@@ -2,10 +2,29 @@ package org.dkeeney.graphing.equations;
 
 import static org.junit.Assert.assertEquals;
 
+import org.dkeeney.utils.Utils;
 import org.junit.Test;
 
 public class EquationTest {
     private static final double DELTA = 0.0000001;
+
+    @Test
+    public void testInvalidEquations() {
+        String[] input = { "", " ", null, "+", "+1", "1*2*8*" };
+
+        for (String s : input) {
+            this.testEquationValidity(s, false);
+        }
+    }
+
+    @Test
+    public void testValidEquations() {
+        String[] input = { "1+2", "3 * 4 / 5" };
+
+        for (String s : input) {
+            this.testEquationValidity(s, true);
+        }
+    }
 
     @Test
     public void testConstants() {
@@ -35,6 +54,22 @@ public class EquationTest {
         for (int i = 0; i < input.length; i++) {
             this.testEquation(input[i], output[i]);
         }
+    }
+
+    @Test
+    public void testOrderOfOperations() {
+        String[] input = { "1+2*3" };
+        double[] output = { 7 };
+
+        for (int i = 0; i < input.length; i++) {
+            this.testEquation(input[i], output[i]);
+        }
+    }
+
+    private void testEquationValidity(String equation, boolean valid) {
+        equation = Utils.removeAllWhiteSpace(equation);
+        assertEquals("Failed validity test for equation " + equation + " "
+                + valid + ".", Equation.isValidEquation(equation), valid);
     }
 
     private void testEquation(String equation, double expected) {

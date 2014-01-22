@@ -2,6 +2,9 @@ package org.dkeeney.utils;
 
 public class Utils {
     public static String removeAllWhiteSpace(String s) {
+        if (s == null) {
+            return null;
+        }
         return s.replaceAll("\\s+", "");
     }
 

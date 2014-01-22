@@ -10,9 +10,20 @@ public class Equation implements Valuable {
     private final List<Operation> operations;
 
     public Equation(String input) {
-        this.operations = new ArrayList<Operation>();
         input = Utils.removeAllWhiteSpace(input);
+        if (!Equation.isValidEquation(input)) {
+            throw new InvalidEquationException();
+        }
+        this.operations = new ArrayList<Operation>();
         this.recursivelyAddOperations(input);
+    }
+
+    public static boolean isValidEquation(String equation) {
+        if (equation == null || "".equals(equation)) {
+            return false;
+        }
+        return equation.matches("[0-9]+(" + Operation.OPERATOR_REGEX
+                + "[0-9]+)*");
     }
 
     private void recursivelyAddOperations(String input) {

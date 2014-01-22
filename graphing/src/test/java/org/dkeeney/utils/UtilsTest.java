@@ -1,6 +1,7 @@
 package org.dkeeney.utils;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 
 import org.junit.Test;
@@ -15,6 +16,8 @@ public class UtilsTest {
             this.assertHasWhiteSpace(s);
             this.assertHasNoWhiteSpace(Utils.removeAllWhiteSpace(s));
         }
+
+        assertNull(Utils.removeAllWhiteSpace(null));
     }
 
     @Test
