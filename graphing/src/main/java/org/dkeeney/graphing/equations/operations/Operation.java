@@ -26,12 +26,12 @@ public abstract class Operation implements Valuable {
 
     public abstract String getOperator();
 
-    public static Operation getOperation(String operator, Term left, Term right) {
-        return createOperation(determineOperation(operator), left, right);
-    }
-
     public static boolean containsOperator(String input) {
         return Utils.containsRegex(input, OPERATOR_REGEX);
+    }
+
+    public static Operation getOperation(String operator, Term left, Term right) {
+        return createOperation(determineOperation(operator), left, right);
     }
 
     private static Operation createOperation(Class<? extends Operation> clazz,
@@ -67,6 +67,23 @@ public abstract class Operation implements Valuable {
         ret.put("*", Multiplication.class);
         ret.put("/", Division.class);
         ret.put("^", Exponent.class);
+        ret.put(null, Constant.class);
         return ret;
+    }
+
+    public Term getLeft() {
+        return this.left;
+    }
+
+    public void setLeft(Term left) {
+        this.left = left;
+    }
+
+    public Term getRight() {
+        return this.right;
+    }
+
+    public void setRight(Term right) {
+        this.right = right;
     }
 }
