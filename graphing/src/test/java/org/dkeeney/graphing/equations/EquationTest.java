@@ -58,8 +58,8 @@ public class EquationTest {
 
     @Test
     public void testOrderOfOperations() {
-        String[] input = { "1+2*3" };
-        double[] output = { 7 };
+        String[] input = { "1+2*3", "1+3^3+1*4", "0/4+1*3" };
+        double[] output = { 7, 32, 3 };
 
         for (int i = 0; i < input.length; i++) {
             this.testEquation(input[i], output[i]);
