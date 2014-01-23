@@ -1,10 +1,13 @@
 package org.dkeeney.graphing.equations.operations;
 
-import org.dkeeney.graphing.equations.Term;
+import org.dkeeney.graphing.equations.Valuable;
 
 public class Multiplication extends Operation {
-    protected Multiplication(Term left, Term right) {
+    protected Multiplication(Valuable left, Valuable right) {
         super(left, right);
+    }
+
+    protected Multiplication() {
     }
 
     @Override

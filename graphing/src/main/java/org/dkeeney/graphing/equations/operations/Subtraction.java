@@ -1,10 +1,13 @@
 package org.dkeeney.graphing.equations.operations;
 
-import org.dkeeney.graphing.equations.Term;
+import org.dkeeney.graphing.equations.Valuable;
 
 public class Subtraction extends Operation {
-    protected Subtraction(Term left, Term right) {
+    protected Subtraction(Valuable left, Valuable right) {
         super(left, right);
+    }
+
+    protected Subtraction() {
     }
 
     @Override

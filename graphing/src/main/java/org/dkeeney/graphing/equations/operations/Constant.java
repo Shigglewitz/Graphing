@@ -1,11 +1,14 @@
 package org.dkeeney.graphing.equations.operations;
 
-import org.dkeeney.graphing.equations.Term;
+import org.dkeeney.graphing.equations.Valuable;
 
 public class Constant extends Operation {
 
-    protected Constant(Term left, Term right) {
+    protected Constant(Valuable left, Valuable right) {
         super(left, right);
+    }
+
+    protected Constant() {
     }
 
     @Override

@@ -5,18 +5,23 @@ import java.lang.reflect.InvocationTargetException;
 import java.util.HashMap;
 import java.util.Map;
 
-import org.dkeeney.graphing.equations.Term;
 import org.dkeeney.graphing.equations.Valuable;
 import org.dkeeney.utils.Utils;
 
 public abstract class Operation implements Valuable {
+    private static final Operation[] SUPPORTED_OPERATIONS = { new Constant(),
+            new Addition(), new Subtraction(), new Multiplication(),
+            new Division(), new Exponent() };
     private static Map<String, Class<? extends Operation>> OPERATION_MAP;
     public static final String OPERATOR_REGEX = "[+-/*^]";
 
-    protected Term left;
-    protected Term right;
+    protected Valuable left;
+    protected Valuable right;
 
-    protected Operation(Term left, Term right) {
+    protected Operation() {
+    };
+
+    protected Operation(Valuable left, Valuable right) {
         this.left = left;
         this.right = right;
     }
@@ -30,16 +35,17 @@ public abstract class Operation implements Valuable {
         return Utils.containsRegex(input, OPERATOR_REGEX);
     }
 
-    public static Operation getOperation(String operator, Term left, Term right) {
+    public static Operation getOperation(String operator, Valuable left,
+            Valuable right) {
         return createOperation(determineOperation(operator), left, right);
     }
 
     private static Operation createOperation(Class<? extends Operation> clazz,
-            Term left, Term right) {
+            Valuable left, Valuable right) {
         Operation o = null;
         try {
             Constructor<? extends Operation> c = clazz.getDeclaredConstructor(
-                    Term.class, Term.class);
+                    Valuable.class, Valuable.class);
             o = c.newInstance(left, right);
         } catch (InstantiationException | IllegalAccessException
                 | NoSuchMethodException | SecurityException
@@ -61,29 +67,27 @@ public abstract class Operation implements Valuable {
     }
 
     private static Map<String, Class<? extends Operation>> initMap() {
+
         Map<String, Class<? extends Operation>> ret = new HashMap<String, Class<? extends Operation>>();
-        ret.put("+", Addition.class);
-        ret.put("-", Subtraction.class);
-        ret.put("*", Multiplication.class);
-        ret.put("/", Division.class);
-        ret.put("^", Exponent.class);
-        ret.put(null, Constant.class);
+        for (Operation o : SUPPORTED_OPERATIONS) {
+            ret.put(o.getOperator(), o.getClass());
+        }
         return ret;
     }
 
-    public Term getLeft() {
+    public Valuable getLeft() {
         return this.left;
     }
 
-    public void setLeft(Term left) {
+    public void setLeft(Valuable left) {
         this.left = left;
     }
 
-    public Term getRight() {
+    public Valuable getRight() {
         return this.right;
     }
 
-    public void setRight(Term right) {
+    public void setRight(Valuable right) {
         this.right = right;
     }
 }

@@ -1,10 +1,13 @@
 package org.dkeeney.graphing.equations.operations;
 
-import org.dkeeney.graphing.equations.Term;
+import org.dkeeney.graphing.equations.Valuable;
 
 public class Exponent extends Operation {
-    protected Exponent(Term left, Term right) {
+    protected Exponent(Valuable left, Valuable right) {
         super(left, right);
+    }
+
+    protected Exponent() {
     }
 
     @Override

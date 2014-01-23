@@ -1,10 +1,13 @@
 package org.dkeeney.graphing.equations.operations;
 
-import org.dkeeney.graphing.equations.Term;
+import org.dkeeney.graphing.equations.Valuable;
 
 public class Addition extends Operation {
-    protected Addition(Term left, Term right) {
+    protected Addition(Valuable left, Valuable right) {
         super(left, right);
+    }
+
+    protected Addition() {
     }
 
     @Override
