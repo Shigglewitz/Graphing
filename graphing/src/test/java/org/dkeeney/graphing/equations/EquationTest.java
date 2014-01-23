@@ -27,6 +27,17 @@ public class EquationTest {
     }
 
     @Test
+    public void testImplicitMultiplication() {
+        String[] tests = { "1+2(3*4)7+8", "(1)30+45+67(89)(56)(12)" };
+        String[] expected = { "1+2*(3*4)*7+8", "(1)*30+45+67*(89)*(56)*(12)" };
+
+        for (int i = 0; i < tests.length; i++) {
+            assertEquals(expected[i],
+                    Equation.removeImpliedMultiplication(tests[i]));
+        }
+    }
+
+    @Test
     public void testConstants() {
         String[] input = { "1", "20", "5", "4" };
         for (String element : input) {
