@@ -5,25 +5,36 @@
 	<artifactId>graphing</artifactId>
 	<version>0.0.1-SNAPSHOT</version>
 	<name>Graphing</name>
+	<properties>
+		<apacheCommonsVersion>3.2.1</apacheCommonsVersion>
+		<junitVersion>4.8.1</junitVersion>
+		<mavenVersion>2.1</mavenVersion>
+		<javaVersion>1.7</javaVersion>
+	</properties>
 	<dependencies>
+		<dependency>
+			<groupId>org.apache.commons</groupId>
+			<artifactId>commons-lang3</artifactId>
+			<version>${apacheCommonsVersion}</version>
+		</dependency>
 		<dependency>
 			<groupId>junit</groupId>
 			<artifactId>junit</artifactId>
-			<version>4.8.1</version>
+			<version>${junitVersion}</version>
 			<scope>test</scope>
 		</dependency>
 	</dependencies>
-	
+
 	<!-- necessary of else m2e will revert to 1.5 :( -->
 	<build>
 		<plugins>
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-compiler-plugin</artifactId>
-				<version>2.1</version>
+				<version>${mavenVersion}</version>
 				<configuration>
-					<source>1.7</source>
-					<target>1.7</target>
+					<source>${javaVersion}</source>
+					<target>${javaVersion}</target>
 				</configuration>
 			</plugin>
 		</plugins>
