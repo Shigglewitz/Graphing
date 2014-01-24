@@ -27,13 +27,31 @@ public class EquationTest {
     }
 
     @Test
+    public void testInvalidEquationsWithParens() {
+        String[] input = { "1+(2", "(1*3)) * (4 / 5)" };
+
+        for (String s : input) {
+            this.testEquationValidity(s, false);
+        }
+    }
+
+    @Test
+    public void testValidEquationsWithParens() {
+        String[] input = { "(1+2)", "(1+(3*4)) " };
+
+        for (String s : input) {
+            this.testEquationValidity(s, true);
+        }
+    }
+
+    @Test
     public void testImplicitMultiplication() {
         String[] tests = { "1+2(3*4)7+8", "(1)30+45+67(89)(56)(12)" };
         String[] expected = { "1+2*(3*4)*7+8", "(1)*30+45+67*(89)*(56)*(12)" };
 
         for (int i = 0; i < tests.length; i++) {
             assertEquals(expected[i],
-                    Equation.removeImpliedMultiplication(tests[i]));
+                    Equation.addImpliedMultiplication(tests[i]));
         }
     }
 
@@ -69,8 +87,20 @@ public class EquationTest {
 
     @Test
     public void testOrderOfOperations() {
-        String[] input = { "1+2*3", "1+3^3+1*4", "0/4+1*3" };
-        double[] output = { 7, 32, 3 };
+        String[] input = { "1+2*3", "1+3^3+1*4", "0/4+1*3",
+                "1*30+45+67*89*56*12" };
+        double[] output = { 7, 32, 3, 4007211 };
+
+        for (int i = 0; i < input.length; i++) {
+            this.testEquation(input[i], output[i]);
+        }
+    }
+
+    @Test
+    public void testEquationsWithParens() {
+        String[] input = { "(1+2)*3", "1+3^(3+1)*4", "0/(4+1)3",
+                "1*30+(45+67)89(56)*12" };
+        double[] output = { 9, 325, 0, 6698526 };
 
         for (int i = 0; i < input.length; i++) {
             this.testEquation(input[i], output[i]);

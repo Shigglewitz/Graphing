@@ -17,16 +17,8 @@ import org.dkeeney.utils.Utils;
 public class Equation implements Valuable {
     private final List<Operation> operations;
 
-    public Equation(String input) {
-        input = Utils.removeAllWhiteSpace(input);
-        input = removeImpliedMultiplication(input);
-        if (!Equation.isValidEquation(input)) {
-            throw new InvalidEquationException();
-        }
-        this.operations = new ArrayList<Operation>();
-        this.recursivelyAddOperations(input);
-    }
-
+    private static String VALID_EQUATION_REGEX = "\\(*[0-9]+\\)*("
+            + Operation.OPERATOR_REGEX + "\\(*[0-9]+\\)*)*";
     private static final String IMPLIED_BEFORE_PAREN_REGEX = "([0-9)]\\()";
     private static final String IMPLIED_AFTER_PAREN_REGEX = "(\\)[(0-9])";
     private static final Pattern IMPLIED_BEFORE_PAREN = Pattern
@@ -34,13 +26,25 @@ public class Equation implements Valuable {
     private static final Pattern IMPLIED_AFTER_PAREN = Pattern
             .compile(IMPLIED_AFTER_PAREN_REGEX);
 
-    public static String removeImpliedMultiplication(String equation) {
+    public Equation(String input) {
+        input = Utils.removeAllWhiteSpace(input);
+        input = addImpliedMultiplication(input);
+        if (!Equation.isValidEquation(input)) {
+            throw new InvalidEquationException();
+        }
+        this.operations = new ArrayList<Operation>();
+        this.recursivelyAddOperations(input);
+        System.out.println("Equation for " + input);
+    }
+
+    public static String addImpliedMultiplication(String equation) {
         Matcher before = IMPLIED_BEFORE_PAREN.matcher(equation);
         String ret = "";
         int position = 0;
         while (before.find()) {
             ret += equation.substring(position, before.start())
-                    + before.group(1).replace("(", "*(");
+                    + before.group(1).replace("(",
+                            Multiplication.OPERATOR + "(");
             position = before.end();
         }
 
@@ -54,7 +58,8 @@ public class Equation implements Valuable {
         Matcher after = IMPLIED_AFTER_PAREN.matcher(equation);
         while (after.find()) {
             ret += equation.substring(position, after.start())
-                    + after.group(1).replace(")", ")*");
+                    + after.group(1)
+                            .replace(")", ")" + Multiplication.OPERATOR);
             position = after.end();
         }
 
@@ -67,9 +72,6 @@ public class Equation implements Valuable {
 
         return equation;
     }
-
-    private static String VALID_EQUATION_REGEX = "\\(?[0-9]+("
-            + Operation.OPERATOR_REGEX + "[0-9]+)*\\)?";
 
     public static boolean isValidEquation(String equation) {
         if (equation == null || "".equals(equation)) {

@@ -55,6 +55,22 @@ public class UtilsTest {
         }
     }
 
+    @Test
+    public void testGetMatchedGroup() {
+        String[] tests = { "123(456)789", "[123[456[789]]asdf[456]]asdf" };
+        char[][] delimiters = { { '(', ')' }, { '[', ']' } };
+        int[][] expected = { { 3, 7 }, { 0, 23 } };
+
+        int[] ret;
+        for (int i = 0; i < tests.length; i++) {
+            ret = Utils.getMatchedGroup(tests[i], delimiters[i][0],
+                    delimiters[i][1]);
+            assertEquals(expected[i][0], ret[0]);
+            assertEquals(expected[i][1], ret[1]);
+            System.out.println(tests[i].substring(ret[0], ret[1]));
+        }
+    }
+
     private static final String WHITE_SPACE_REGEX = ".*\\s.*";
 
     private void assertHasWhiteSpace(String s) {

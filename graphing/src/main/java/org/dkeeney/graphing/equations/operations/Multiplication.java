@@ -3,6 +3,8 @@ package org.dkeeney.graphing.equations.operations;
 import org.dkeeney.graphing.equations.Valuable;
 
 public class Multiplication extends Operation {
+    public static final String OPERATOR = "*";
+
     protected Multiplication(Valuable left, Valuable right) {
         super(left, right);
     }
@@ -17,7 +19,7 @@ public class Multiplication extends Operation {
 
     @Override
     public String getOperator() {
-        return "*";
+        return OPERATOR;
     }
 
 }
