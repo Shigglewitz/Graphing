@@ -1,22 +1,18 @@
 package org.dkeeney.graphing.equations;
 
+import java.lang.reflect.Constructor;
+import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import org.apache.commons.lang3.StringUtils;
-import org.dkeeney.graphing.equations.operations.Addition;
-import org.dkeeney.graphing.equations.operations.Division;
-import org.dkeeney.graphing.equations.operations.Exponent;
 import org.dkeeney.graphing.equations.operations.Multiplication;
 import org.dkeeney.graphing.equations.operations.Operation;
-import org.dkeeney.graphing.equations.operations.Subtraction;
 import org.dkeeney.utils.Utils;
 
-public class Equation implements Valuable {
-    private final List<Operation> operations;
-
+public class Equation {
     private static String VALID_EQUATION_REGEX = "\\(*[0-9]+\\)*("
             + Operation.OPERATOR_REGEX + "\\(*[0-9]+\\)*)*";
     private static final String IMPLIED_BEFORE_PAREN_REGEX = "([0-9)]\\()";
@@ -26,15 +22,15 @@ public class Equation implements Valuable {
     private static final Pattern IMPLIED_AFTER_PAREN = Pattern
             .compile(IMPLIED_AFTER_PAREN_REGEX);
 
+    private final String equation;
+
     public Equation(String input) {
         input = Utils.removeAllWhiteSpace(input);
         input = addImpliedMultiplication(input);
         if (!Equation.isValidEquation(input)) {
             throw new InvalidEquationException();
         }
-        this.operations = new ArrayList<Operation>();
-        this.recursivelyAddOperations(input);
-        System.out.println("Equation for " + input);
+        this.equation = input;
     }
 
     public static String addImpliedMultiplication(String equation) {
@@ -82,64 +78,77 @@ public class Equation implements Valuable {
                         .countMatches(equation, ")");
     }
 
-    private void recursivelyAddOperations(String input) {
-        String[] parsed = null;
-
-        do {
-            parsed = Utils.splitWithDelimiter(input, Operation.OPERATOR_REGEX,
-                    3);
-            if (parsed.length == 1) {
-                this.operations.add(Operation.getOperation(null, new Term(
-                        parsed[0]), null));
-            } else {
-                this.operations
-                        .add(Operation.getOperation(
-                                parsed[1],
-                                new Term(parsed[0]),
-                                new Term(parsed[2]
-                                        .split(Operation.OPERATOR_REGEX)[0])));
-                input = parsed[2];
-            }
-        } while (parsed.length > 1);
+    public double solve() {
+        return this.evaluate(this.equation);
     }
 
-    @Override
-    public double evaluate() {
-        double ret = 0;
-        Class<?>[][] orderOfOperations = { { Exponent.class },
-                { Multiplication.class, Division.class },
-                { Addition.class, Subtraction.class } };
+    private double evaluate(String evaluate) {
+        while (evaluate.indexOf(')') > -1) {
+            int closeParen = evaluate.indexOf(')');
+            int openParen = evaluate.substring(0, closeParen).lastIndexOf('(');
+            double parenValue = this.evaluate(evaluate.substring(openParen + 1,
+                    closeParen));
+            evaluate = evaluate.substring(0, openParen)
+                    + Double.toString(parenValue)
+                    + evaluate.substring(closeParen + 1);
+        }
 
-        for (Class<?>[] orderOfOperation : orderOfOperations) {
-            boolean shouldEvaluate = false;
-            for (int j = 0; j < this.operations.size(); j++) {
+        String[] parse = Utils.splitWithDelimiter(evaluate,
+                Operation.OPERATOR_REGEX);
+        List<String> parsedList = new ArrayList<String>();
+        for (String s : parse) {
+            parsedList.add(s);
+        }
+        boolean shouldEvaluate = false;
+        for (Operation[] ops : Operation.getOrderOfOperations()) {
+            for (int i = 0; i < parsedList.size(); i++) {
                 shouldEvaluate = false;
-                for (Class<?> clazz : orderOfOperation) {
-                    if (clazz.isInstance(this.operations.get(j))) {
-                        shouldEvaluate = true;
+                if (Operation.isOperator(parsedList.get(i))) {
+                    for (Operation o : ops) {
+                        if (o.getOperator().equals(parsedList.get(i))) {
+                            shouldEvaluate = true;
+                        }
+                    }
+
+                    if (shouldEvaluate) {
+                        if (i == 0) {
+                            throw new InvalidEquationException(
+                                    "Operator found without a left operand.");
+                        } else if (i >= parsedList.size() - 1) {
+                            throw new InvalidEquationException(
+                                    "Operator found without a right operand.");
+                        } else {
+                            try {
+                                Constructor<? extends Operation> constructor = Operation
+                                        .determineOperation(parsedList.get(i))
+                                        .getDeclaredConstructor(Valuable.class,
+                                                Valuable.class);
+                                constructor.setAccessible(true);
+                                double value = constructor.newInstance(
+                                        new Term(parsedList.get(i - 1)),
+                                        new Term(parsedList.get(i + 1)))
+                                        .evaluate();
+                                parsedList.set(i - 1, Double.toString(value));
+                                parsedList.remove(i);
+                                parsedList.remove(i);
+                                i--;
+                            } catch (InstantiationException
+                                    | IllegalAccessException
+                                    | IllegalArgumentException
+                                    | InvocationTargetException
+                                    | NoSuchMethodException | SecurityException e) {
+                                e.printStackTrace();
+                                throw new InvalidEquationException(
+                                        "Exception evaluating expression", e);
+                            }
+                        }
                     }
                 }
-                if (shouldEvaluate) {
-                    this.evaluateAndDelete(j);
-                    j--;
-                }
             }
         }
 
-        // should be down to just a constant
-        ret = this.operations.get(0).evaluate();
+        // should be down to just a constant now
 
-        return ret;
-    }
-
-    private void evaluateAndDelete(int index) {
-        double value = this.operations.get(index).evaluate();
-        if (index > 0) {
-            this.operations.get(index - 1).setRight(new Term(value));
-        }
-        if (index < this.operations.size() - 1) {
-            this.operations.get(index + 1).setLeft(new Term(value));
-        }
-        this.operations.remove(index);
+        return Double.parseDouble(parsedList.get(0));
     }
 }
