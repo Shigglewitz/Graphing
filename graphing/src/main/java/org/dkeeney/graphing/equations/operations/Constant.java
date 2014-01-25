@@ -2,22 +2,24 @@ package org.dkeeney.graphing.equations.operations;
 
 import org.dkeeney.graphing.equations.Term;
 
-public class Addition extends Operation {
-    protected Addition(Term left, Term right) {
+public class Constant extends Operation {
+
+    protected Constant(Term left, Term right) {
         super(left, right);
     }
 
-    protected Addition() {
+    protected Constant() {
     }
 
     @Override
     public double evaluate() {
-        return this.left.evaluate() + this.right.evaluate();
+        return this.right == null ? this.left.evaluate() : this.right
+                .evaluate();
     }
 
     @Override
     public String getOperator() {
-        return "+";
+        return null;
     }
 
 }

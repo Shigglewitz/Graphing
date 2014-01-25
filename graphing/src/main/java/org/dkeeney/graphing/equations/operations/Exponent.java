@@ -3,14 +3,21 @@ package org.dkeeney.graphing.equations.operations;
 import org.dkeeney.graphing.equations.Term;
 
 public class Exponent extends Operation {
-
-    public Exponent(Term left, Term right) {
+    protected Exponent(Term left, Term right) {
         super(left, right);
+    }
+
+    protected Exponent() {
     }
 
     @Override
     public double evaluate() {
-        return Math.pow(this.left.valueOf(), this.right.valueOf());
+        return Math.pow(this.left.evaluate(), this.right.evaluate());
+    }
+
+    @Override
+    public String getOperator() {
+        return "^";
     }
 
 }

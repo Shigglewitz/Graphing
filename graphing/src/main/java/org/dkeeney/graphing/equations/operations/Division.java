@@ -3,14 +3,21 @@ package org.dkeeney.graphing.equations.operations;
 import org.dkeeney.graphing.equations.Term;
 
 public class Division extends Operation {
-
-    public Division(Term left, Term right) {
+    protected Division(Term left, Term right) {
         super(left, right);
+    }
+
+    protected Division() {
     }
 
     @Override
     public double evaluate() {
-        return this.left.valueOf() / this.right.valueOf();
+        return this.left.evaluate() / this.right.evaluate();
+    }
+
+    @Override
+    public String getOperator() {
+        return "/";
     }
 
 }
