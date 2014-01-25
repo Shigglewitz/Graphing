@@ -45,6 +45,24 @@ public class EquationTest {
     }
 
     @Test
+    public void testValidDecimals() {
+        String[] input = { "1.0004 * 0.01", "0.1(5.6)/4.3" };
+
+        for (String s : input) {
+            this.testEquationValidity(s, true);
+        }
+    }
+
+    @Test
+    public void testInvalidDecimals() {
+        String[] input = { ".3*4.5", "0.567 + 9.", "0.45 * 78..12" };
+
+        for (String s : input) {
+            this.testEquationValidity(s, false);
+        }
+    }
+
+    @Test
     public void testImplicitMultiplication() {
         String[] tests = { "1+2(3*4)7+8", "(1)30+45+67(89)(56)(12)" };
         String[] expected = { "1+2*(3*4)*7+8", "(1)*30+45+67*(89)*(56)*(12)" };
@@ -110,6 +128,7 @@ public class EquationTest {
 
     private void testEquationValidity(String equation, boolean valid) {
         equation = Utils.removeAllWhiteSpace(equation);
+        equation = Equation.addImpliedMultiplication(equation);
         assertEquals("Failed validity test for equation " + equation + " "
                 + valid + ".", Equation.isValidEquation(equation), valid);
     }
