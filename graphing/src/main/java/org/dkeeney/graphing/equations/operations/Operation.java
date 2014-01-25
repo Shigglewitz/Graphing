@@ -5,47 +5,74 @@ import java.lang.reflect.InvocationTargetException;
 import java.util.HashMap;
 import java.util.Map;
 
-import org.dkeeney.graphing.equations.Valuable;
+import org.dkeeney.graphing.equations.Term;
 import org.dkeeney.utils.Utils;
 
-public abstract class Operation implements Valuable {
+public abstract class Operation {
     private static final Operation[] SUPPORTED_OPERATIONS = { new Constant(),
             new Addition(), new Subtraction(), new Multiplication(),
             new Division(), new Exponent() };
+    private static final Operation[][] ORDER_OF_OPERATIONS = {
+            { new Exponent() }, { new Multiplication(), new Division() },
+            { new Addition(), new Subtraction() } };
     private static Map<String, Class<? extends Operation>> OPERATION_MAP;
-    public static final String OPERATOR_REGEX = "[+-/*^]";
+    public static final String OPERATOR_REGEX = "[\\^*/+-]";
 
-    protected Valuable left;
-    protected Valuable right;
+    protected Term left;
+    protected Term right;
 
     protected Operation() {
     };
 
-    protected Operation(Valuable left, Valuable right) {
+    protected Operation(Term left, Term right) {
         this.left = left;
         this.right = right;
     }
 
-    @Override
     public abstract double evaluate();
 
     public abstract String getOperator();
+
+    public static Operation[][] getOrderOfOperations() {
+        Operation[][] ret = new Operation[ORDER_OF_OPERATIONS.length][];
+
+        for (int i = 0; i < ORDER_OF_OPERATIONS.length; i++) {
+            ret[i] = new Operation[ORDER_OF_OPERATIONS[i].length];
+            for (int j = 0; j < ORDER_OF_OPERATIONS[i].length; j++) {
+                ret[i][j] = ORDER_OF_OPERATIONS[i][j];
+            }
+        }
+        return ret;
+    }
 
     public static boolean containsOperator(String input) {
         return Utils.containsRegex(input, OPERATOR_REGEX);
     }
 
-    public static Operation getOperation(String operator, Valuable left,
-            Valuable right) {
+    public static boolean isOperator(String input) {
+        return input.matches(OPERATOR_REGEX);
+    }
+
+    public static Operation getOperation(String operator, Term left, Term right) {
         return createOperation(determineOperation(operator), left, right);
     }
 
+    public static Class<? extends Operation> determineOperation(String operator) {
+        synchronized (Operation.class) {
+            if (OPERATION_MAP == null) {
+                OPERATION_MAP = initMap();
+            }
+        }
+
+        return OPERATION_MAP.get(operator);
+    }
+
     private static Operation createOperation(Class<? extends Operation> clazz,
-            Valuable left, Valuable right) {
+            Term left, Term right) {
         Operation o = null;
         try {
             Constructor<? extends Operation> c = clazz.getDeclaredConstructor(
-                    Valuable.class, Valuable.class);
+                    Term.class, Term.class);
             o = c.newInstance(left, right);
         } catch (InstantiationException | IllegalAccessException
                 | NoSuchMethodException | SecurityException
@@ -54,16 +81,6 @@ public abstract class Operation implements Valuable {
             return null;
         }
         return o;
-    }
-
-    private static Class<? extends Operation> determineOperation(String operator) {
-        synchronized (Operation.class) {
-            if (OPERATION_MAP == null) {
-                OPERATION_MAP = initMap();
-            }
-        }
-
-        return OPERATION_MAP.get(operator);
     }
 
     private static Map<String, Class<? extends Operation>> initMap() {
@@ -75,19 +92,19 @@ public abstract class Operation implements Valuable {
         return ret;
     }
 
-    public Valuable getLeft() {
+    public Term getLeft() {
         return this.left;
     }
 
-    public void setLeft(Valuable left) {
+    public void setLeft(Term left) {
         this.left = left;
     }
 
-    public Valuable getRight() {
+    public Term getRight() {
         return this.right;
     }
 
-    public void setRight(Valuable right) {
+    public void setRight(Term right) {
         this.right = right;
     }
 }

@@ -1,6 +1,6 @@
 package org.dkeeney.graphing.equations;
 
-public class Term implements Valuable {
+public class Term {
     private final double value;
 
     public Term(String value) {
@@ -11,7 +11,6 @@ public class Term implements Valuable {
         this.value = value;
     }
 
-    @Override
     public double evaluate() {
         return this.value;
     }

@@ -1,9 +1,9 @@
 package org.dkeeney.graphing.equations.operations;
 
-import org.dkeeney.graphing.equations.Valuable;
+import org.dkeeney.graphing.equations.Term;
 
 public class Addition extends Operation {
-    protected Addition(Valuable left, Valuable right) {
+    protected Addition(Term left, Term right) {
         super(left, right);
     }
 

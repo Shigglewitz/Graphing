@@ -4,6 +4,7 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 
+import org.dkeeney.graphing.equations.operations.Operation;
 import org.junit.Test;
 
 public class UtilsTest {
@@ -29,6 +30,10 @@ public class UtilsTest {
         input = "asdfasdf";
         split = Utils.splitWithDelimiter(input, delimiter);
         assertEquals("Incorrect number of strings found", 1, split.length);
+        input = "3.0*4.5/7.6";
+        delimiter = Operation.OPERATOR_REGEX;
+        split = Utils.splitWithDelimiter(input, delimiter);
+        assertEquals("Incorrect number of strings found", 5, split.length);
     }
 
     @Test
@@ -67,7 +72,6 @@ public class UtilsTest {
                     delimiters[i][1]);
             assertEquals(expected[i][0], ret[0]);
             assertEquals(expected[i][1], ret[1]);
-            System.out.println(tests[i].substring(ret[0], ret[1]));
         }
     }
 
