@@ -13,8 +13,10 @@ import org.dkeeney.graphing.equations.operations.Operation;
 import org.dkeeney.utils.Utils;
 
 public class Equation {
-    private static String VALID_EQUATION_REGEX = "\\(*[0-9]+\\)*("
-            + Operation.OPERATOR_REGEX + "\\(*[0-9]+\\)*)*";
+    private static final String NUMBER_REGEX = "[0-9]+([.][0-9]+)?";
+    private static final String VALID_EQUATION_REGEX = "\\(*" + NUMBER_REGEX
+            + "\\)*(" + Operation.OPERATOR_REGEX + "\\(*" + NUMBER_REGEX
+            + "\\)*)*";
     private static final String IMPLIED_BEFORE_PAREN_REGEX = "([0-9)]\\()";
     private static final String IMPLIED_AFTER_PAREN_REGEX = "(\\)[(0-9])";
     private static final Pattern IMPLIED_BEFORE_PAREN = Pattern
@@ -34,6 +36,10 @@ public class Equation {
     }
 
     public static String addImpliedMultiplication(String equation) {
+        if (equation == null) {
+            return null;
+        }
+
         Matcher before = IMPLIED_BEFORE_PAREN.matcher(equation);
         String ret = "";
         int position = 0;
