@@ -55,7 +55,26 @@ public class EquationTest {
 
     @Test
     public void testInvalidDecimals() {
-        String[] input = { ".3*4.5", "0.567 + 9.", "0.45 * 78..12" };
+        String[] input = { ".3*4.5", "0.567 + 9.", "0.45 * 78..12", "1+2+3.4.5" };
+
+        for (String s : input) {
+            this.testEquationValidity(s, false);
+        }
+    }
+
+    @Test
+    public void testValidVariables() {
+        String[] input = { "1+2+x", "((4*5)^x-1)", "x-y-z+t^f", "1(2.05x)(y)",
+                "xyz", "20xy", "2(x)+1", "x(2*y)z" };
+
+        for (String s : input) {
+            this.testEquationValidity(s, true);
+        }
+    }
+
+    @Test
+    public void testInvalidVariables() {
+        String[] input = { "2Xy" };
 
         for (String s : input) {
             this.testEquationValidity(s, false);
@@ -118,8 +137,8 @@ public class EquationTest {
     @Test
     public void testEquationsWithParens() {
         String[] input = { "(20)*(19)", "(1+2)*3", "1+3^(3+1)*4", "0/(4+1)3",
-                "1*30+(45+67)89(56)*12" };
-        double[] output = { 380, 9, 325, 0, 6698526 };
+                "1*30+(45+67)89(56)*12", "1+((2*(5+2)))" };
+        double[] output = { 380, 9, 325, 0, 6698526, 15 };
 
         for (int i = 0; i < input.length; i++) {
             this.testEquation(input[i], output[i]);
@@ -130,7 +149,7 @@ public class EquationTest {
         equation = Utils.removeAllWhiteSpace(equation);
         equation = Equation.addImpliedMultiplication(equation);
         assertEquals("Failed validity test for equation " + equation + " "
-                + valid + ".", Equation.isValidEquation(equation), valid);
+                + valid + ".", valid, Equation.isValidEquation(equation));
     }
 
     private void testEquation(String equation, double expected) {

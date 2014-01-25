@@ -13,26 +13,35 @@ import org.dkeeney.graphing.equations.operations.Operation;
 import org.dkeeney.utils.Utils;
 
 public class Equation {
+    private static final String VARIABLE_REGEX = "[a-z]";
     private static final String NUMBER_REGEX = "[0-9]+([.][0-9]+)?";
-    private static final String VALID_EQUATION_REGEX = "\\(*" + NUMBER_REGEX
-            + "\\)*(" + Operation.OPERATOR_REGEX + "\\(*" + NUMBER_REGEX
-            + "\\)*)*";
-    private static final String IMPLIED_BEFORE_PAREN_REGEX = "([0-9)]\\()";
-    private static final String IMPLIED_AFTER_PAREN_REGEX = "(\\)[(0-9])";
+    private static final String NON_OPERATOR_REGEX = "((" + NUMBER_REGEX + ")|"
+            + VARIABLE_REGEX + ")";
+    private static final String VALID_EQUATION_REGEX = "\\(*"
+            + NON_OPERATOR_REGEX + "\\)*(" + Operation.OPERATOR_REGEX + "\\(*"
+            + NON_OPERATOR_REGEX + "\\)*)*";
+    private static final String IMPLIED_BEFORE_PAREN_REGEX = "([a-z0-9)]\\()";
+    private static final String IMPLIED_AFTER_PAREN_REGEX = "(\\)[(0-9a-z])";
+    private static final String IMPLIED_WITH_VAR_REGEX = "((" + NUMBER_REGEX
+            + ")|" + VARIABLE_REGEX + ")(?=" + VARIABLE_REGEX + ")";
     private static final Pattern IMPLIED_BEFORE_PAREN = Pattern
             .compile(IMPLIED_BEFORE_PAREN_REGEX);
     private static final Pattern IMPLIED_AFTER_PAREN = Pattern
             .compile(IMPLIED_AFTER_PAREN_REGEX);
+    private static final Pattern IMPLIED_WITH_VAR = Pattern
+            .compile(IMPLIED_WITH_VAR_REGEX);
 
     private final String equation;
+    private final List<String> operations;
 
     public Equation(String input) {
+        this.equation = input;
         input = Utils.removeAllWhiteSpace(input);
         input = addImpliedMultiplication(input);
         if (!Equation.isValidEquation(input)) {
             throw new InvalidEquationException();
         }
-        this.equation = input;
+        this.operations = this.reduce(input);
     }
 
     public static String addImpliedMultiplication(String equation) {
@@ -72,6 +81,20 @@ public class Equation {
             ret = "";
         }
 
+        Matcher variables = IMPLIED_WITH_VAR.matcher(equation);
+        while (variables.find()) {
+            ret += equation.substring(position, variables.start())
+                    + variables.group(0) + Multiplication.OPERATOR;
+            position = variables.end();
+        }
+
+        if (position != 0) {
+            ret += equation.substring(position, equation.length());
+            position = 0;
+            equation = ret;
+            ret = "";
+        }
+
         return equation;
     }
 
@@ -85,21 +108,33 @@ public class Equation {
     }
 
     public double solve() {
-        return this.evaluate(this.equation);
+        return this.evaluate();
     }
 
-    private double evaluate(String evaluate) {
-        while (evaluate.indexOf(')') > -1) {
-            int closeParen = evaluate.indexOf(')');
-            int openParen = evaluate.substring(0, closeParen).lastIndexOf('(');
-            double parenValue = this.evaluate(evaluate.substring(openParen + 1,
-                    closeParen));
-            evaluate = evaluate.substring(0, openParen)
-                    + Double.toString(parenValue)
-                    + evaluate.substring(closeParen + 1);
+    public String getEquation() {
+        return this.equation;
+    }
+
+    private String flatten(List<String> input) {
+        String ret = "";
+        for (String s : input) {
+            ret += s;
         }
 
-        String[] parse = Utils.splitWithDelimiter(evaluate,
+        return ret;
+    }
+
+    private List<String> reduce(String equation) {
+        while (equation.indexOf(')') > -1) {
+            int closeParen = equation.indexOf(')');
+            int openParen = equation.substring(0, closeParen).lastIndexOf('(');
+            String parenValue = this.flatten(this.reduce(equation.substring(
+                    openParen + 1, closeParen)));
+            equation = equation.substring(0, openParen) + parenValue
+                    + equation.substring(closeParen + 1);
+        }
+
+        String[] parse = Utils.splitWithDelimiter(equation,
                 Operation.OPERATOR_REGEX);
         List<String> parsedList = new ArrayList<String>();
         for (String s : parse) {
@@ -153,8 +188,10 @@ public class Equation {
             }
         }
 
-        // should be down to just a constant now
+        return parsedList;
+    }
 
-        return Double.parseDouble(parsedList.get(0));
+    private double evaluate() {
+        return Double.parseDouble(this.operations.get(0));
     }
 }
