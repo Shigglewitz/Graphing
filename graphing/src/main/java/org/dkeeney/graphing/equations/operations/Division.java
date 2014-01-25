@@ -1,9 +1,9 @@
 package org.dkeeney.graphing.equations.operations;
 
-import org.dkeeney.graphing.equations.Valuable;
+import org.dkeeney.graphing.equations.Term;
 
 public class Division extends Operation {
-    protected Division(Valuable left, Valuable right) {
+    protected Division(Term left, Term right) {
         super(left, right);
     }
 

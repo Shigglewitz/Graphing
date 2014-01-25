@@ -1,11 +1,11 @@
 package org.dkeeney.graphing.equations.operations;
 
-import org.dkeeney.graphing.equations.Valuable;
+import org.dkeeney.graphing.equations.Term;
 
 public class Multiplication extends Operation {
     public static final String OPERATOR = "*";
 
-    protected Multiplication(Valuable left, Valuable right) {
+    protected Multiplication(Term left, Term right) {
         super(left, right);
     }
 

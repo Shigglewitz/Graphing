@@ -1,9 +1,9 @@
 package org.dkeeney.graphing.equations.operations;
 
-import org.dkeeney.graphing.equations.Valuable;
+import org.dkeeney.graphing.equations.Term;
 
 public class Subtraction extends Operation {
-    protected Subtraction(Valuable left, Valuable right) {
+    protected Subtraction(Term left, Term right) {
         super(left, right);
     }
 

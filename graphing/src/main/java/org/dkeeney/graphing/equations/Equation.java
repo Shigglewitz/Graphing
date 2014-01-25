@@ -121,8 +121,8 @@ public class Equation {
                             try {
                                 Constructor<? extends Operation> constructor = Operation
                                         .determineOperation(parsedList.get(i))
-                                        .getDeclaredConstructor(Valuable.class,
-                                                Valuable.class);
+                                        .getDeclaredConstructor(Term.class,
+                                                Term.class);
                                 constructor.setAccessible(true);
                                 double value = constructor.newInstance(
                                         new Term(parsedList.get(i - 1)),
