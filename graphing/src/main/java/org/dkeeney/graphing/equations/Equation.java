@@ -14,11 +14,12 @@ import org.dkeeney.graphing.equations.exceptions.InsufficientVariableInformation
 import org.dkeeney.graphing.equations.exceptions.InvalidEquationException;
 import org.dkeeney.graphing.equations.operations.Multiplication;
 import org.dkeeney.graphing.equations.operations.Operation;
+import org.dkeeney.graphing.equations.operations.Subtraction;
 import org.dkeeney.utils.Utils;
 
 public class Equation {
     public static final String VARIABLE_REGEX = "[a-z]";
-    private static final String NUMBER_REGEX = "[0-9]+([.][0-9]+)?";
+    private static final String NUMBER_REGEX = "-?[0-9]+([.][0-9]+)?";
     private static final String NON_OPERATOR_REGEX = "((" + NUMBER_REGEX + ")|"
             + VARIABLE_REGEX + ")";
     private static final String VALID_EQUATION_REGEX = "\\(*"
@@ -151,8 +152,19 @@ public class Equation {
         String[] parse = Utils.splitWithDelimiter(equation,
                 Operation.OPERATOR_REGEX);
         List<String> parsedList = new ArrayList<String>();
-        for (String s : parse) {
-            parsedList.add(s);
+        for (int i = 0; i < parse.length; i++) {
+            if ("".equals(parse[i])) {
+                continue;
+            }
+            // the regex validation made sure there can't be a "-" at the end of
+            // the equation so there will be more after it
+            if (Subtraction.OPERATOR.equals(parse[i])
+                    && (parsedList.size() == 0 || Operation
+                            .isOperator(parse[i - 1]))) {
+                parsedList.add(parse[i] + parse[++i]);
+            } else {
+                parsedList.add(parse[i]);
+            }
         }
         boolean shouldEvaluate = false;
         for (Operation[] ops : Operation.getOrderOfOperations()) {
@@ -168,10 +180,12 @@ public class Equation {
                     if (shouldEvaluate) {
                         if (i == 0) {
                             throw new EvaluationException(
-                                    "Operator found without a left operand.");
+                                    "Operator found without a left operand in "
+                                            + equation);
                         } else if (i >= parsedList.size() - 1) {
                             throw new EvaluationException(
-                                    "Operator found without a right operand.");
+                                    "Operator found without a right operand in "
+                                            + equation);
                         } else {
                             try {
                                 Constructor<? extends Operation> constructor = Operation
@@ -194,7 +208,8 @@ public class Equation {
                                     | NoSuchMethodException | SecurityException e) {
                                 e.printStackTrace();
                                 throw new EvaluationException(
-                                        "Exception evaluating expression", e);
+                                        "Exception evaluating expression "
+                                                + equation, e);
                             }
                         }
                     }

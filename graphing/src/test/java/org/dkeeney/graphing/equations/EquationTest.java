@@ -150,8 +150,8 @@ public class EquationTest {
     @Test
     public void testConstants() throws InvalidEquationException,
             InsufficientVariableInformationException {
-        String[] input = { "1", "20", "5", "4", "(40)" };
-        double[] expected = { 1, 20, 5, 4, 40 };
+        String[] input = { "1", "20", "5", "4", "(40)", "-5" };
+        double[] expected = { 1, 20, 5, 4, 40, -5 };
         for (int i = 0; i < input.length; i++) {
             this.testEquation(input[i], expected[i]);
         }
@@ -160,8 +160,9 @@ public class EquationTest {
     @Test
     public void testSimpleEquations() throws InvalidEquationException,
             InsufficientVariableInformationException {
-        String[] input = { "1+1", "1*3", "3/5", "0-4", "5^0", "5^1", "3^3" };
-        double[] output = { 2, 3, 0.6, -4, 1, 5, 27 };
+        String[] input = { "1+1", "1*3", "3/5", "0-4", "5^0", "5^1", "3^3",
+                "-1-2" };
+        double[] output = { 2, 3, 0.6, -4, 1, 5, 27, -3 };
 
         for (int i = 0; i < input.length; i++) {
             this.testEquation(input[i], output[i]);
@@ -185,8 +186,8 @@ public class EquationTest {
     public void testOrderOfOperations() throws InvalidEquationException,
             InsufficientVariableInformationException {
         String[] input = { "1+2*3", "1+3^3+1*4", "0/4+1*3",
-                "1*30+45+67*89*56*12" };
-        double[] output = { 7, 32, 3, 4007211 };
+                "1*30+45+67*89*56*12", "1*3+-4" };
+        double[] output = { 7, 32, 3, 4007211, -1 };
 
         for (int i = 0; i < input.length; i++) {
             this.testEquation(input[i], output[i]);
@@ -198,7 +199,7 @@ public class EquationTest {
             InsufficientVariableInformationException {
         String[] input = { "(20)*(19)", "(1+2)*3", "1+3^(3+1)*4", "0/(4+1)3",
                 "1*30+(45+67)89(56)*12", "1+((2*(5+2)))" };
-        double[] output = { 380, 9, 325, 0, 6698526, 15 };
+        double[] output = { 380, 9, 325, 0, 6698526, 15, };
 
         for (int i = 0; i < input.length; i++) {
             this.testEquation(input[i], output[i]);
@@ -208,8 +209,8 @@ public class EquationTest {
     @Test
     public void testEquationsWithVariables() throws InvalidEquationException,
             InsufficientVariableInformationException {
-        String[] tests = { "x+y", "b^c", "b*b", "b(c)/(d+e)" };
-        double[] expected = { 49, 8, 4, 2.0 / 3.0 };
+        String[] tests = { "x+y", "b^c", "b*b", "b(c)/(d+e)", "x^2" };
+        double[] expected = { 49, 8, 4, 2.0 / 3.0, 576 };
 
         for (int i = 0; i < tests.length; i++) {
             this.testEquation(tests[i], expected[i], STANDARD_VARS);
