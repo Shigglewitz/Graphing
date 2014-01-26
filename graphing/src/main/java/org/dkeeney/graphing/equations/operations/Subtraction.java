@@ -3,6 +3,8 @@ package org.dkeeney.graphing.equations.operations;
 import org.dkeeney.graphing.equations.Term;
 
 public class Subtraction extends Operation {
+    public static final String OPERATOR = "-";
+
     protected Subtraction(Term left, Term right) {
         super(left, right);
     }
@@ -17,7 +19,7 @@ public class Subtraction extends Operation {
 
     @Override
     public String getOperator() {
-        return "-";
+        return OPERATOR;
     }
 
 }
