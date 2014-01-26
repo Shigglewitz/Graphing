@@ -1,5 +1,16 @@
 package org.dkeeney.utils;
 
+
+/**
+ * to count the number of lines in a project, use file search and use this
+ * regex: \n[\s]*
+ * 
+ * source:
+ * http://stackoverflow.com/questions/1043666/counting-line-numbers-in-eclipse
+ * 
+ * @author Daniel
+ * 
+ */
 public class Utils {
     public static String removeAllWhiteSpace(String s) {
         if (s == null) {
