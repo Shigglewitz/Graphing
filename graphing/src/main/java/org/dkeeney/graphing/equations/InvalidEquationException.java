@@ -1,6 +1,6 @@
 package org.dkeeney.graphing.equations;
 
-public class InvalidEquationException extends RuntimeException {
+public class InvalidEquationException extends Exception {
 
     private static final long serialVersionUID = -3649371200438490763L;
 

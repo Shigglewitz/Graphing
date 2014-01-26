@@ -4,6 +4,7 @@ import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -13,18 +14,29 @@ import org.dkeeney.graphing.equations.operations.Operation;
 import org.dkeeney.utils.Utils;
 
 public class Equation {
-    private static String VALID_EQUATION_REGEX = "\\(*[0-9]+\\)*("
-            + Operation.OPERATOR_REGEX + "\\(*[0-9]+\\)*)*";
-    private static final String IMPLIED_BEFORE_PAREN_REGEX = "([0-9)]\\()";
-    private static final String IMPLIED_AFTER_PAREN_REGEX = "(\\)[(0-9])";
+    public static final String VARIABLE_REGEX = "[a-z]";
+    private static final String NUMBER_REGEX = "[0-9]+([.][0-9]+)?";
+    private static final String NON_OPERATOR_REGEX = "((" + NUMBER_REGEX + ")|"
+            + VARIABLE_REGEX + ")";
+    private static final String VALID_EQUATION_REGEX = "\\(*"
+            + NON_OPERATOR_REGEX + "\\)*(" + Operation.OPERATOR_REGEX + "\\(*"
+            + NON_OPERATOR_REGEX + "\\)*)*";
+    private static final String IMPLIED_BEFORE_PAREN_REGEX = "([a-z0-9)]\\()";
+    private static final String IMPLIED_AFTER_PAREN_REGEX = "(\\)[(0-9a-z])";
+    private static final String IMPLIED_WITH_VAR_REGEX = "((" + NUMBER_REGEX
+            + ")|" + VARIABLE_REGEX + ")(?=" + VARIABLE_REGEX + ")";
     private static final Pattern IMPLIED_BEFORE_PAREN = Pattern
             .compile(IMPLIED_BEFORE_PAREN_REGEX);
     private static final Pattern IMPLIED_AFTER_PAREN = Pattern
             .compile(IMPLIED_AFTER_PAREN_REGEX);
+    private static final Pattern IMPLIED_WITH_VAR = Pattern
+            .compile(IMPLIED_WITH_VAR_REGEX);
 
+    private final String originalEquation;
     private final String equation;
 
-    public Equation(String input) {
+    public Equation(String input) throws InvalidEquationException {
+        this.originalEquation = input;
         input = Utils.removeAllWhiteSpace(input);
         input = addImpliedMultiplication(input);
         if (!Equation.isValidEquation(input)) {
@@ -34,6 +46,10 @@ public class Equation {
     }
 
     public static String addImpliedMultiplication(String equation) {
+        if (equation == null) {
+            return null;
+        }
+
         Matcher before = IMPLIED_BEFORE_PAREN.matcher(equation);
         String ret = "";
         int position = 0;
@@ -66,6 +82,20 @@ public class Equation {
             ret = "";
         }
 
+        Matcher variables = IMPLIED_WITH_VAR.matcher(equation);
+        while (variables.find()) {
+            ret += equation.substring(position, variables.start())
+                    + variables.group(0) + Multiplication.OPERATOR;
+            position = variables.end();
+        }
+
+        if (position != 0) {
+            ret += equation.substring(position, equation.length());
+            position = 0;
+            equation = ret;
+            ret = "";
+        }
+
         return equation;
     }
 
@@ -78,22 +108,45 @@ public class Equation {
                         .countMatches(equation, ")");
     }
 
-    public double solve() {
-        return this.evaluate(this.equation);
+    public double solve(Map<String, Double> variableValues)
+            throws InvalidEquationException,
+            InsufficientVariableInformationException {
+        return this.evaluate(mapVariables(this.equation, variableValues));
     }
 
-    private double evaluate(String evaluate) {
-        while (evaluate.indexOf(')') > -1) {
-            int closeParen = evaluate.indexOf(')');
-            int openParen = evaluate.substring(0, closeParen).lastIndexOf('(');
-            double parenValue = this.evaluate(evaluate.substring(openParen + 1,
-                    closeParen));
-            evaluate = evaluate.substring(0, openParen)
-                    + Double.toString(parenValue)
-                    + evaluate.substring(closeParen + 1);
+    public String getOriginalEquation() {
+        return this.originalEquation;
+    }
+
+    public static String mapVariables(String equation,
+            Map<String, Double> variableValues)
+            throws InsufficientVariableInformationException {
+        if (variableValues != null) {
+            for (Map.Entry<String, Double> e : variableValues.entrySet()) {
+                equation = equation.replaceAll(e.getKey(),
+                        Double.toString(e.getValue()));
+            }
         }
 
-        String[] parse = Utils.splitWithDelimiter(evaluate,
+        if (equation.matches(".*" + VARIABLE_REGEX + ".*")) {
+            throw InsufficientVariableInformationException
+                    .findMissingVars(equation);
+        }
+
+        return equation;
+    }
+
+    private double evaluate(String equation) throws InvalidEquationException {
+        while (equation.indexOf(')') > -1) {
+            int closeParen = equation.indexOf(')');
+            int openParen = equation.substring(0, closeParen).lastIndexOf('(');
+            double parenValue = this.evaluate(equation.substring(openParen + 1,
+                    closeParen));
+            equation = equation.substring(0, openParen) + parenValue
+                    + equation.substring(closeParen + 1);
+        }
+
+        String[] parse = Utils.splitWithDelimiter(equation,
                 Operation.OPERATOR_REGEX);
         List<String> parsedList = new ArrayList<String>();
         for (String s : parse) {
@@ -147,8 +200,6 @@ public class Equation {
             }
         }
 
-        // should be down to just a constant now
-
-        return Double.parseDouble(parsedList.get(0));
+        return Double.valueOf(parsedList.get(0));
     }
 }
