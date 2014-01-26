@@ -1,5 +1,7 @@
 package org.dkeeney.graphing;
 
+import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -16,14 +18,17 @@ public class Grapher {
         this.values = null;
     }
 
-    public void calculateValues(double minRange, double maxRange, double delta,
-            String var) throws InsufficientVariableInformationException {
-        Map<String, Double> vars = new HashMap<>();
-        this.values = new double[(int) Math.floor((maxRange - minRange) / delta
-                + .5)];
+    public void calculateValues(BigDecimal minRange, BigDecimal maxRange,
+            BigDecimal delta, String var)
+            throws InsufficientVariableInformationException {
+        Map<String, BigDecimal> vars = new HashMap<>();
+        this.values = new double[(int) Math.floor(maxRange.subtract(minRange)
+                .divide(delta, RoundingMode.CEILING).add(new BigDecimal(0.5))
+                .doubleValue())];
 
         int i = 0;
-        for (double eval = minRange; eval <= maxRange; eval += delta, i++) {
+        for (BigDecimal eval = minRange; eval.compareTo(maxRange) < 0; eval = eval
+                .add(delta), i++) {
             vars.put(var, eval);
             this.values[i] = this.e.solve(vars);
         }

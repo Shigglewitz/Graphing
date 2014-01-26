@@ -2,6 +2,7 @@ package org.dkeeney.graphing.equations;
 
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
+import java.math.BigDecimal;
 import java.text.NumberFormat;
 import java.util.ArrayList;
 import java.util.List;
@@ -145,22 +146,36 @@ public class Equation {
                         .countMatches(equation, ")");
     }
 
-    public double solve(Map<String, Double> variableValues)
+    public double solve(Map<String, BigDecimal> variableValues)
             throws InsufficientVariableInformationException {
-        return this.evaluate(this.mapVariables(this.equation, variableValues));
+        return this.evaluate(this.mapFormattedVariables(this.equation,
+                variableValues));
     }
 
     public String getOriginalEquation() {
         return this.originalEquation;
     }
 
-    public String mapVariables(String equation,
-            Map<String, Double> variableValues)
+    private String mapFormattedVariables(String equation,
+            Map<String, BigDecimal> variableValues)
+            throws InsufficientVariableInformationException {
+        return mapFormattedVariables(equation, variableValues, this.nf);
+    }
+
+    public static String mapVariables(String equation,
+            Map<String, BigDecimal> variableValues)
+            throws InsufficientVariableInformationException {
+        return mapFormattedVariables(equation, variableValues,
+                NumberFormat.getInstance());
+    }
+
+    private static String mapFormattedVariables(String equation,
+            Map<String, BigDecimal> variableValues, NumberFormat format)
             throws InsufficientVariableInformationException {
         if (variableValues != null) {
-            for (Map.Entry<String, Double> e : variableValues.entrySet()) {
+            for (Map.Entry<String, BigDecimal> e : variableValues.entrySet()) {
                 equation = equation.replaceAll(e.getKey(),
-                        this.nf.format(e.getValue()));
+                        format.format(e.getValue().doubleValue()));
             }
         }
 
