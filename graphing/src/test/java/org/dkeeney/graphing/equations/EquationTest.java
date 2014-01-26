@@ -3,6 +3,7 @@ package org.dkeeney.graphing.equations;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
+import java.math.BigDecimal;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -14,14 +15,14 @@ import org.junit.Test;
 
 public class EquationTest {
     private static final double DELTA = 0.0000001;
-    private static final Map<String, Double> STANDARD_VARS = new HashMap<>();
+    private static final Map<String, BigDecimal> STANDARD_VARS = new HashMap<>();
 
     @BeforeClass
     public static void before() {
         char var;
         for (int i = 0; i < 26; i++) {
             var = (char) ('a' + i);
-            STANDARD_VARS.put(Character.toString(var), Double.valueOf(i + 1));
+            STANDARD_VARS.put(Character.toString(var), new BigDecimal(i + 1));
         }
     }
 
@@ -121,7 +122,7 @@ public class EquationTest {
     public void testMapVariables()
             throws InsufficientVariableInformationException {
         String[] tests = { "x+4+y+z*45", "(a)*b^((c)+d)" };
-        String[] expected = { "24.0+4+25.0+26.0*45", "(1.0)*2.0^((3.0)+4.0)" };
+        String[] expected = { "24+4+25+26*45", "(1)*2^((3)+4)" };
 
         for (int i = 0; i < tests.length; i++) {
             assertEquals(expected[i],
@@ -132,7 +133,7 @@ public class EquationTest {
     @Test
     public void testInsufficientVariables() {
         String[] tests = { "x+4+y+z*45", "(a)*b^((c)+d)" };
-        Map<String, Double> vars = new HashMap<>();
+        Map<String, BigDecimal> vars = new HashMap<>();
         String baseMessage = "Missing variable values for ";
         String[] expectedMessages = { baseMessage + "x, y, z",
                 baseMessage + "a, b, c, d" };
@@ -231,7 +232,7 @@ public class EquationTest {
     }
 
     private void testEquation(String equation, double expected,
-            Map<String, Double> vars) throws InvalidEquationException,
+            Map<String, BigDecimal> vars) throws InvalidEquationException,
             InsufficientVariableInformationException {
         assertEquals("Equation " + equation + " did not evaluate to "
                 + expected, expected, new Equation(equation).solve(vars), DELTA);
