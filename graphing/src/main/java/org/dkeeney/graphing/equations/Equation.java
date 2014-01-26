@@ -4,6 +4,7 @@ import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -13,7 +14,7 @@ import org.dkeeney.graphing.equations.operations.Operation;
 import org.dkeeney.utils.Utils;
 
 public class Equation {
-    private static final String VARIABLE_REGEX = "[a-z]";
+    public static final String VARIABLE_REGEX = "[a-z]";
     private static final String NUMBER_REGEX = "[0-9]+([.][0-9]+)?";
     private static final String NON_OPERATOR_REGEX = "((" + NUMBER_REGEX + ")|"
             + VARIABLE_REGEX + ")";
@@ -31,17 +32,17 @@ public class Equation {
     private static final Pattern IMPLIED_WITH_VAR = Pattern
             .compile(IMPLIED_WITH_VAR_REGEX);
 
+    private final String originalEquation;
     private final String equation;
-    private final List<String> operations;
 
-    public Equation(String input) {
-        this.equation = input;
+    public Equation(String input) throws InvalidEquationException {
+        this.originalEquation = input;
         input = Utils.removeAllWhiteSpace(input);
         input = addImpliedMultiplication(input);
         if (!Equation.isValidEquation(input)) {
             throw new InvalidEquationException();
         }
-        this.operations = this.reduce(input);
+        this.equation = input;
     }
 
     public static String addImpliedMultiplication(String equation) {
@@ -107,29 +108,40 @@ public class Equation {
                         .countMatches(equation, ")");
     }
 
-    public double solve() {
-        return this.evaluate();
+    public double solve(Map<String, Double> variableValues)
+            throws InvalidEquationException,
+            InsufficientVariableInformationException {
+        return this.evaluate(mapVariables(this.equation, variableValues));
     }
 
-    public String getEquation() {
-        return this.equation;
+    public String getOriginalEquation() {
+        return this.originalEquation;
     }
 
-    private String flatten(List<String> input) {
-        String ret = "";
-        for (String s : input) {
-            ret += s;
+    public static String mapVariables(String equation,
+            Map<String, Double> variableValues)
+            throws InsufficientVariableInformationException {
+        if (variableValues != null) {
+            for (Map.Entry<String, Double> e : variableValues.entrySet()) {
+                equation = equation.replaceAll(e.getKey(),
+                        Double.toString(e.getValue()));
+            }
         }
 
-        return ret;
+        if (equation.matches(".*" + VARIABLE_REGEX + ".*")) {
+            throw InsufficientVariableInformationException
+                    .findMissingVars(equation);
+        }
+
+        return equation;
     }
 
-    private List<String> reduce(String equation) {
+    private double evaluate(String equation) throws InvalidEquationException {
         while (equation.indexOf(')') > -1) {
             int closeParen = equation.indexOf(')');
             int openParen = equation.substring(0, closeParen).lastIndexOf('(');
-            String parenValue = this.flatten(this.reduce(equation.substring(
-                    openParen + 1, closeParen)));
+            double parenValue = this.evaluate(equation.substring(openParen + 1,
+                    closeParen));
             equation = equation.substring(0, openParen) + parenValue
                     + equation.substring(closeParen + 1);
         }
@@ -188,10 +200,6 @@ public class Equation {
             }
         }
 
-        return parsedList;
-    }
-
-    private double evaluate() {
-        return Double.parseDouble(this.operations.get(0));
+        return Double.valueOf(parsedList.get(0));
     }
 }
