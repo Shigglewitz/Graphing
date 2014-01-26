@@ -6,6 +6,8 @@ import static org.junit.Assert.assertTrue;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.dkeeney.graphing.equations.exceptions.InsufficientVariableInformationException;
+import org.dkeeney.graphing.equations.exceptions.InvalidEquationException;
 import org.dkeeney.utils.Utils;
 import org.junit.BeforeClass;
 import org.junit.Test;

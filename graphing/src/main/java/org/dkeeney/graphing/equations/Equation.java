@@ -9,6 +9,9 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import org.apache.commons.lang3.StringUtils;
+import org.dkeeney.graphing.equations.exceptions.EvaluationException;
+import org.dkeeney.graphing.equations.exceptions.InsufficientVariableInformationException;
+import org.dkeeney.graphing.equations.exceptions.InvalidEquationException;
 import org.dkeeney.graphing.equations.operations.Multiplication;
 import org.dkeeney.graphing.equations.operations.Operation;
 import org.dkeeney.utils.Utils;
@@ -109,8 +112,7 @@ public class Equation {
     }
 
     public double solve(Map<String, Double> variableValues)
-            throws InvalidEquationException,
-            InsufficientVariableInformationException {
+            throws InsufficientVariableInformationException {
         return this.evaluate(mapVariables(this.equation, variableValues));
     }
 
@@ -136,7 +138,7 @@ public class Equation {
         return equation;
     }
 
-    private double evaluate(String equation) throws InvalidEquationException {
+    private double evaluate(String equation) {
         while (equation.indexOf(')') > -1) {
             int closeParen = equation.indexOf(')');
             int openParen = equation.substring(0, closeParen).lastIndexOf('(');
@@ -165,10 +167,10 @@ public class Equation {
 
                     if (shouldEvaluate) {
                         if (i == 0) {
-                            throw new InvalidEquationException(
+                            throw new EvaluationException(
                                     "Operator found without a left operand.");
                         } else if (i >= parsedList.size() - 1) {
-                            throw new InvalidEquationException(
+                            throw new EvaluationException(
                                     "Operator found without a right operand.");
                         } else {
                             try {
@@ -191,7 +193,7 @@ public class Equation {
                                     | InvocationTargetException
                                     | NoSuchMethodException | SecurityException e) {
                                 e.printStackTrace();
-                                throw new InvalidEquationException(
+                                throw new EvaluationException(
                                         "Exception evaluating expression", e);
                             }
                         }

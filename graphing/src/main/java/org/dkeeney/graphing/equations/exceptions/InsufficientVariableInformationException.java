@@ -1,7 +1,9 @@
-package org.dkeeney.graphing.equations;
+package org.dkeeney.graphing.equations.exceptions;
 
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+
+import org.dkeeney.graphing.equations.Equation;
 
 public class InsufficientVariableInformationException extends Exception {
 
