@@ -2,6 +2,7 @@ package org.dkeeney.graphing.equations;
 
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
+import java.text.NumberFormat;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -38,8 +39,16 @@ public class Equation {
 
     private final String originalEquation;
     private final String equation;
+    private final NumberFormat nf;
+
+    private static final int DEFAULT_NUM_DECIMAL_DIGITS = 5;
 
     public Equation(String input) throws InvalidEquationException {
+        this(input, DEFAULT_NUM_DECIMAL_DIGITS);
+    }
+
+    public Equation(String input, int maxDecimalDigits)
+            throws InvalidEquationException {
         this.originalEquation = input;
         input = Utils.removeAllWhiteSpace(input);
         input = addImpliedMultiplication(input);
@@ -47,6 +56,30 @@ public class Equation {
             throw new InvalidEquationException();
         }
         this.equation = input;
+        this.nf = NumberFormat.getInstance();
+        this.nf.setMinimumIntegerDigits(1);
+        this.nf.setMinimumFractionDigits(0);
+        this.nf.setMaximumFractionDigits(maxDecimalDigits);
+    }
+
+    public void adjustPrecision(int minIntDigits, int maxIntDigits,
+            int minDecDigits, int maxDecDigits) {
+        if (minIntDigits >= 0) {
+            this.nf.setMinimumIntegerDigits(minIntDigits);
+        }
+        if (maxIntDigits >= 0) {
+            this.nf.setMaximumIntegerDigits(maxIntDigits);
+        }
+        if (minDecDigits >= 0) {
+            this.nf.setMinimumFractionDigits(minDecDigits);
+        }
+        if (maxDecDigits >= 0) {
+            this.nf.setMaximumFractionDigits(maxDecDigits);
+        }
+    }
+
+    public String formatDouble(double value) {
+        return this.nf.format(value);
     }
 
     public static String addImpliedMultiplication(String equation) {
@@ -114,20 +147,20 @@ public class Equation {
 
     public double solve(Map<String, Double> variableValues)
             throws InsufficientVariableInformationException {
-        return this.evaluate(mapVariables(this.equation, variableValues));
+        return this.evaluate(this.mapVariables(this.equation, variableValues));
     }
 
     public String getOriginalEquation() {
         return this.originalEquation;
     }
 
-    public static String mapVariables(String equation,
+    public String mapVariables(String equation,
             Map<String, Double> variableValues)
             throws InsufficientVariableInformationException {
         if (variableValues != null) {
             for (Map.Entry<String, Double> e : variableValues.entrySet()) {
                 equation = equation.replaceAll(e.getKey(),
-                        Double.toString(e.getValue()));
+                        this.nf.format(e.getValue()));
             }
         }
 
@@ -145,7 +178,8 @@ public class Equation {
             int openParen = equation.substring(0, closeParen).lastIndexOf('(');
             double parenValue = this.evaluate(equation.substring(openParen + 1,
                     closeParen));
-            equation = equation.substring(0, openParen) + parenValue
+            equation = equation.substring(0, openParen)
+                    + this.nf.format(parenValue)
                     + equation.substring(closeParen + 1);
         }
 
