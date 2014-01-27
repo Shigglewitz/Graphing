@@ -1,4 +1,4 @@
-package org.dkeeney.graphing.equations;
+package org.dkeeney.graphing.equations.exceptions;
 
 public class InvalidEquationException extends Exception {
 

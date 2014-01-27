@@ -2,6 +2,8 @@ package org.dkeeney.graphing.equations;
 
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
+import java.math.BigDecimal;
+import java.text.NumberFormat;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -9,13 +11,17 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import org.apache.commons.lang3.StringUtils;
+import org.dkeeney.graphing.equations.exceptions.EvaluationException;
+import org.dkeeney.graphing.equations.exceptions.InsufficientVariableInformationException;
+import org.dkeeney.graphing.equations.exceptions.InvalidEquationException;
 import org.dkeeney.graphing.equations.operations.Multiplication;
 import org.dkeeney.graphing.equations.operations.Operation;
+import org.dkeeney.graphing.equations.operations.Subtraction;
 import org.dkeeney.utils.Utils;
 
 public class Equation {
     public static final String VARIABLE_REGEX = "[a-z]";
-    private static final String NUMBER_REGEX = "[0-9]+([.][0-9]+)?";
+    private static final String NUMBER_REGEX = "-?[0-9]+([.][0-9]+)?";
     private static final String NON_OPERATOR_REGEX = "((" + NUMBER_REGEX + ")|"
             + VARIABLE_REGEX + ")";
     private static final String VALID_EQUATION_REGEX = "\\(*"
@@ -34,8 +40,16 @@ public class Equation {
 
     private final String originalEquation;
     private final String equation;
+    private final NumberFormat nf;
+
+    private static final int DEFAULT_NUM_DECIMAL_DIGITS = 5;
 
     public Equation(String input) throws InvalidEquationException {
+        this(input, DEFAULT_NUM_DECIMAL_DIGITS);
+    }
+
+    public Equation(String input, int maxDecimalDigits)
+            throws InvalidEquationException {
         this.originalEquation = input;
         input = Utils.removeAllWhiteSpace(input);
         input = addImpliedMultiplication(input);
@@ -43,6 +57,30 @@ public class Equation {
             throw new InvalidEquationException();
         }
         this.equation = input;
+        this.nf = NumberFormat.getInstance();
+        this.nf.setMinimumIntegerDigits(1);
+        this.nf.setMinimumFractionDigits(0);
+        this.nf.setMaximumFractionDigits(maxDecimalDigits);
+    }
+
+    public void adjustPrecision(int minIntDigits, int maxIntDigits,
+            int minDecDigits, int maxDecDigits) {
+        if (minIntDigits >= 0) {
+            this.nf.setMinimumIntegerDigits(minIntDigits);
+        }
+        if (maxIntDigits >= 0) {
+            this.nf.setMaximumIntegerDigits(maxIntDigits);
+        }
+        if (minDecDigits >= 0) {
+            this.nf.setMinimumFractionDigits(minDecDigits);
+        }
+        if (maxDecDigits >= 0) {
+            this.nf.setMaximumFractionDigits(maxDecDigits);
+        }
+    }
+
+    public String formatDouble(double value) {
+        return this.nf.format(value);
     }
 
     public static String addImpliedMultiplication(String equation) {
@@ -108,23 +146,36 @@ public class Equation {
                         .countMatches(equation, ")");
     }
 
-    public double solve(Map<String, Double> variableValues)
-            throws InvalidEquationException,
-            InsufficientVariableInformationException {
-        return this.evaluate(mapVariables(this.equation, variableValues));
+    public double solve(Map<String, BigDecimal> variableValues)
+            throws InsufficientVariableInformationException {
+        return this.evaluate(this.mapFormattedVariables(this.equation,
+                variableValues));
     }
 
     public String getOriginalEquation() {
         return this.originalEquation;
     }
 
+    private String mapFormattedVariables(String equation,
+            Map<String, BigDecimal> variableValues)
+            throws InsufficientVariableInformationException {
+        return mapFormattedVariables(equation, variableValues, this.nf);
+    }
+
     public static String mapVariables(String equation,
-            Map<String, Double> variableValues)
+            Map<String, BigDecimal> variableValues)
+            throws InsufficientVariableInformationException {
+        return mapFormattedVariables(equation, variableValues,
+                NumberFormat.getInstance());
+    }
+
+    private static String mapFormattedVariables(String equation,
+            Map<String, BigDecimal> variableValues, NumberFormat format)
             throws InsufficientVariableInformationException {
         if (variableValues != null) {
-            for (Map.Entry<String, Double> e : variableValues.entrySet()) {
+            for (Map.Entry<String, BigDecimal> e : variableValues.entrySet()) {
                 equation = equation.replaceAll(e.getKey(),
-                        Double.toString(e.getValue()));
+                        format.format(e.getValue().doubleValue()));
             }
         }
 
@@ -136,21 +187,33 @@ public class Equation {
         return equation;
     }
 
-    private double evaluate(String equation) throws InvalidEquationException {
+    private double evaluate(String equation) {
         while (equation.indexOf(')') > -1) {
             int closeParen = equation.indexOf(')');
             int openParen = equation.substring(0, closeParen).lastIndexOf('(');
             double parenValue = this.evaluate(equation.substring(openParen + 1,
                     closeParen));
-            equation = equation.substring(0, openParen) + parenValue
+            equation = equation.substring(0, openParen)
+                    + this.nf.format(parenValue)
                     + equation.substring(closeParen + 1);
         }
 
         String[] parse = Utils.splitWithDelimiter(equation,
                 Operation.OPERATOR_REGEX);
         List<String> parsedList = new ArrayList<String>();
-        for (String s : parse) {
-            parsedList.add(s);
+        for (int i = 0; i < parse.length; i++) {
+            if ("".equals(parse[i])) {
+                continue;
+            }
+            // the regex validation made sure there can't be a "-" at the end of
+            // the equation so there will be more after it
+            if (Subtraction.OPERATOR.equals(parse[i])
+                    && (parsedList.size() == 0 || Operation
+                            .isOperator(parse[i - 1]))) {
+                parsedList.add(parse[i] + parse[++i]);
+            } else {
+                parsedList.add(parse[i]);
+            }
         }
         boolean shouldEvaluate = false;
         for (Operation[] ops : Operation.getOrderOfOperations()) {
@@ -165,11 +228,13 @@ public class Equation {
 
                     if (shouldEvaluate) {
                         if (i == 0) {
-                            throw new InvalidEquationException(
-                                    "Operator found without a left operand.");
+                            throw new EvaluationException(
+                                    "Operator found without a left operand in "
+                                            + equation);
                         } else if (i >= parsedList.size() - 1) {
-                            throw new InvalidEquationException(
-                                    "Operator found without a right operand.");
+                            throw new EvaluationException(
+                                    "Operator found without a right operand in "
+                                            + equation);
                         } else {
                             try {
                                 Constructor<? extends Operation> constructor = Operation
@@ -191,8 +256,9 @@ public class Equation {
                                     | InvocationTargetException
                                     | NoSuchMethodException | SecurityException e) {
                                 e.printStackTrace();
-                                throw new InvalidEquationException(
-                                        "Exception evaluating expression", e);
+                                throw new EvaluationException(
+                                        "Exception evaluating expression "
+                                                + equation, e);
                             }
                         }
                     }
