@@ -11,6 +11,7 @@ import org.dkeeney.graphing.equations.Equation;
 import org.dkeeney.graphing.equations.exceptions.InsufficientVariableInformationException;
 import org.dkeeney.graphing.equations.exceptions.InvalidEquationException;
 import org.dkeeney.utils.ColorUtils;
+import org.dkeeney.utils.ColorUtils.NormalizationStrategy;
 
 public class ColorGrapher {
     private static final int DEFAULT_WIDTH = 400;
@@ -18,6 +19,8 @@ public class ColorGrapher {
 
     private final Equation red, green, blue, alpha;
     private int[][] values;
+
+    private ColorUtils.NormalizationStrategy strategy = NormalizationStrategy.CURVE;
 
     public ColorGrapher(String red, String green, String blue)
             throws InvalidEquationException {
@@ -49,15 +52,15 @@ public class ColorGrapher {
             vars.put("x", new BigDecimal(x));
             for (int y = 0; y < height; y++) {
                 vars.put("y", new BigDecimal(y));
-                redValue = ColorUtils
-                        .normalizeColor((int) this.red.solve(vars));
-                greenValue = ColorUtils.normalizeColor((int) this.green
-                        .solve(vars));
-                blueValue = ColorUtils.normalizeColor((int) this.blue
-                        .solve(vars));
+                redValue = ColorUtils.normalizeColor(
+                        (int) this.red.solve(vars), this.strategy);
+                greenValue = ColorUtils.normalizeColor(
+                        (int) this.green.solve(vars), this.strategy);
+                blueValue = ColorUtils.normalizeColor(
+                        (int) this.blue.solve(vars), this.strategy);
                 if (this.alpha != null) {
-                    alphaValue = ColorUtils.normalizeAlpha((int) this.alpha
-                            .solve(vars));
+                    alphaValue = ColorUtils.normalizeAlpha(
+                            (int) this.alpha.solve(vars), this.strategy);
                 }
 
                 this.values[x][y] = ColorUtils.getRgbAsInt(redValue,
@@ -96,4 +99,7 @@ public class ColorGrapher {
         return image;
     }
 
+    public void setStrategy(ColorUtils.NormalizationStrategy strategy) {
+        this.strategy = strategy;
+    }
 }

@@ -36,11 +36,43 @@ public class ColorUtils {
         return RANDOM.nextInt(256);
     }
 
-    public static int normalizeColor(int input) {
-        return Math.abs(input) % 0x100;
+    public static enum NormalizationStrategy {
+        CRUDE, CURVE
     }
 
+    private static final int COLOR_NORMALIZATION_MASK = 0x100;
+
+    public static int normalizeColor(int input) {
+        return normalize(input, NormalizationStrategy.CRUDE, COLOR_NORMALIZATION_MASK);
+    }
+
+    public static int normalizeColor(int input, NormalizationStrategy strategy) {
+        return normalize(input, strategy, COLOR_NORMALIZATION_MASK);
+    }
+
+    private static final int ALPHA_NORMALIZATION_MASK = 0x1000;
+
     public static int normalizeAlpha(int input) {
-        return Math.abs(input) % 0x1000;
+        return normalize(input, NormalizationStrategy.CRUDE, ALPHA_NORMALIZATION_MASK);
+    }
+
+    public static int normalizeAlpha(int input, NormalizationStrategy strategy) {
+        return normalize(input, strategy, ALPHA_NORMALIZATION_MASK);
+    }
+
+    private static int normalize(int input, NormalizationStrategy strategy,
+            int mask) {
+        switch (strategy) {
+        case CRUDE:
+            return Math.abs(input) % mask;
+        case CURVE:
+            int reduce = Math.abs(input) % (2 * mask);
+            if (reduce > mask) {
+                reduce /= 2;
+            }
+            return reduce;
+        default:
+            return input;
+        }
     }
 }
