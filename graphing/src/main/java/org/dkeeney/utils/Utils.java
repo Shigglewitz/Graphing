@@ -1,5 +1,8 @@
 package org.dkeeney.utils;
 
+import java.io.File;
+import java.util.Random;
+
 /**
  * to count the number of lines in a project, use file search and use this
  * regex: \n[\s]*
@@ -10,7 +13,6 @@ package org.dkeeney.utils;
  * @author Daniel
  * 
  */
-import java.util.Random;
 
 public class Utils {
     private static final Random RANDOM = new Random();
@@ -107,5 +109,12 @@ public class Utils {
      */
     public static int getRandomColor() {
         return RANDOM.nextInt(256);
+    }
+
+    public static void cleanDirectory(String dirName) {
+        File dir = new File(dirName);
+        for (File file : dir.listFiles()) {
+            file.delete();
+        }
     }
 }

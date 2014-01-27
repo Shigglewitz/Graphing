@@ -33,7 +33,7 @@ public class Grapher {
             throws InsufficientVariableInformationException {
         Map<String, BigDecimal> vars = new HashMap<>();
         this.values = new double[(int) Math.floor(maxRange.subtract(minRange)
-                .divide(delta, RoundingMode.CEILING).add(new BigDecimal(0.5))
+                .divide(delta, RoundingMode.CEILING).add(new BigDecimal(1))
                 .doubleValue())];
 
         int i = 0;
@@ -64,18 +64,23 @@ public class Grapher {
                 maxY);
     }
 
-    private final Color axisColor = Color.BLACK;
-    private final Color gridColor = new Color(200, 200, 200);
+    private Color graphBackground = Color.WHITE;
+    private Color axisColor = Color.BLACK;
+    private Color gridColor = new Color(200, 200, 200);
+    private Color graphColor = Color.GREEN;
 
-    private final boolean drawGrid = false;
-    private final boolean drawTicks = true;
+    private boolean drawGrid = false;
+    private boolean drawTicks = true;
 
-    private final int pixelsPerTick = 3;
-    private final int unitsBetweenTicks = 1;
+    private int pixelsPerTick = 3;
+    private int unitsBetweenTicks = 1;
+
+    private int extraGraphPadding = 0;
 
     public BufferedImage getGraph(int width, int height, double minX,
             double maxX, double minY, double maxY) {
-        BufferedImage image = ImageMaker.baseImage(width, height);
+        BufferedImage image = ImageMaker.baseImage(width, height,
+                this.graphBackground);
         Graphics2D graphics = image.createGraphics();
         int xAxisPosition = -1;
         int yAxisPosition = -1;
@@ -85,8 +90,8 @@ public class Grapher {
         } else if (maxY == 0) {
             xAxisPosition = 0;
         } else if (minY < 0 && maxY > 0) {
-            xAxisPosition = Math.abs((int) (minY / (maxY - minY) * image
-                    .getHeight()));
+            xAxisPosition = image.getHeight()
+                    - Math.abs(-(int) (minY / (maxY - minY) * image.getHeight()));
         }
         if (minX == 0) {
             yAxisPosition = image.getWidth();
@@ -102,18 +107,22 @@ public class Grapher {
             // draw grid
             int gridPosition = -1;
             for (int y = (int) Math.ceil(minY); y <= maxY; y += this.unitsBetweenTicks) {
-                gridPosition = Math
-                        .abs((int) ((y - minY) / (maxY - minY) * image
-                                .getHeight()));
-                graphics.drawLine(0, gridPosition, image.getWidth(),
-                        gridPosition);
+                if (y != 0) {
+                    gridPosition = image.getHeight()
+                            - Math.abs((int) ((y - minY) / (maxY - minY) * image
+                                    .getHeight()));
+                    graphics.drawLine(0, gridPosition, image.getWidth(),
+                            gridPosition);
+                }
             }
             for (int x = (int) Math.ceil(minX); x <= maxX; x += this.unitsBetweenTicks) {
-                gridPosition = Math
-                        .abs((int) ((x - minX) / (maxX - minX) * image
-                                .getWidth()));
-                graphics.drawLine(gridPosition, 0, gridPosition,
-                        image.getHeight());
+                if (x != 0) {
+                    gridPosition = Math
+                            .abs((int) ((x - minX) / (maxX - minX) * image
+                                    .getWidth()));
+                    graphics.drawLine(gridPosition, 0, gridPosition,
+                            image.getHeight());
+                }
             }
         } else if (this.drawTicks) {
             // draw ticks
@@ -142,11 +151,103 @@ public class Grapher {
 
         // draw axes
         graphics.setColor(this.axisColor);
+        // x axis
         graphics.drawLine(0, xAxisPosition, image.getWidth(), xAxisPosition);
+        // y axis
         graphics.drawLine(yAxisPosition, 0, yAxisPosition, image.getHeight());
+
+        // calculate values
+        if (this.values == null) {
+            try {
+                this.calculateValues(new BigDecimal(minX),
+                        new BigDecimal(maxX), new BigDecimal((maxX - minX)
+                                / image.getWidth()), "x");
+            } catch (InsufficientVariableInformationException e) {
+                e.printStackTrace();
+                graphics.drawString("Exception calculating values", 1, 10);
+            }
+        }
+        // draw graphs
+        int y = image.getHeight()
+                - ((int) ((this.values[0] - minY) / (maxY - minY) * image
+                        .getHeight()));
+        int pastY = y;
+        int pastX = 0;
+        int temp = -1;
+        graphics.setColor(this.graphColor);
+        for (int x = 0; x < image.getWidth(); x++) {
+            y = image.getHeight()
+                    - ((int) ((this.values[x] - minY) / (maxY - minY) * image
+                            .getHeight()));
+            if ((y >= 0 && y < image.getHeight())
+                    || (pastY >= 0 && pastY < image.getHeight())) {
+                temp = y;
+                if (y < 0) {
+                    y = 0;
+                }
+                if (y >= image.getHeight()) {
+                    y = image.getHeight() - 1;
+                }
+                if (pastY < 0) {
+                    pastY = 0;
+                }
+                if (pastY >= image.getHeight()) {
+                    pastY = image.getHeight() - 1;
+                }
+                graphics.drawLine(pastX, pastY, x, y);
+                for (int i = 0; i < this.extraGraphPadding; i++) {
+                    if (pastX > 0) {
+                        graphics.drawLine(pastX - 1, pastY, x - 1, y);
+                    }
+                    if (x < image.getWidth() - 1) {
+                        graphics.drawLine(pastX + 1, pastY, x + 1, y);
+                    }
+                }
+
+                y = temp;
+            }
+            pastY = y;
+            pastX = x;
+        }
 
         graphics.dispose();
 
         return image;
+    }
+
+    public void setGraphBackground(Color graphBackground) {
+        this.graphBackground = graphBackground;
+    }
+
+    public void setAxisColor(Color axisColor) {
+        this.axisColor = axisColor;
+    }
+
+    public void setGridColor(Color gridColor) {
+        this.gridColor = gridColor;
+    }
+
+    public void setGraphColor(Color graphColor) {
+        this.graphColor = graphColor;
+    }
+
+    public void setDrawGrid(boolean drawGrid) {
+        this.drawGrid = drawGrid;
+    }
+
+    public void setDrawTicks(boolean drawTicks) {
+        this.drawTicks = drawTicks;
+    }
+
+    public void setPixelsPerTick(int pixelsPerTick) {
+        this.pixelsPerTick = pixelsPerTick;
+    }
+
+    public void setUnitsBetweenTicks(int unitsBetweenTicks) {
+        this.unitsBetweenTicks = unitsBetweenTicks;
+    }
+
+    public void setExtraGraphPadding(int extraGraphPadding) {
+        this.extraGraphPadding = extraGraphPadding;
     }
 }

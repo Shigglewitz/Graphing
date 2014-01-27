@@ -23,10 +23,7 @@ public class ImageMakerTest {
 
     @AfterClass
     public static void cleanUp() {
-        File dir = new File(ImageMaker.DEFAULT_DIRECTORY);
-        for (File file : dir.listFiles()) {
-            file.delete();
-        }
+        Utils.cleanDirectory(ImageMaker.DEFAULT_DIRECTORY);
     }
 
     @Test
