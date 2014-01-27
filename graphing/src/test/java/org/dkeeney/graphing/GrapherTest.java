@@ -4,6 +4,7 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 
+import java.io.IOException;
 import java.math.BigDecimal;
 
 import org.dkeeney.graphing.equations.exceptions.InsufficientVariableInformationException;
@@ -27,5 +28,12 @@ public class GrapherTest {
         assertEquals(4, g.getValues()[0], DELTA);
         assertEquals(4, g.getValues()[400], DELTA);
         assertEquals(3.0625, g.getValues()[375], DELTA);
+    }
+
+    @Test
+    public void testGetGraph() throws InvalidEquationException, IOException {
+        Grapher g = new Grapher("x^2");
+        ImageMaker.saveImage(g.getGraph(), "graph1", "png");
+        ImageMaker.saveImage(g.getGraph(-1, 10, -2, 5), "graph2", "png");
     }
 }
