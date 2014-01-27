@@ -1,5 +1,7 @@
 package org.dkeeney.utils;
 
+import java.io.File;
+import java.util.Random;
 
 /**
  * to count the number of lines in a project, use file search and use this
@@ -11,15 +13,17 @@ package org.dkeeney.utils;
  * @author Daniel
  * 
  */
+
 public class Utils {
+    private static final Random RANDOM = new Random();
+    private static final String WITH_DELIMITER = "((?<=%1$s)|(?=%1$s))";
+
     public static String removeAllWhiteSpace(String s) {
         if (s == null) {
             return null;
         }
         return s.replaceAll("\\s+", "");
     }
-
-    private static final String WITH_DELIMITER = "((?<=%1$s)|(?=%1$s))";
 
     public static String[] splitWithDelimiter(String s, String delimiter,
             int limit) {
@@ -74,5 +78,43 @@ public class Utils {
         }
 
         return ret;
+    }
+
+    public static int getRgbAsInt(int red, int green, int blue, int alpha) {
+        return ((alpha & 0xfff) << 24 | (red & 0x0ff) << 16)
+                | ((green & 0x0ff) << 8) | (blue & 0x0ff);
+    }
+
+    public static int getRgbAsInt(int red, int green, int blue) {
+        return getRgbAsInt(red, green, blue, 0xfff);
+    }
+
+    /**
+     * 
+     * @param rgb
+     * @return [0] is red, [1] is green, [2] is blue
+     */
+    public static int[] getRgbFromInt(int rgb) {
+        int red = (rgb >> 16) & 0x0ff;
+        int green = (rgb >> 8) & 0x0ff;
+        int blue = (rgb) & 0x0ff;
+
+        return new int[] { red, green, blue };
+    }
+
+    /**
+     * wrapper method for random.nextInt(256);
+     * 
+     * @return
+     */
+    public static int getRandomColor() {
+        return RANDOM.nextInt(256);
+    }
+
+    public static void cleanDirectory(String dirName) {
+        File dir = new File(dirName);
+        for (File file : dir.listFiles()) {
+            file.delete();
+        }
     }
 }
