@@ -2,10 +2,11 @@ package org.dkeeney.graphing.equations.operations;
 
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
+import java.math.BigDecimal;
 import java.util.HashMap;
 import java.util.Map;
 
-import org.dkeeney.graphing.equations.Term;
+import org.dkeeney.graphing.equations.Evaluable;
 import org.dkeeney.utils.Utils;
 
 public abstract class Operation {
@@ -18,18 +19,17 @@ public abstract class Operation {
     private static Map<String, Class<? extends Operation>> OPERATION_MAP;
     public static final String OPERATOR_REGEX = "[\\^*/+-]";
 
-    protected Term left;
-    protected Term right;
+    protected Evaluable right;
 
     protected Operation() {
     };
 
-    protected Operation(Term left, Term right) {
-        this.left = left;
+    protected Operation(Evaluable right) {
         this.right = right;
     }
 
-    public abstract double evaluate();
+    public abstract double operate(double initialValue,
+            Map<String, BigDecimal> variableValues);
 
     public abstract String getOperator();
 
@@ -53,8 +53,8 @@ public abstract class Operation {
         return input.matches(OPERATOR_REGEX);
     }
 
-    public static Operation getOperation(String operator, Term left, Term right) {
-        return createOperation(determineOperation(operator), left, right);
+    public static Operation getOperation(String operator, Evaluable right) {
+        return createOperation(determineOperation(operator), right);
     }
 
     public static Class<? extends Operation> determineOperation(String operator) {
@@ -68,12 +68,12 @@ public abstract class Operation {
     }
 
     private static Operation createOperation(Class<? extends Operation> clazz,
-            Term left, Term right) {
+            Evaluable right) {
         Operation o = null;
         try {
-            Constructor<? extends Operation> c = clazz.getDeclaredConstructor(
-                    Term.class, Term.class);
-            o = c.newInstance(left, right);
+            Constructor<? extends Operation> c = clazz
+                    .getDeclaredConstructor(Evaluable.class);
+            o = c.newInstance(right);
         } catch (InstantiationException | IllegalAccessException
                 | NoSuchMethodException | SecurityException
                 | IllegalArgumentException | InvocationTargetException e) {
@@ -92,19 +92,11 @@ public abstract class Operation {
         return ret;
     }
 
-    public Term getLeft() {
-        return this.left;
-    }
-
-    public void setLeft(Term left) {
-        this.left = left;
-    }
-
-    public Term getRight() {
+    public Evaluable getRight() {
         return this.right;
     }
 
-    public void setRight(Term right) {
+    public void setRight(Evaluable right) {
         this.right = right;
     }
 }

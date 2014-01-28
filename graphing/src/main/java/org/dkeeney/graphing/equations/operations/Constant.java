@@ -1,25 +1,28 @@
 package org.dkeeney.graphing.equations.operations;
 
-import org.dkeeney.graphing.equations.Term;
+import java.math.BigDecimal;
+import java.util.Map;
+
+import org.dkeeney.graphing.equations.Evaluable;
 
 public class Constant extends Operation {
 
-    protected Constant(Term left, Term right) {
-        super(left, right);
+    protected Constant(Evaluable right) {
+        super(right);
     }
 
     protected Constant() {
     }
 
     @Override
-    public double evaluate() {
-        return this.right == null ? this.left.evaluate() : this.right
-                .evaluate();
+    public String getOperator() {
+        return null;
     }
 
     @Override
-    public String getOperator() {
-        return null;
+    public double operate(double initialValue,
+            Map<String, BigDecimal> variableValues) {
+        return this.right.evaluate(variableValues);
     }
 
 }

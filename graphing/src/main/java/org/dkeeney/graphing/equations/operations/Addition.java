@@ -1,23 +1,27 @@
 package org.dkeeney.graphing.equations.operations;
 
-import org.dkeeney.graphing.equations.Term;
+import java.math.BigDecimal;
+import java.util.Map;
+
+import org.dkeeney.graphing.equations.Evaluable;
 
 public class Addition extends Operation {
-    protected Addition(Term left, Term right) {
-        super(left, right);
+    protected Addition(Evaluable right) {
+        super(right);
     }
 
     protected Addition() {
     }
 
     @Override
-    public double evaluate() {
-        return this.left.evaluate() + this.right.evaluate();
+    public String getOperator() {
+        return "+";
     }
 
     @Override
-    public String getOperator() {
-        return "+";
+    public double operate(double initialValue,
+            Map<String, BigDecimal> variableValues) {
+        return initialValue + this.right.evaluate(variableValues);
     }
 
 }

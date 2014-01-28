@@ -1,23 +1,27 @@
 package org.dkeeney.graphing.equations.operations;
 
-import org.dkeeney.graphing.equations.Term;
+import java.math.BigDecimal;
+import java.util.Map;
+
+import org.dkeeney.graphing.equations.Evaluable;
 
 public class Exponent extends Operation {
-    protected Exponent(Term left, Term right) {
-        super(left, right);
+    protected Exponent(Evaluable right) {
+        super(right);
     }
 
     protected Exponent() {
     }
 
     @Override
-    public double evaluate() {
-        return Math.pow(this.left.evaluate(), this.right.evaluate());
+    public String getOperator() {
+        return "^";
     }
 
     @Override
-    public String getOperator() {
-        return "^";
+    public double operate(double initialValue,
+            Map<String, BigDecimal> variableValues) {
+        return Math.pow(initialValue, this.right.evaluate(variableValues));
     }
 
 }

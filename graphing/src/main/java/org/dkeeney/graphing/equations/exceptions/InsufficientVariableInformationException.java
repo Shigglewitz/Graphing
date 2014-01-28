@@ -5,7 +5,7 @@ import java.util.regex.Pattern;
 
 import org.dkeeney.graphing.equations.Equation;
 
-public class InsufficientVariableInformationException extends Exception {
+public class InsufficientVariableInformationException extends RuntimeException {
 
     private static final long serialVersionUID = 2624232956195618460L;
     private static final Pattern REMAINING_VARIABLES_PATTERN = Pattern

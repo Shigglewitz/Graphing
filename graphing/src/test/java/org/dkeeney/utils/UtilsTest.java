@@ -75,6 +75,18 @@ public class UtilsTest {
         }
     }
 
+    @Test
+    public void testProperUseOfMatchedGroup() {
+        String test = "123(456)789";
+        String expectedBefore = "123";
+        String expected = "456";
+        String expectedAfter = "789";
+        int[] range = Utils.getMatchedGroup(test, '(', ')');
+        assertEquals(expectedBefore, test.substring(0, range[0]));
+        assertEquals(expected, test.substring(range[0] + 1, range[1]));
+        assertEquals(expectedAfter, test.substring(range[1] + 1));
+    }
+
     private static final String WHITE_SPACE_REGEX = ".*\\s.*";
 
     private void assertHasWhiteSpace(String s) {

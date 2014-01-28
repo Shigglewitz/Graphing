@@ -1,18 +1,22 @@
 package org.dkeeney.graphing.equations.operations;
 
-import org.dkeeney.graphing.equations.Term;
+import java.math.BigDecimal;
+import java.util.Map;
+
+import org.dkeeney.graphing.equations.Evaluable;
 
 public class Division extends Operation {
-    protected Division(Term left, Term right) {
-        super(left, right);
+    protected Division(Evaluable right) {
+        super(right);
     }
 
     protected Division() {
     }
 
     @Override
-    public double evaluate() {
-        return this.left.evaluate() / this.right.evaluate();
+    public double operate(double initialValue,
+            Map<String, BigDecimal> variableValues) {
+        return initialValue + this.right.evaluate(variableValues);
     }
 
     @Override
