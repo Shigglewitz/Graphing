@@ -43,7 +43,8 @@ public class ColorUtils {
     private static final int COLOR_NORMALIZATION_MASK = 0x100;
 
     public static int normalizeColor(int input) {
-        return normalize(input, NormalizationStrategy.CRUDE, COLOR_NORMALIZATION_MASK);
+        return normalize(input, NormalizationStrategy.CRUDE,
+                COLOR_NORMALIZATION_MASK);
     }
 
     public static int normalizeColor(int input, NormalizationStrategy strategy) {
@@ -53,7 +54,8 @@ public class ColorUtils {
     private static final int ALPHA_NORMALIZATION_MASK = 0x1000;
 
     public static int normalizeAlpha(int input) {
-        return normalize(input, NormalizationStrategy.CRUDE, ALPHA_NORMALIZATION_MASK);
+        return normalize(input, NormalizationStrategy.CRUDE,
+                ALPHA_NORMALIZATION_MASK);
     }
 
     public static int normalizeAlpha(int input, NormalizationStrategy strategy) {
@@ -67,8 +69,10 @@ public class ColorUtils {
             return Math.abs(input) % mask;
         case CURVE:
             int reduce = Math.abs(input) % (2 * mask);
-            if (reduce > mask) {
-                reduce /= 2;
+            if (reduce == mask) {
+                reduce--;
+            } else if (reduce > mask) {
+                reduce = mask - (reduce % mask);
             }
             return reduce;
         default:

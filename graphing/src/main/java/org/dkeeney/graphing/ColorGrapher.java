@@ -77,6 +77,8 @@ public class ColorGrapher {
         BufferedImage image = ImageMaker.baseImage(width, height);
         Graphics2D graphics = image.createGraphics();
 
+        long beforeCalc = System.currentTimeMillis();
+
         if (this.values == null || this.values.length != image.getWidth()
                 || this.values[0].length != image.getHeight()) {
             try {
@@ -88,16 +90,29 @@ public class ColorGrapher {
             }
         }
 
+        long afterCalc = System.currentTimeMillis();
+
         for (int x = 0; x < image.getWidth(); x++) {
             for (int y = 0; y < image.getHeight(); y++) {
                 image.setRGB(x, y, this.values[x][y]);
             }
         }
 
+        long afterDraw = System.currentTimeMillis();
+
         graphics.dispose();
+
+        if (this.diagnostics) {
+            System.out.println("Took " + (afterCalc - beforeCalc)
+                    + "ms to calculate.");
+            System.out.println("Took " + (afterDraw - afterCalc)
+                    + "ms to draw.");
+        }
 
         return image;
     }
+
+    private final boolean diagnostics = false;
 
     public void setStrategy(ColorUtils.NormalizationStrategy strategy) {
         this.strategy = strategy;

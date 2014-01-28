@@ -6,6 +6,7 @@ import static org.junit.Assert.assertTrue;
 import java.awt.Color;
 import java.util.Random;
 
+import org.dkeeney.utils.ColorUtils.NormalizationStrategy;
 import org.junit.Test;
 
 public class ColorUtilsTest {
@@ -52,13 +53,14 @@ public class ColorUtilsTest {
     }
 
     @Test
-    public void testNormalizeColor() {
+    public void testNormalizeColorCrude() {
         int[] tests = { -1, 256, 34, 257 };
         int[] expected = { 1, 0, 34, 1 };
         int numRandomTests = 20;
 
         for (int i = 0; i < tests.length; i++) {
-            assertEquals(expected[i], ColorUtils.normalizeColor(tests[i]));
+            assertEquals(expected[i], ColorUtils.normalizeColor(tests[i],
+                    NormalizationStrategy.CRUDE));
         }
 
         for (int i = 0; i < numRandomTests; i++) {
@@ -66,6 +68,20 @@ public class ColorUtilsTest {
             int trimmed = ColorUtils.normalizeColor(toTrim);
             assertTrue(toTrim + " was trimmed to " + trimmed
                     + " instead of 0-255", trimmed >= 0 && trimmed <= 0xfff);
+        }
+    }
+
+    @Test
+    public void testNormalizeColorCurve() {
+        int pastValue = -1;
+        int normalized = 0;
+
+        for (int test = 0; test < 0x222; test++) {
+            normalized = ColorUtils.normalizeColor(test,
+                    NormalizationStrategy.CURVE);
+            assertTrue("Too much difference for " + test,
+                    Math.abs(pastValue - normalized) < 2);
+            pastValue = normalized;
         }
     }
 }
