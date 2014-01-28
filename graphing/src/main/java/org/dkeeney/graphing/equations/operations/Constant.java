@@ -7,7 +7,7 @@ import org.dkeeney.graphing.equations.Evaluable;
 
 public class Constant extends Operation {
 
-    protected Constant(Evaluable right) {
+    public Constant(Evaluable right) {
         super(right);
     }
 

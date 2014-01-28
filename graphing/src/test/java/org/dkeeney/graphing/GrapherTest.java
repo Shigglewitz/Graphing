@@ -10,7 +10,6 @@ import java.math.BigDecimal;
 
 import org.dkeeney.graphing.equations.exceptions.InsufficientVariableInformationException;
 import org.dkeeney.graphing.equations.exceptions.InvalidEquationException;
-import org.dkeeney.utils.Utils;
 import org.junit.AfterClass;
 import org.junit.Test;
 
@@ -19,7 +18,7 @@ public class GrapherTest {
 
     @AfterClass
     public static void cleanUp() {
-        Utils.cleanDirectory(ImageMaker.DEFAULT_DIRECTORY);
+        // Utils.cleanDirectory(ImageMaker.DEFAULT_DIRECTORY);
     }
 
     @Test

@@ -53,14 +53,14 @@ public class ColorGrapher {
             for (int y = 0; y < height; y++) {
                 vars.put("y", new BigDecimal(y));
                 redValue = ColorUtils.normalizeColor(
-                        (int) this.red.solve(vars), this.strategy);
+                        (int) this.red.evaluate(vars), this.strategy);
                 greenValue = ColorUtils.normalizeColor(
-                        (int) this.green.solve(vars), this.strategy);
+                        (int) this.green.evaluate(vars), this.strategy);
                 blueValue = ColorUtils.normalizeColor(
-                        (int) this.blue.solve(vars), this.strategy);
+                        (int) this.blue.evaluate(vars), this.strategy);
                 if (this.alpha != null) {
                     alphaValue = ColorUtils.normalizeAlpha(
-                            (int) this.alpha.solve(vars), this.strategy);
+                            (int) this.alpha.evaluate(vars), this.strategy);
                 }
 
                 this.values[x][y] = ColorUtils.getRgbAsInt(redValue,
@@ -112,7 +112,7 @@ public class ColorGrapher {
         return image;
     }
 
-    private final boolean diagnostics = false;
+    private final boolean diagnostics = true;
 
     public void setStrategy(ColorUtils.NormalizationStrategy strategy) {
         this.strategy = strategy;

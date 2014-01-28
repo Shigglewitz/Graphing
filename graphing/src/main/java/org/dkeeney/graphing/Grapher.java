@@ -40,7 +40,7 @@ public class Grapher {
         for (BigDecimal eval = minRange; eval.compareTo(maxRange) < 0; eval = eval
                 .add(delta), i++) {
             vars.put(var, eval);
-            this.values[i] = this.e.solve(vars);
+            this.values[i] = this.e.evaluate(vars);
         }
     }
 
