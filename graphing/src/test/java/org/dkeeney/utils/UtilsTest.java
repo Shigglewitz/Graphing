@@ -4,9 +4,6 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 
-import java.awt.Color;
-import java.util.Random;
-
 import org.dkeeney.graphing.equations.operations.Operation;
 import org.junit.Test;
 
@@ -75,46 +72,6 @@ public class UtilsTest {
                     delimiters[i][1]);
             assertEquals(expected[i][0], ret[0]);
             assertEquals(expected[i][1], ret[1]);
-        }
-    }
-
-    @Test
-    public void testGetRgbAsInt() {
-        int red = 0;
-        int blue = 0;
-        int green = 0;
-
-        int numTests = 15;
-
-        Random random = new Random();
-
-        for (int i = 0; i < numTests; i++) {
-            red = random.nextInt(256);
-            blue = random.nextInt(256);
-            green = random.nextInt(256);
-            assertEquals(new Color(red, green, blue).getRGB(),
-                    Utils.getRgbAsInt(red, green, blue));
-        }
-    }
-
-    @Test
-    public void testGetRgbAsIntWithAlpha() {
-        int red = 0;
-        int blue = 0;
-        int green = 0;
-        int alpha = 0;
-
-        int numTests = 15;
-
-        Random random = new Random();
-
-        for (int i = 0; i < numTests; i++) {
-            red = random.nextInt(256);
-            blue = random.nextInt(256);
-            green = random.nextInt(256);
-            alpha = random.nextInt(256);
-            assertEquals(new Color(red, green, blue, alpha).getRGB(),
-                    Utils.getRgbAsInt(red, green, blue, alpha));
         }
     }
 
