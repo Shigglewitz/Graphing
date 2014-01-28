@@ -1,6 +1,7 @@
 package org.dkeeney.graphing.equations;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 
 import java.math.BigDecimal;
 import java.util.HashMap;
@@ -10,7 +11,6 @@ import org.dkeeney.graphing.equations.exceptions.InsufficientVariableInformation
 import org.dkeeney.graphing.equations.exceptions.InvalidEquationException;
 import org.dkeeney.utils.Utils;
 import org.junit.BeforeClass;
-import org.junit.Ignore;
 import org.junit.Test;
 
 public class EquationTest {
@@ -119,35 +119,20 @@ public class EquationTest {
     }
 
     @Test
-    @Ignore
-    public void testMapVariables()
-            throws InsufficientVariableInformationException {
-        // String[] tests = { "x+4+y+z*45", "(a)*b^((c)+d)" };
-        // String[] expected = { "24+4+25+26*45", "(1)*2^((3)+4)" };
-        //
-        // for (int i = 0; i < tests.length; i++) {
-        // assertEquals(expected[i],
-        // Equation.mapVariables(tests[i], STANDARD_VARS));
-        // }
-    }
-
-    @Test
-    @Ignore
     public void testInsufficientVariables() {
         String[] tests = { "x+4+y+z*45", "(a)*b^((c)+d)" };
         Map<String, BigDecimal> vars = new HashMap<>();
-        String baseMessage = "Missing variable values for ";
-        String[] expectedMessages = { baseMessage + "x, y, z",
-                baseMessage + "a, b, c, d" };
+        String baseMessage = "Missing variable value for ";
+        String[] expectedMessages = { baseMessage + "x", baseMessage + "a" };
 
-        // for (int i = 0; i < tests.length; i++) {
-        // try {
-        // Equation.mapVariables(tests[i], vars);
-        // assertTrue("Exception not thrown for " + tests[i], false);
-        // } catch (InsufficientVariableInformationException e) {
-        // assertEquals(expectedMessages[i], e.getMessage());
-        // }
-        // }
+        for (int i = 0; i < tests.length; i++) {
+            try {
+                new Equation(tests[i]).evaluate(vars);
+                assertTrue("Exception not thrown for " + tests[i], false);
+            } catch (InsufficientVariableInformationException e) {
+                assertEquals(expectedMessages[i], e.getMessage());
+            }
+        }
     }
 
     @Test

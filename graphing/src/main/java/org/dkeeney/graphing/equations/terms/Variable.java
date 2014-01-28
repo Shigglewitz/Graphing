@@ -16,7 +16,8 @@ public class Variable implements Term {
     @Override
     public double evaluate(Map<String, BigDecimal> varValues) {
         if (varValues.get(this.variable) == null) {
-            throw new InsufficientVariableInformationException();
+            throw new InsufficientVariableInformationException(
+                    "Missing variable value for " + this.variable);
         } else {
             return varValues.get(this.variable).doubleValue();
         }

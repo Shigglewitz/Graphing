@@ -18,6 +18,31 @@ import org.dkeeney.graphing.equations.terms.ConstantAmount;
 import org.dkeeney.graphing.equations.terms.Variable;
 import org.dkeeney.utils.Utils;
 
+/**
+ * going to switch to djikstra's algorithm:
+ * 
+ * need:
+ * 1 stack for operators
+ * 1 queue for output
+ * 1 array (or other list) for tokens
+ * 
+ * algorithm:
+ *  while there are tokens to read
+ *      read a token
+ *      if it's a number, add to queue
+ *      if it's an operator:
+ *          while there's an operator on top of stack with greater precedence:
+ *              pop operators from the stack onto the output queue
+ *          push the current operator onto the stack
+ *      if it's a left bracket '(', push it onto the stack
+ *      if it's a right bracket ')'
+ *          while there's not a left bracket at the top of the stack
+ *              pop operators from the stack onto the output queue
+ *          pop left bracket from the stack but discard
+ *  while there are operators on the stack, pop them to the queue    
+ * @author Daniel
+ *
+ */
 public class Equation implements Evaluable {
     public static final String VARIABLE_REGEX = "[a-z]";
     private static final String NUMBER_REGEX = "-?[0-9]+(\\.[0-9]+)?";
@@ -146,9 +171,12 @@ public class Equation implements Evaluable {
             }
         }
 
-        ret.add(new Constant(getEvaluable(parsedList.get(0))));
+        if (parsedList.get(0).matches(NUMBER_REGEX)) {
+            ret.add(new Constant(ConstantAmount.getTerm(parsedList.get(0))));
+            parsedList.remove(0);
+        }
 
-        for (int i = 1; i < parsedList.size(); i++) {
+        for (int i = 0; i < parsedList.size(); i++) {
             if (Operation.isOperator(parsedList.get(i))) {
                 if (i == parsedList.size() - 1) {
                     evaluable = null;
@@ -189,7 +217,6 @@ public class Equation implements Evaluable {
     }
 
     public void orderOperations(List<Operation> operations) {
-
     }
 
     public String getOriginalEquation() {
