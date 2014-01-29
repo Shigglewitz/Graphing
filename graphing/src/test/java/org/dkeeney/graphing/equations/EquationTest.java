@@ -11,6 +11,7 @@ import java.util.Map;
 import org.dkeeney.graphing.equations.exceptions.InsufficientVariableInformationException;
 import org.dkeeney.graphing.equations.exceptions.InvalidEquationException;
 import org.dkeeney.graphing.equations.exceptions.InvalidParenthesisException;
+import org.dkeeney.graphing.equations.operations.trigonometry.TrigonometricOperation;
 import org.dkeeney.utils.Utils;
 import org.junit.BeforeClass;
 import org.junit.Test;
@@ -138,8 +139,7 @@ public class EquationTest {
     }
 
     @Test
-    public void testConstants() throws InvalidEquationException,
-            InsufficientVariableInformationException {
+    public void testConstants() throws InvalidEquationException {
         String[] input = { "1", "20", "5", "4", "(40)", "-5" };
         double[] expected = { 1, 20, 5, 4, 40, -5 };
         for (int i = 0; i < input.length; i++) {
@@ -148,8 +148,7 @@ public class EquationTest {
     }
 
     @Test
-    public void testSimpleEquations() throws InvalidEquationException,
-            InsufficientVariableInformationException {
+    public void testSimpleEquations() throws InvalidEquationException {
         String[] input = { "1+1", "1*3", "3/5", "0-4", "5^0", "5^1", "3^3",
                 "-1-2" };
         double[] output = { 2, 3, 0.6, -4, 1, 5, 27, -3 };
@@ -160,8 +159,7 @@ public class EquationTest {
     }
 
     @Test
-    public void testLongEquations() throws InvalidEquationException,
-            InsufficientVariableInformationException {
+    public void testLongEquations() throws InvalidEquationException {
         // none of these tests should test the order of operations
         String[] input = { "1 + 1  + 1 +  1", "1 * 3 * 2 * 4 ", "3 * 2 + 1",
                 "2^3*2+1" };
@@ -173,8 +171,7 @@ public class EquationTest {
     }
 
     @Test
-    public void testOrderOfOperations() throws InvalidEquationException,
-            InsufficientVariableInformationException {
+    public void testOrderOfOperations() throws InvalidEquationException {
         String[] input = { "1+2*3", "1+3^3+1*4", "0/4+1*3",
                 "1*30+45+67*89*56*12", "1*3+-4" };
         double[] output = { 7, 32, 3, 4007211, -1 };
@@ -187,8 +184,7 @@ public class EquationTest {
     }
 
     @Test
-    public void testEquationsWithParens() throws InvalidEquationException,
-            InsufficientVariableInformationException {
+    public void testEquationsWithParens() throws InvalidEquationException {
         String[] input = { "(20)*(19)", "(1+2)*3", "1+3^(3+1)*4", "0/(4+1)3",
                 "1*30+(45+67)89(56)*12", "1+((2*(5+2)))" };
         double[] output = { 380, 9, 325, 0, 6698526, 15, };
@@ -199,12 +195,32 @@ public class EquationTest {
     }
 
     @Test
-    public void testEquationsWithVariables() throws InvalidEquationException,
-            InsufficientVariableInformationException {
+    public void testEquationsWithVariables() throws InvalidEquationException {
         String[] tests = { "X+Y", "B^C", "B*B", "B(C)/(D+E)", "X^2" };
         double[] expected = { 49, 8, 4, 2.0 / 3.0, 576 };
 
-        this.testEquation(tests[3], expected[3], STANDARD_VARS);
+        for (int i = 0; i < tests.length; i++) {
+            this.testEquation(tests[i], expected[i], STANDARD_VARS);
+        }
+    }
+
+    @Test
+    public void testValidationForGeometricEquations() {
+        String[] tests = { "sin", "cos", "tan", "sicotan" };
+        boolean[] expected = { true, true, true, false };
+
+        for (int i = 0; i < tests.length; i++) {
+            assertEquals("Unexpected (in)validity for " + tests[i],
+                    tests[i].matches(TrigonometricOperation.OPERATOR_REGEX),
+                    expected[i]);
+        }
+    }
+
+    @Test
+    public void testGeometricEquations() throws InvalidEquationException {
+        String[] tests = { "sin(0)", "cos(0)", "tan(0)", "sin(X)", "cos(X)",
+                "tan(X)" };
+        double[] expected = { 0, 1, 0, 0.4067366, 0.9135454, 0.4452286 };
 
         for (int i = 0; i < tests.length; i++) {
             this.testEquation(tests[i], expected[i], STANDARD_VARS);
@@ -223,14 +239,12 @@ public class EquationTest {
     }
 
     private void testEquation(String equation, double expected)
-            throws InvalidEquationException,
-            InsufficientVariableInformationException {
+            throws InvalidEquationException {
         this.testEquation(equation, expected, null);
     }
 
     private void testEquation(String equation, double expected,
-            Map<String, BigDecimal> vars) throws InvalidEquationException,
-            InsufficientVariableInformationException {
+            Map<String, BigDecimal> vars) throws InvalidEquationException {
         assertEquals("Equation " + equation + " did not evaluate to "
                 + expected, expected, new Equation(equation).evaluate(vars),
                 DELTA);
