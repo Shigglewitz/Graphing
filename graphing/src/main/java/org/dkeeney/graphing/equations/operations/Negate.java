@@ -7,25 +7,24 @@ import org.dkeeney.graphing.equations.Token;
 import org.dkeeney.graphing.equations.terms.ConstantAmount;
 import org.dkeeney.graphing.equations.terms.Term;
 
-public class Division extends Operation {
-    public Division() {
-    }
-
-    @Override
-    public String getOperator() {
-        return "/";
+public class Negate extends Operation {
+    public Negate() {
     }
 
     @Override
     public ConstantAmount operate(Term[] inputs,
             Map<String, BigDecimal> variableValues) {
-        return new ConstantAmount(inputs[0].evaluate(variableValues)
-                / inputs[1].evaluate(variableValues));
+        return new ConstantAmount(-1 * inputs[0].evaluate(variableValues));
+    }
+
+    @Override
+    public String getOperator() {
+        return "-";
     }
 
     @Override
     public Precedence getPrecedence() {
-        return Precedence.MULTIPLY_DIVIDE;
+        return Precedence.ADDITION_SUBTRACTION;
     }
 
     @Override
@@ -35,12 +34,12 @@ public class Division extends Operation {
 
     @Override
     public int getNumberOfInputs() {
-        return 2;
+        return 1;
     }
 
     @Override
     public Token cloneToken() {
-        return new Division();
+        return new Negate();
     }
 
 }

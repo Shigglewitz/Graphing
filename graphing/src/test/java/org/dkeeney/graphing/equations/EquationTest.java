@@ -183,6 +183,11 @@ public class EquationTest {
     }
 
     @Test
+    public void testSplit() {
+        Equation.split("-1.0/X+2*(4/5)^34");
+    }
+
+    @Test
     public void testEquationsWithParens() throws InvalidEquationException,
             InsufficientVariableInformationException {
         String[] input = { "(20)*(19)", "(1+2)*3", "1+3^(3+1)*4", "0/(4+1)3",

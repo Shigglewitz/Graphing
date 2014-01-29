@@ -10,7 +10,6 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import org.dkeeney.graphing.equations.exceptions.EvaluationException;
-import org.dkeeney.graphing.equations.operations.Constant;
 import org.dkeeney.graphing.equations.operations.Multiplication;
 import org.dkeeney.graphing.equations.operations.Operation;
 import org.dkeeney.graphing.equations.operations.Subtraction;
@@ -58,7 +57,7 @@ public class Equation implements Evaluable {
             .compile(IMPLIED_WITH_VAR_REGEX);
 
     private final String originalEquation;
-    private final List<Operation> operations;
+    private final List<Token> tokens;
 
     public Equation(String input) {
         this.originalEquation = input;
@@ -66,6 +65,14 @@ public class Equation implements Evaluable {
         input = addImpliedMultiplication(input);
         this.operations = parseOperations(input);
         this.orderOperations(this.operations);
+    }
+
+    public static void split(String equation) {
+        Pattern p = Pattern.compile("[\\^*/+A-Z()-]|(-?[0-9]+(\\.[0-9]+)?)");
+        Matcher m = p.matcher(equation);
+        while (m.find()) {
+            System.out.println("Group " + 0 + ": " + m.group(0));
+        }
     }
 
     public static String addImpliedMultiplication(String equation) {

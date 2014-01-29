@@ -7,43 +7,48 @@ import java.util.HashMap;
 import java.util.Map;
 
 import org.dkeeney.graphing.equations.Evaluable;
+import org.dkeeney.graphing.equations.Token;
+import org.dkeeney.graphing.equations.terms.ConstantAmount;
+import org.dkeeney.graphing.equations.terms.Term;
 import org.dkeeney.utils.Utils;
 
-public abstract class Operation {
-    private static final Operation[] SUPPORTED_OPERATIONS = { new Constant(),
-            new Addition(), new Subtraction(), new Multiplication(),
-            new Division(), new Exponent() };
-    private static final Operation[][] ORDER_OF_OPERATIONS = {
-            { new Exponent() }, { new Multiplication(), new Division() },
-            { new Addition(), new Subtraction() } };
+public abstract class Operation implements Token {
+    private static final Operation[] SUPPORTED_OPERATIONS = { new Addition(),
+            new Subtraction(), new Multiplication(), new Division(),
+            new Exponent() };
     private static Map<String, Class<? extends Operation>> OPERATION_MAP;
     public static final String OPERATOR_REGEX = "[\\^*/+-]";
 
-    protected Evaluable right;
-
-    protected Operation() {
+    public Operation() {
     };
 
-    protected Operation(Evaluable right) {
-        this.right = right;
+    public enum Associativity {
+        LEFT, RIGHT
     }
 
-    public abstract double operate(double initialValue,
+    public enum Precedence implements Comparable<Precedence> {
+        EXPONENT(4), MULTIPLY_DIVIDE(3), ADDITION_SUBTRACTION(2);
+        private int precedence;
+
+        private Precedence(int precedence) {
+            this.precedence = precedence;
+        }
+
+        public int getPrecedence() {
+            return this.precedence;
+        }
+    }
+
+    public abstract ConstantAmount operate(Term[] inputs,
             Map<String, BigDecimal> variableValues);
 
     public abstract String getOperator();
 
-    public static Operation[][] getOrderOfOperations() {
-        Operation[][] ret = new Operation[ORDER_OF_OPERATIONS.length][];
+    public abstract Precedence getPrecedence();
 
-        for (int i = 0; i < ORDER_OF_OPERATIONS.length; i++) {
-            ret[i] = new Operation[ORDER_OF_OPERATIONS[i].length];
-            for (int j = 0; j < ORDER_OF_OPERATIONS[i].length; j++) {
-                ret[i][j] = ORDER_OF_OPERATIONS[i][j];
-            }
-        }
-        return ret;
-    }
+    public abstract Associativity getAssociativity();
+
+    public abstract int getNumberOfInputs();
 
     public static boolean containsOperator(String input) {
         return Utils.containsRegex(input, OPERATOR_REGEX);
@@ -90,13 +95,5 @@ public abstract class Operation {
             ret.put(o.getOperator(), o.getClass());
         }
         return ret;
-    }
-
-    public Evaluable getRight() {
-        return this.right;
-    }
-
-    public void setRight(Evaluable right) {
-        this.right = right;
     }
 }

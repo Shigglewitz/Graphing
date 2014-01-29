@@ -4,6 +4,7 @@ import java.math.BigDecimal;
 import java.util.Map;
 
 import org.dkeeney.graphing.equations.Evaluable;
+import org.dkeeney.graphing.equations.Token;
 
 public class ConstantAmount implements Term {
     private final double amount;
@@ -19,6 +20,15 @@ public class ConstantAmount implements Term {
 
     public static Evaluable getTerm(String amount) {
         return new ConstantAmount(amount);
+    }
+
+    public ConstantAmount(double amount) {
+        this.amount = amount;
+    }
+
+    @Override
+    public Token cloneToken() {
+        return new ConstantAmount(this.amount);
     }
 
 }
