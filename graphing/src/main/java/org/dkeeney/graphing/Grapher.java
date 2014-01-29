@@ -30,7 +30,8 @@ public class Grapher {
 
     public void calculateValues(BigDecimal minRange, BigDecimal maxRange,
             BigDecimal delta, String var)
-            throws InsufficientVariableInformationException {
+            throws InsufficientVariableInformationException,
+            InvalidEquationException {
         Map<String, BigDecimal> vars = new HashMap<>();
         this.values = new double[(int) Math.floor(maxRange.subtract(minRange)
                 .divide(delta, RoundingMode.CEILING).add(new BigDecimal(1))
@@ -161,8 +162,9 @@ public class Grapher {
             try {
                 this.calculateValues(new BigDecimal(minX),
                         new BigDecimal(maxX), new BigDecimal((maxX - minX)
-                                / image.getWidth()), "x");
-            } catch (InsufficientVariableInformationException e) {
+                                / image.getWidth()), "X");
+            } catch (InvalidEquationException
+                    | InsufficientVariableInformationException e) {
                 e.printStackTrace();
                 graphics.drawString("Exception calculating values", 1, 10);
             }

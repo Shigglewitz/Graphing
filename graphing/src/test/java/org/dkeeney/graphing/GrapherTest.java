@@ -5,11 +5,14 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 
 import java.awt.Color;
+import java.awt.image.BufferedImage;
 import java.io.IOException;
 import java.math.BigDecimal;
 
 import org.dkeeney.graphing.equations.exceptions.InsufficientVariableInformationException;
 import org.dkeeney.graphing.equations.exceptions.InvalidEquationException;
+import org.dkeeney.utils.ImageComparison;
+import org.dkeeney.utils.Utils;
 import org.junit.AfterClass;
 import org.junit.Test;
 
@@ -18,16 +21,16 @@ public class GrapherTest {
 
     @AfterClass
     public static void cleanUp() {
-        // Utils.cleanDirectory(ImageMaker.DEFAULT_DIRECTORY);
+        Utils.cleanDirectory(ImageMaker.DEFAULT_DIRECTORY);
     }
 
     @Test
     public void testCalculateValues() throws InvalidEquationException,
             InsufficientVariableInformationException {
-        Grapher g = new Grapher("x^2");
+        Grapher g = new Grapher("X^2");
         assertNull(g.getValues());
         g.calculateValues(new BigDecimal(-2), new BigDecimal(2.005),
-                new BigDecimal(0.01), "x");
+                new BigDecimal(0.01), "X");
         assertNotNull(g.getValues());
         assertEquals("Calculated the wrong number of values", 401,
                 g.getValues().length);
@@ -38,16 +41,24 @@ public class GrapherTest {
     }
 
     @Test
-    public void testGetGraph() throws InvalidEquationException, IOException {
-        Grapher g = new Grapher("x^2");
-        ImageMaker.saveImage(g.getGraph(), "graph1", "png");
-        g = new Grapher("0-x^2");
+    public void testGetSimpleGraph() throws InvalidEquationException,
+            IOException {
+        Grapher g = new Grapher("X^2");
+        BufferedImage experiment = g.getGraph();
+        ImageComparison.compareRandomPixels("graph1", experiment);
+    }
+
+    @Test
+    public void testGetGraphWithOptions() throws InvalidEquationException,
+            IOException {
+        Grapher g = new Grapher("-(X^2)");
         g.setGraphBackground(Color.CYAN);
         g.setAxisColor(Color.DARK_GRAY);
         g.setGridColor(Color.WHITE);
         g.setGraphColor(Color.RED);
         g.setExtraGraphPadding(1);
         g.setDrawGrid(true);
-        ImageMaker.saveImage(g.getGraph(-1, 10, -5, 2), "graph2", "png");
+        BufferedImage experiment = g.getGraph(-1, 10, -5, 2);
+        ImageComparison.compareRandomPixels("graph2", experiment);
     }
 }

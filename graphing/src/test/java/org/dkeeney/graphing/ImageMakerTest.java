@@ -14,6 +14,7 @@ import javax.imageio.ImageIO;
 
 import org.apache.commons.lang3.RandomStringUtils;
 import org.dkeeney.utils.ColorUtils;
+import org.dkeeney.utils.Utils;
 import org.junit.AfterClass;
 import org.junit.Test;
 
@@ -23,7 +24,7 @@ public class ImageMakerTest {
 
     @AfterClass
     public static void cleanUp() {
-        // Utils.cleanDirectory(ImageMaker.DEFAULT_DIRECTORY);
+        Utils.cleanDirectory(ImageMaker.DEFAULT_DIRECTORY);
     }
 
     @Test
