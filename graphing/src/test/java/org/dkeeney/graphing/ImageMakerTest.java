@@ -13,6 +13,7 @@ import java.util.Random;
 import javax.imageio.ImageIO;
 
 import org.apache.commons.lang3.RandomStringUtils;
+import org.dkeeney.utils.ColorUtils;
 import org.dkeeney.utils.Utils;
 import org.junit.AfterClass;
 import org.junit.Test;
@@ -39,15 +40,15 @@ public class ImageMakerTest {
 
     @Test
     public void testBaseImageWithColor() {
-        int red = Utils.getRandomColor();
-        int green = Utils.getRandomColor();
-        int blue = Utils.getRandomColor();
+        int red = ColorUtils.getRandomColor();
+        int green = ColorUtils.getRandomColor();
+        int blue = ColorUtils.getRandomColor();
 
         BufferedImage image = ImageMaker.baseImage(DEFAULT_WIDTH,
                 DEFAULT_HEIGHT, new Color(red, green, blue));
         for (int x = 0; x < image.getWidth(); x++) {
             for (int y = 0; y < image.getHeight(); y++) {
-                assertEquals(Utils.getRgbAsInt(red, green, blue),
+                assertEquals(ColorUtils.getRgbAsInt(red, green, blue),
                         image.getRGB(x, y));
             }
         }
@@ -56,8 +57,8 @@ public class ImageMakerTest {
     @Test
     public void testSaveImage() throws IOException {
         Random random = new Random();
-        Color randomColor = new Color(Utils.getRandomColor(),
-                Utils.getRandomColor(), Utils.getRandomColor());
+        Color randomColor = new Color(ColorUtils.getRandomColor(),
+                ColorUtils.getRandomColor(), ColorUtils.getRandomColor());
         BufferedImage image = ImageMaker.baseImage(
                 random.nextInt(DEFAULT_WIDTH) + 50,
                 random.nextInt(DEFAULT_HEIGHT) + 50, randomColor);

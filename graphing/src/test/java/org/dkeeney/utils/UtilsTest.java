@@ -4,9 +4,6 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 
-import java.awt.Color;
-import java.util.Random;
-
 import org.dkeeney.graphing.equations.operations.Operation;
 import org.junit.Test;
 
@@ -79,43 +76,15 @@ public class UtilsTest {
     }
 
     @Test
-    public void testGetRgbAsInt() {
-        int red = 0;
-        int blue = 0;
-        int green = 0;
-
-        int numTests = 15;
-
-        Random random = new Random();
-
-        for (int i = 0; i < numTests; i++) {
-            red = random.nextInt(256);
-            blue = random.nextInt(256);
-            green = random.nextInt(256);
-            assertEquals(new Color(red, green, blue).getRGB(),
-                    Utils.getRgbAsInt(red, green, blue));
-        }
-    }
-
-    @Test
-    public void testGetRgbAsIntWithAlpha() {
-        int red = 0;
-        int blue = 0;
-        int green = 0;
-        int alpha = 0;
-
-        int numTests = 15;
-
-        Random random = new Random();
-
-        for (int i = 0; i < numTests; i++) {
-            red = random.nextInt(256);
-            blue = random.nextInt(256);
-            green = random.nextInt(256);
-            alpha = random.nextInt(256);
-            assertEquals(new Color(red, green, blue, alpha).getRGB(),
-                    Utils.getRgbAsInt(red, green, blue, alpha));
-        }
+    public void testProperUseOfMatchedGroup() {
+        String test = "123(456)789";
+        String expectedBefore = "123";
+        String expected = "456";
+        String expectedAfter = "789";
+        int[] range = Utils.getMatchedGroup(test, '(', ')');
+        assertEquals(expectedBefore, test.substring(0, range[0]));
+        assertEquals(expected, test.substring(range[0] + 1, range[1]));
+        assertEquals(expectedAfter, test.substring(range[1] + 1));
     }
 
     private static final String WHITE_SPACE_REGEX = ".*\\s.*";

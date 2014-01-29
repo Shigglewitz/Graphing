@@ -1,25 +1,48 @@
 package org.dkeeney.graphing.equations.operations;
 
-import org.dkeeney.graphing.equations.Term;
+import java.math.BigDecimal;
+import java.util.Map;
+
+import org.dkeeney.graphing.equations.Token;
+import org.dkeeney.graphing.equations.terms.ConstantAmount;
+import org.dkeeney.graphing.equations.terms.Term;
 
 public class Subtraction extends Operation {
     public static final String OPERATOR = "-";
 
-    protected Subtraction(Term left, Term right) {
-        super(left, right);
-    }
-
-    protected Subtraction() {
-    }
-
-    @Override
-    public double evaluate() {
-        return this.left.evaluate() - this.right.evaluate();
+    public Subtraction() {
     }
 
     @Override
     public String getOperator() {
         return OPERATOR;
+    }
+
+    @Override
+    public ConstantAmount operate(Term[] inputs,
+            Map<String, BigDecimal> variableValues) {
+        return new ConstantAmount(inputs[1].evaluate(variableValues)
+                - inputs[0].evaluate(variableValues));
+    }
+
+    @Override
+    public Precedence getPrecedence() {
+        return Precedence.ADDITION_SUBTRACTION;
+    }
+
+    @Override
+    public Associativity getAssociativity() {
+        return Associativity.LEFT;
+    }
+
+    @Override
+    public int getNumberOfInputs() {
+        return 2;
+    }
+
+    @Override
+    public Token cloneToken() {
+        return new Subtraction();
     }
 
 }

@@ -8,6 +8,7 @@ import java.io.IOException;
 
 import javax.imageio.ImageIO;
 
+import org.dkeeney.utils.ColorUtils;
 import org.dkeeney.utils.Utils;
 
 public class ImageMaker {
@@ -46,11 +47,10 @@ public class ImageMaker {
 
         for (int x = 0; x < width; x++) {
             for (int y = 0; y < height; y++) {
-                image.setRGB(
-                        x,
-                        y,
-                        Utils.getRgbAsInt(Utils.getRandomColor(),
-                                Utils.getRandomColor(), Utils.getRandomColor()));
+                image.setRGB(x, y, ColorUtils.getRgbAsInt(
+                        ColorUtils.getRandomColor(),
+                        ColorUtils.getRandomColor(),
+                        ColorUtils.getRandomColor()));
             }
         }
 

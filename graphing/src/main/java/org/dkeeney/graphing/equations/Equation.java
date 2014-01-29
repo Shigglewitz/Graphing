@@ -3,32 +3,33 @@ package org.dkeeney.graphing.equations;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
 import java.math.BigDecimal;
-import java.text.NumberFormat;
 import java.util.ArrayList;
+import java.util.EmptyStackException;
+import java.util.HashMap;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.Stack;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import org.apache.commons.lang3.StringUtils;
 import org.dkeeney.graphing.equations.exceptions.EvaluationException;
-import org.dkeeney.graphing.equations.exceptions.InsufficientVariableInformationException;
 import org.dkeeney.graphing.equations.exceptions.InvalidEquationException;
+import org.dkeeney.graphing.equations.exceptions.InvalidParenthesisException;
 import org.dkeeney.graphing.equations.operations.Multiplication;
+import org.dkeeney.graphing.equations.operations.Negate;
 import org.dkeeney.graphing.equations.operations.Operation;
 import org.dkeeney.graphing.equations.operations.Subtraction;
+import org.dkeeney.graphing.equations.terms.ConstantAmount;
+import org.dkeeney.graphing.equations.terms.Term;
+import org.dkeeney.graphing.equations.terms.Variable;
 import org.dkeeney.utils.Utils;
 
 public class Equation {
-    public static final String VARIABLE_REGEX = "[a-z]";
-    private static final String NUMBER_REGEX = "-?[0-9]+([.][0-9]+)?";
-    private static final String NON_OPERATOR_REGEX = "((" + NUMBER_REGEX + ")|"
-            + VARIABLE_REGEX + ")";
-    private static final String VALID_EQUATION_REGEX = "\\(*"
-            + NON_OPERATOR_REGEX + "\\)*(" + Operation.OPERATOR_REGEX + "\\(*"
-            + NON_OPERATOR_REGEX + "\\)*)*";
-    private static final String IMPLIED_BEFORE_PAREN_REGEX = "([a-z0-9)]\\()";
-    private static final String IMPLIED_AFTER_PAREN_REGEX = "(\\)[(0-9a-z])";
+    public static final String VARIABLE_REGEX = "[A-Z]";
+    private static final String NUMBER_REGEX = "-?[0-9]+(\\.[0-9]+)?";
+    private static final String IMPLIED_BEFORE_PAREN_REGEX = "([A-Z0-9)]\\()";
+    private static final String IMPLIED_AFTER_PAREN_REGEX = "(\\)[(0-9A-Z])";
     private static final String IMPLIED_WITH_VAR_REGEX = "((" + NUMBER_REGEX
             + ")|" + VARIABLE_REGEX + ")(?=" + VARIABLE_REGEX + ")";
     private static final Pattern IMPLIED_BEFORE_PAREN = Pattern
@@ -38,49 +39,125 @@ public class Equation {
     private static final Pattern IMPLIED_WITH_VAR = Pattern
             .compile(IMPLIED_WITH_VAR_REGEX);
 
-    private final String originalEquation;
-    private final String equation;
-    private final NumberFormat nf;
+    private static final Map<String, BigDecimal> STANDARD_VARS = new HashMap<>();
 
-    private static final int DEFAULT_NUM_DECIMAL_DIGITS = 5;
+    static {
+        char var;
+        for (int i = 0; i < 26; i++) {
+            var = (char) ('A' + i);
+            STANDARD_VARS.put(Character.toString(var), new BigDecimal(1));
+        }
+    }
+
+    private final String originalEquation;
+    private final List<Token> tokens;
 
     public Equation(String input) throws InvalidEquationException {
-        this(input, DEFAULT_NUM_DECIMAL_DIGITS);
-    }
-
-    public Equation(String input, int maxDecimalDigits)
-            throws InvalidEquationException {
+        if (input == null) {
+            throw new InvalidEquationException("Equation cannot be null");
+        }
         this.originalEquation = input;
         input = Utils.removeAllWhiteSpace(input);
+        if ("".equals(input)) {
+            throw new InvalidEquationException("Equation cannot be empty");
+        }
         input = addImpliedMultiplication(input);
-        if (!Equation.isValidEquation(input)) {
-            throw new InvalidEquationException();
-        }
-        this.equation = input;
-        this.nf = NumberFormat.getInstance();
-        this.nf.setMinimumIntegerDigits(1);
-        this.nf.setMinimumFractionDigits(0);
-        this.nf.setMaximumFractionDigits(maxDecimalDigits);
+        this.tokens = djikstraShunt(input);
+        this.evaluate(STANDARD_VARS);
     }
 
-    public void adjustPrecision(int minIntDigits, int maxIntDigits,
-            int minDecDigits, int maxDecDigits) {
-        if (minIntDigits >= 0) {
-            this.nf.setMinimumIntegerDigits(minIntDigits);
-        }
-        if (maxIntDigits >= 0) {
-            this.nf.setMaximumIntegerDigits(maxIntDigits);
-        }
-        if (minDecDigits >= 0) {
-            this.nf.setMinimumFractionDigits(minDecDigits);
-        }
-        if (maxDecDigits >= 0) {
-            this.nf.setMaximumFractionDigits(maxDecDigits);
-        }
-    }
+    public static List<Token> djikstraShunt(String equation)
+            throws InvalidEquationException {
+        Pattern p = Pattern.compile("[\\^*/+()-]|[A-Z]|(-?[0-9]+(\\.[0-9]+)?)");
+        Matcher m = p.matcher(equation);
+        List<Token> inFix = new LinkedList<>();
+        String group;
+        String previous = null;
+        int lastEnd = 0;
+        while (m.find()) {
+            if (m.start() != lastEnd) {
+                throw new InvalidEquationException("Could not parse part of "
+                        + equation);
+            }
+            group = m.group(0);
+            if (group.matches(NUMBER_REGEX)) {
+                inFix.add(ConstantAmount.getTerm(group));
+            } else if (group.matches(VARIABLE_REGEX)) {
+                inFix.add(Variable.getTerm(group));
+            } else if (group.matches("[()]")) {
+                inFix.add(new Parenthesis(group));
+            } else if (group.equals(Subtraction.OPERATOR)) {
+                if (previous == null || previous.matches("[(]")
+                        || Operation.isOperator(previous)) {
+                    inFix.add(new Negate());
+                } else {
+                    inFix.add(new Subtraction());
+                }
+            } else {
+                Constructor<? extends Operation> constructor;
+                try {
+                    constructor = Operation.determineOperation(group)
+                            .getConstructor();
+                    constructor.setAccessible(true);
+                    inFix.add(constructor.newInstance());
+                } catch (NoSuchMethodException | SecurityException
+                        | InstantiationException | IllegalAccessException
+                        | IllegalArgumentException | InvocationTargetException e) {
+                    throw new EvaluationException(e);
+                }
+            }
 
-    public String formatDouble(double value) {
-        return this.nf.format(value);
+            previous = group;
+            lastEnd = m.end();
+        }
+        if (lastEnd != equation.length()) {
+            throw new InvalidEquationException("Unable to parse all of "
+                    + equation);
+        }
+
+        Stack<Token> operatorStack = new Stack<>();
+        List<Token> ret = new ArrayList<>();
+
+        Operation o;
+        for (Token t : inFix) {
+            if (t instanceof Term) {
+                ret.add(t);
+            } else if (t instanceof Operation) {
+                o = (Operation) t;
+                while (operatorStack.size() > 0
+                        && operatorStack.peek() instanceof Operation
+                        && ((Operation) operatorStack.peek()).getPrecedence()
+                                .compareTo(o.getPrecedence()) > 0) {
+                    ret.add(operatorStack.pop());
+                }
+                operatorStack.push(o);
+            } else if (t instanceof Parenthesis) {
+                if (((Parenthesis) t).isLeft()) {
+                    operatorStack.push(t);
+                } else {
+                    try {
+                        while (!(operatorStack.peek() instanceof Parenthesis)) {
+                            ret.add(operatorStack.pop());
+                        }
+                    } catch (EmptyStackException e) {
+                        throw new InvalidParenthesisException(
+                                "Unmatched parenthesis in " + equation);
+                    }
+                    operatorStack.pop();
+                }
+            }
+        }
+
+        while (operatorStack.size() > 0) {
+            if (operatorStack.peek() instanceof Parenthesis) {
+                throw new InvalidParenthesisException(
+                        "Unmatched parenthesis found for " + equation);
+            } else {
+                ret.add(operatorStack.pop());
+            }
+        }
+
+        return ret;
     }
 
     public static String addImpliedMultiplication(String equation) {
@@ -137,135 +214,46 @@ public class Equation {
         return equation;
     }
 
-    public static boolean isValidEquation(String equation) {
-        if (equation == null || "".equals(equation)) {
-            return false;
-        }
-        return equation.matches(VALID_EQUATION_REGEX)
-                && StringUtils.countMatches(equation, "(") == StringUtils
-                        .countMatches(equation, ")");
-    }
+    public double evaluate(Map<String, BigDecimal> varValues)
+            throws InvalidEquationException {
+        Stack<Term> termStack = new Stack<>();
+        Operation o;
+        // currently the highest number of inputs for an equation is 2
+        // adjust the size of this array if this changes
+        Term[] evaluateMe = new Term[2];
+        int i;
 
-    public double solve(Map<String, BigDecimal> variableValues)
-            throws InsufficientVariableInformationException {
-        return this.evaluate(this.mapFormattedVariables(this.equation,
-                variableValues));
+        for (Token t : this.tokens) {
+            if (t instanceof Term) {
+                termStack.push((Term) t);
+            } else if (t instanceof Operation) {
+                o = (Operation) t;
+                if (o.getNumberOfInputs() > termStack.size()) {
+                    throw new InvalidEquationException(
+                            "Too few values in equation "
+                                    + this.originalEquation + " for " + o);
+                } else {
+                    for (i = 0; i < o.getNumberOfInputs(); i++) {
+                        evaluateMe[i] = termStack.pop();
+                    }
+                    termStack.push(o.operate(evaluateMe, varValues));
+                }
+            } else {
+                throw new EvaluationException(
+                        "Invalid token found in equation "
+                                + this.originalEquation);
+            }
+        }
+
+        if (termStack.size() == 1) {
+            return termStack.pop().evaluate(varValues);
+        } else {
+            throw new InvalidEquationException("Too many values in equation "
+                    + this.originalEquation);
+        }
     }
 
     public String getOriginalEquation() {
         return this.originalEquation;
-    }
-
-    private String mapFormattedVariables(String equation,
-            Map<String, BigDecimal> variableValues)
-            throws InsufficientVariableInformationException {
-        return mapFormattedVariables(equation, variableValues, this.nf);
-    }
-
-    public static String mapVariables(String equation,
-            Map<String, BigDecimal> variableValues)
-            throws InsufficientVariableInformationException {
-        return mapFormattedVariables(equation, variableValues,
-                NumberFormat.getInstance());
-    }
-
-    private static String mapFormattedVariables(String equation,
-            Map<String, BigDecimal> variableValues, NumberFormat format)
-            throws InsufficientVariableInformationException {
-        if (variableValues != null) {
-            for (Map.Entry<String, BigDecimal> e : variableValues.entrySet()) {
-                equation = equation.replaceAll(e.getKey(),
-                        format.format(e.getValue().doubleValue()));
-            }
-        }
-
-        if (equation.matches(".*" + VARIABLE_REGEX + ".*")) {
-            throw InsufficientVariableInformationException
-                    .findMissingVars(equation);
-        }
-
-        return equation;
-    }
-
-    private double evaluate(String equation) {
-        while (equation.indexOf(')') > -1) {
-            int closeParen = equation.indexOf(')');
-            int openParen = equation.substring(0, closeParen).lastIndexOf('(');
-            double parenValue = this.evaluate(equation.substring(openParen + 1,
-                    closeParen));
-            equation = equation.substring(0, openParen)
-                    + this.nf.format(parenValue)
-                    + equation.substring(closeParen + 1);
-        }
-
-        String[] parse = Utils.splitWithDelimiter(equation,
-                Operation.OPERATOR_REGEX);
-        List<String> parsedList = new ArrayList<String>();
-        for (int i = 0; i < parse.length; i++) {
-            if ("".equals(parse[i])) {
-                continue;
-            }
-            // the regex validation made sure there can't be a "-" at the end of
-            // the equation so there will be more after it
-            if (Subtraction.OPERATOR.equals(parse[i])
-                    && (parsedList.size() == 0 || Operation
-                            .isOperator(parse[i - 1]))) {
-                parsedList.add(parse[i] + parse[++i]);
-            } else {
-                parsedList.add(parse[i]);
-            }
-        }
-        boolean shouldEvaluate = false;
-        for (Operation[] ops : Operation.getOrderOfOperations()) {
-            for (int i = 0; i < parsedList.size(); i++) {
-                shouldEvaluate = false;
-                if (Operation.isOperator(parsedList.get(i))) {
-                    for (Operation o : ops) {
-                        if (o.getOperator().equals(parsedList.get(i))) {
-                            shouldEvaluate = true;
-                        }
-                    }
-
-                    if (shouldEvaluate) {
-                        if (i == 0) {
-                            throw new EvaluationException(
-                                    "Operator found without a left operand in "
-                                            + equation);
-                        } else if (i >= parsedList.size() - 1) {
-                            throw new EvaluationException(
-                                    "Operator found without a right operand in "
-                                            + equation);
-                        } else {
-                            try {
-                                Constructor<? extends Operation> constructor = Operation
-                                        .determineOperation(parsedList.get(i))
-                                        .getDeclaredConstructor(Term.class,
-                                                Term.class);
-                                constructor.setAccessible(true);
-                                double value = constructor.newInstance(
-                                        new Term(parsedList.get(i - 1)),
-                                        new Term(parsedList.get(i + 1)))
-                                        .evaluate();
-                                parsedList.set(i - 1, Double.toString(value));
-                                parsedList.remove(i);
-                                parsedList.remove(i);
-                                i--;
-                            } catch (InstantiationException
-                                    | IllegalAccessException
-                                    | IllegalArgumentException
-                                    | InvocationTargetException
-                                    | NoSuchMethodException | SecurityException e) {
-                                e.printStackTrace();
-                                throw new EvaluationException(
-                                        "Exception evaluating expression "
-                                                + equation, e);
-                            }
-                        }
-                    }
-                }
-            }
-        }
-
-        return Double.valueOf(parsedList.get(0));
     }
 }

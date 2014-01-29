@@ -1,60 +1,53 @@
 package org.dkeeney.graphing.equations.operations;
 
-import java.lang.reflect.Constructor;
-import java.lang.reflect.InvocationTargetException;
+import java.math.BigDecimal;
 import java.util.HashMap;
 import java.util.Map;
 
-import org.dkeeney.graphing.equations.Term;
-import org.dkeeney.utils.Utils;
+import org.dkeeney.graphing.equations.Token;
+import org.dkeeney.graphing.equations.terms.ConstantAmount;
+import org.dkeeney.graphing.equations.terms.Term;
 
-public abstract class Operation {
-    private static final Operation[] SUPPORTED_OPERATIONS = { new Constant(),
-            new Addition(), new Subtraction(), new Multiplication(),
-            new Division(), new Exponent() };
-    private static final Operation[][] ORDER_OF_OPERATIONS = {
-            { new Exponent() }, { new Multiplication(), new Division() },
-            { new Addition(), new Subtraction() } };
+public abstract class Operation implements Token {
+    private static final Operation[] SUPPORTED_OPERATIONS = { new Addition(),
+            new Subtraction(), new Multiplication(), new Division(),
+            new Exponent() };
     private static Map<String, Class<? extends Operation>> OPERATION_MAP;
     public static final String OPERATOR_REGEX = "[\\^*/+-]";
 
-    protected Term left;
-    protected Term right;
-
-    protected Operation() {
+    public Operation() {
     };
 
-    protected Operation(Term left, Term right) {
-        this.left = left;
-        this.right = right;
+    public enum Associativity {
+        LEFT, RIGHT
     }
 
-    public abstract double evaluate();
+    public enum Precedence implements Comparable<Precedence> {
+        ADDITION_SUBTRACTION(2), MULTIPLY_DIVIDE(3), EXPONENT(4), NEGATE(5);
+        private int precedence;
+
+        private Precedence(int precedence) {
+            this.precedence = precedence;
+        }
+
+        public int getPrecedence() {
+            return this.precedence;
+        }
+    }
+
+    public abstract ConstantAmount operate(Term[] inputs,
+            Map<String, BigDecimal> variableValues);
 
     public abstract String getOperator();
 
-    public static Operation[][] getOrderOfOperations() {
-        Operation[][] ret = new Operation[ORDER_OF_OPERATIONS.length][];
+    public abstract Precedence getPrecedence();
 
-        for (int i = 0; i < ORDER_OF_OPERATIONS.length; i++) {
-            ret[i] = new Operation[ORDER_OF_OPERATIONS[i].length];
-            for (int j = 0; j < ORDER_OF_OPERATIONS[i].length; j++) {
-                ret[i][j] = ORDER_OF_OPERATIONS[i][j];
-            }
-        }
-        return ret;
-    }
+    public abstract Associativity getAssociativity();
 
-    public static boolean containsOperator(String input) {
-        return Utils.containsRegex(input, OPERATOR_REGEX);
-    }
+    public abstract int getNumberOfInputs();
 
     public static boolean isOperator(String input) {
         return input.matches(OPERATOR_REGEX);
-    }
-
-    public static Operation getOperation(String operator, Term left, Term right) {
-        return createOperation(determineOperation(operator), left, right);
     }
 
     public static Class<? extends Operation> determineOperation(String operator) {
@@ -67,22 +60,6 @@ public abstract class Operation {
         return OPERATION_MAP.get(operator);
     }
 
-    private static Operation createOperation(Class<? extends Operation> clazz,
-            Term left, Term right) {
-        Operation o = null;
-        try {
-            Constructor<? extends Operation> c = clazz.getDeclaredConstructor(
-                    Term.class, Term.class);
-            o = c.newInstance(left, right);
-        } catch (InstantiationException | IllegalAccessException
-                | NoSuchMethodException | SecurityException
-                | IllegalArgumentException | InvocationTargetException e) {
-            e.printStackTrace();
-            return null;
-        }
-        return o;
-    }
-
     private static Map<String, Class<? extends Operation>> initMap() {
 
         Map<String, Class<? extends Operation>> ret = new HashMap<String, Class<? extends Operation>>();
@@ -90,21 +67,5 @@ public abstract class Operation {
             ret.put(o.getOperator(), o.getClass());
         }
         return ret;
-    }
-
-    public Term getLeft() {
-        return this.left;
-    }
-
-    public void setLeft(Term left) {
-        this.left = left;
-    }
-
-    public Term getRight() {
-        return this.right;
-    }
-
-    public void setRight(Term right) {
-        this.right = right;
     }
 }
