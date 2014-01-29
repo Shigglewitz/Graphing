@@ -10,7 +10,7 @@ import org.dkeeney.graphing.equations.terms.Term;
 public class Multiplication extends Operation {
     public static final String OPERATOR = "*";
 
-    protected Multiplication() {
+    public Multiplication() {
     }
 
     @Override

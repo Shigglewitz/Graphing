@@ -1,16 +1,12 @@
 package org.dkeeney.graphing.equations.operations;
 
-import java.lang.reflect.Constructor;
-import java.lang.reflect.InvocationTargetException;
 import java.math.BigDecimal;
 import java.util.HashMap;
 import java.util.Map;
 
-import org.dkeeney.graphing.equations.Evaluable;
 import org.dkeeney.graphing.equations.Token;
 import org.dkeeney.graphing.equations.terms.ConstantAmount;
 import org.dkeeney.graphing.equations.terms.Term;
-import org.dkeeney.utils.Utils;
 
 public abstract class Operation implements Token {
     private static final Operation[] SUPPORTED_OPERATIONS = { new Addition(),
@@ -27,7 +23,7 @@ public abstract class Operation implements Token {
     }
 
     public enum Precedence implements Comparable<Precedence> {
-        EXPONENT(4), MULTIPLY_DIVIDE(3), ADDITION_SUBTRACTION(2);
+        ADDITION_SUBTRACTION(2), MULTIPLY_DIVIDE(3), EXPONENT(4), NEGATE(5);
         private int precedence;
 
         private Precedence(int precedence) {
@@ -50,16 +46,8 @@ public abstract class Operation implements Token {
 
     public abstract int getNumberOfInputs();
 
-    public static boolean containsOperator(String input) {
-        return Utils.containsRegex(input, OPERATOR_REGEX);
-    }
-
     public static boolean isOperator(String input) {
         return input.matches(OPERATOR_REGEX);
-    }
-
-    public static Operation getOperation(String operator, Evaluable right) {
-        return createOperation(determineOperation(operator), right);
     }
 
     public static Class<? extends Operation> determineOperation(String operator) {
@@ -70,22 +58,6 @@ public abstract class Operation implements Token {
         }
 
         return OPERATION_MAP.get(operator);
-    }
-
-    private static Operation createOperation(Class<? extends Operation> clazz,
-            Evaluable right) {
-        Operation o = null;
-        try {
-            Constructor<? extends Operation> c = clazz
-                    .getDeclaredConstructor(Evaluable.class);
-            o = c.newInstance(right);
-        } catch (InstantiationException | IllegalAccessException
-                | NoSuchMethodException | SecurityException
-                | IllegalArgumentException | InvocationTargetException e) {
-            e.printStackTrace();
-            return null;
-        }
-        return o;
     }
 
     private static Map<String, Class<? extends Operation>> initMap() {

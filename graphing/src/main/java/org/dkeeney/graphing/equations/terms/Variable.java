@@ -3,7 +3,6 @@ package org.dkeeney.graphing.equations.terms;
 import java.math.BigDecimal;
 import java.util.Map;
 
-import org.dkeeney.graphing.equations.Evaluable;
 import org.dkeeney.graphing.equations.Token;
 import org.dkeeney.graphing.equations.exceptions.InsufficientVariableInformationException;
 
@@ -24,7 +23,7 @@ public class Variable implements Term {
         }
     }
 
-    public static Evaluable getTerm(String amount) {
+    public static Term getTerm(String amount) {
         return new Variable(amount);
     }
 

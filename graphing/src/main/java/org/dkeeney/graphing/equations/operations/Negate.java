@@ -24,7 +24,7 @@ public class Negate extends Operation {
 
     @Override
     public Precedence getPrecedence() {
-        return Precedence.ADDITION_SUBTRACTION;
+        return Precedence.NEGATE;
     }
 
     @Override

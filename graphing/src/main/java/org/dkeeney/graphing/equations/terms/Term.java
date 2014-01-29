@@ -1,7 +1,10 @@
 package org.dkeeney.graphing.equations.terms;
 
-import org.dkeeney.graphing.equations.Evaluable;
+import java.math.BigDecimal;
+import java.util.Map;
+
 import org.dkeeney.graphing.equations.Token;
 
-public interface Term extends Evaluable, Token {
+public interface Term extends Token {
+    public double evaluate(Map<String, BigDecimal> varValues);
 }

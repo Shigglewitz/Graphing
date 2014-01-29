@@ -3,7 +3,6 @@ package org.dkeeney.graphing.equations.terms;
 import java.math.BigDecimal;
 import java.util.Map;
 
-import org.dkeeney.graphing.equations.Evaluable;
 import org.dkeeney.graphing.equations.Token;
 
 public class ConstantAmount implements Term {
@@ -18,7 +17,7 @@ public class ConstantAmount implements Term {
         return this.amount;
     }
 
-    public static Evaluable getTerm(String amount) {
+    public static Term getTerm(String amount) {
         return new ConstantAmount(amount);
     }
 

@@ -4,8 +4,8 @@ import org.dkeeney.graphing.equations.exceptions.InvalidParenthesisException;
 
 public class Parenthesis implements Token {
     private final boolean isLeft;
-    private static final String LEFT_PAREN_REGEX = "";
-    private static final String RIGHT_PAREN_REGEX = "";
+    private static final String LEFT_PAREN_REGEX = "[(]";
+    private static final String RIGHT_PAREN_REGEX = "[)]";
 
     public Parenthesis(String input) {
         if (input.matches(LEFT_PAREN_REGEX)) {
@@ -20,6 +20,11 @@ public class Parenthesis implements Token {
 
     public boolean isLeft() {
         return this.isLeft;
+    }
+
+    @Override
+    public Token cloneToken() {
+        return null;
     }
 
 }

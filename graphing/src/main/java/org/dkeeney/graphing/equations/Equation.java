@@ -4,49 +4,32 @@ import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
 import java.math.BigDecimal;
 import java.util.ArrayList;
+import java.util.EmptyStackException;
+import java.util.HashMap;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.Stack;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import org.dkeeney.graphing.equations.exceptions.EvaluationException;
+import org.dkeeney.graphing.equations.exceptions.InvalidEquationException;
+import org.dkeeney.graphing.equations.exceptions.InvalidParenthesisException;
 import org.dkeeney.graphing.equations.operations.Multiplication;
+import org.dkeeney.graphing.equations.operations.Negate;
 import org.dkeeney.graphing.equations.operations.Operation;
 import org.dkeeney.graphing.equations.operations.Subtraction;
 import org.dkeeney.graphing.equations.terms.ConstantAmount;
+import org.dkeeney.graphing.equations.terms.Term;
 import org.dkeeney.graphing.equations.terms.Variable;
 import org.dkeeney.utils.Utils;
 
-/**
- * going to switch to djikstra's algorithm:
- * 
- * need:
- * 1 stack for operators
- * 1 queue for output
- * 1 array (or other list) for tokens
- * 
- * algorithm:
- *  while there are tokens to read
- *      read a token
- *      if it's a number, add to queue
- *      if it's an operator:
- *          while there's an operator on top of stack with greater precedence:
- *              pop operators from the stack onto the output queue
- *          push the current operator onto the stack
- *      if it's a left bracket '(', push it onto the stack
- *      if it's a right bracket ')'
- *          while there's not a left bracket at the top of the stack
- *              pop operators from the stack onto the output queue
- *          pop left bracket from the stack but discard
- *  while there are operators on the stack, pop them to the queue    
- * @author Daniel
- *
- */
-public class Equation implements Evaluable {
-    public static final String VARIABLE_REGEX = "[a-z]";
+public class Equation {
+    public static final String VARIABLE_REGEX = "[A-Z]";
     private static final String NUMBER_REGEX = "-?[0-9]+(\\.[0-9]+)?";
-    private static final String IMPLIED_BEFORE_PAREN_REGEX = "([a-z0-9)]\\()";
-    private static final String IMPLIED_AFTER_PAREN_REGEX = "(\\)[(0-9a-z])";
+    private static final String IMPLIED_BEFORE_PAREN_REGEX = "([A-Z0-9)]\\()";
+    private static final String IMPLIED_AFTER_PAREN_REGEX = "(\\)[(0-9A-Z])";
     private static final String IMPLIED_WITH_VAR_REGEX = "((" + NUMBER_REGEX
             + ")|" + VARIABLE_REGEX + ")(?=" + VARIABLE_REGEX + ")";
     private static final Pattern IMPLIED_BEFORE_PAREN = Pattern
@@ -56,23 +39,125 @@ public class Equation implements Evaluable {
     private static final Pattern IMPLIED_WITH_VAR = Pattern
             .compile(IMPLIED_WITH_VAR_REGEX);
 
+    private static final Map<String, BigDecimal> STANDARD_VARS = new HashMap<>();
+
+    static {
+        char var;
+        for (int i = 0; i < 26; i++) {
+            var = (char) ('A' + i);
+            STANDARD_VARS.put(Character.toString(var), new BigDecimal(1));
+        }
+    }
+
     private final String originalEquation;
     private final List<Token> tokens;
 
-    public Equation(String input) {
+    public Equation(String input) throws InvalidEquationException {
+        if (input == null) {
+            throw new InvalidEquationException("Equation cannot be null");
+        }
         this.originalEquation = input;
         input = Utils.removeAllWhiteSpace(input);
+        if ("".equals(input)) {
+            throw new InvalidEquationException("Equation cannot be empty");
+        }
         input = addImpliedMultiplication(input);
-        this.operations = parseOperations(input);
-        this.orderOperations(this.operations);
+        this.tokens = djikstraShunt(input);
+        this.evaluate(STANDARD_VARS);
     }
 
-    public static void split(String equation) {
-        Pattern p = Pattern.compile("[\\^*/+A-Z()-]|(-?[0-9]+(\\.[0-9]+)?)");
+    public static List<Token> djikstraShunt(String equation)
+            throws InvalidEquationException {
+        Pattern p = Pattern.compile("[\\^*/+()-]|[A-Z]|(-?[0-9]+(\\.[0-9]+)?)");
         Matcher m = p.matcher(equation);
+        List<Token> inFix = new LinkedList<>();
+        String group;
+        String previous = null;
+        int lastEnd = 0;
         while (m.find()) {
-            System.out.println("Group " + 0 + ": " + m.group(0));
+            if (m.start() != lastEnd) {
+                throw new InvalidEquationException("Could not parse part of "
+                        + equation);
+            }
+            group = m.group(0);
+            if (group.matches(NUMBER_REGEX)) {
+                inFix.add(ConstantAmount.getTerm(group));
+            } else if (group.matches(VARIABLE_REGEX)) {
+                inFix.add(Variable.getTerm(group));
+            } else if (group.matches("[()]")) {
+                inFix.add(new Parenthesis(group));
+            } else if (group.equals(Subtraction.OPERATOR)) {
+                if (previous == null || previous.matches("[(]")
+                        || Operation.isOperator(previous)) {
+                    inFix.add(new Negate());
+                } else {
+                    inFix.add(new Subtraction());
+                }
+            } else {
+                Constructor<? extends Operation> constructor;
+                try {
+                    constructor = Operation.determineOperation(group)
+                            .getConstructor();
+                    constructor.setAccessible(true);
+                    inFix.add(constructor.newInstance());
+                } catch (NoSuchMethodException | SecurityException
+                        | InstantiationException | IllegalAccessException
+                        | IllegalArgumentException | InvocationTargetException e) {
+                    throw new EvaluationException(e);
+                }
+            }
+
+            previous = group;
+            lastEnd = m.end();
         }
+        if (lastEnd != equation.length()) {
+            throw new InvalidEquationException("Unable to parse all of "
+                    + equation);
+        }
+
+        Stack<Token> operatorStack = new Stack<>();
+        List<Token> ret = new ArrayList<>();
+
+        Operation o;
+        for (Token t : inFix) {
+            if (t instanceof Term) {
+                ret.add(t);
+            } else if (t instanceof Operation) {
+                o = (Operation) t;
+                while (operatorStack.size() > 0
+                        && operatorStack.peek() instanceof Operation
+                        && ((Operation) operatorStack.peek()).getPrecedence()
+                                .compareTo(o.getPrecedence()) > 0) {
+                    ret.add(operatorStack.pop());
+                }
+                operatorStack.push(o);
+            } else if (t instanceof Parenthesis) {
+                if (((Parenthesis) t).isLeft()) {
+                    operatorStack.push(t);
+                } else {
+                    try {
+                        while (!(operatorStack.peek() instanceof Parenthesis)) {
+                            ret.add(operatorStack.pop());
+                        }
+                    } catch (EmptyStackException e) {
+                        throw new InvalidParenthesisException(
+                                "Unmatched parenthesis in " + equation);
+                    }
+                    operatorStack.pop();
+                }
+            }
+        }
+
+        while (operatorStack.size() > 0) {
+            if (operatorStack.peek() instanceof Parenthesis) {
+                throw new InvalidParenthesisException(
+                        "Unmatched parenthesis found for " + equation);
+            } else {
+                ret.add(operatorStack.pop());
+            }
+        }
+
+        return ret;
     }
 
     public static String addImpliedMultiplication(String equation) {
@@ -129,121 +214,46 @@ public class Equation implements Evaluable {
         return equation;
     }
 
-    public static List<Operation> parseOperations(String equation) {
-        List<Operation> ret;
+    public double evaluate(Map<String, BigDecimal> varValues)
+            throws InvalidEquationException {
+        Stack<Term> termStack = new Stack<>();
+        Operation o;
+        // currently the highest number of inputs for an equation is 2
+        // adjust the size of this array if this changes
+        Term[] evaluateMe = new Term[2];
+        int i;
 
-        if (equation.indexOf(')') > -1) {
-            int[] range = Utils.getMatchedGroup(equation, '(', ')');
-            String beforeParens = equation.substring(0, range[0]);
-            String inParens = equation.substring(range[0] + 1, range[1]);
-            String afterParens = equation.substring(range[1] + 1);
-            if (!"".equals(beforeParens)) {
-                ret = parseOperations(beforeParens);
-                ret.get(ret.size() - 1).setRight(new Equation(inParens));
-            } else {
-                ret = new Equation(inParens).getOperations();
-            }
-            if (!"".equals(afterParens)) {
-                List<Operation> after = parseOperations(afterParens);
-                for (Operation o : after) {
-                    ret.add(o);
-                }
-            }
-        } else {
-            ret = parseOperationsWithoutParens(equation);
-        }
-
-        return ret;
-    }
-
-    public static List<Operation> parseOperationsWithoutParens(String equation) {
-        List<Operation> ret = new ArrayList<>();
-
-        String[] parse = Utils.splitWithDelimiter(equation,
-                Operation.OPERATOR_REGEX);
-        List<String> parsedList = new ArrayList<String>();
-        Constructor<? extends Operation> constructor;
-        Evaluable evaluable;
-
-        for (int i = 0; i < parse.length; i++) {
-            if ("".equals(parse[i])) {
-                continue;
-            }
-            if (Subtraction.OPERATOR.equals(parse[i])
-                    && (parsedList.size() == 0 || Operation
-                            .isOperator(parse[i - 1])) && i < parse.length - 1) {
-                parsedList.add(parse[i] + parse[++i]);
-            } else {
-                parsedList.add(parse[i]);
-            }
-        }
-
-        if (parsedList.get(0).matches(NUMBER_REGEX)) {
-            ret.add(new Constant(ConstantAmount.getTerm(parsedList.get(0))));
-            parsedList.remove(0);
-        }
-
-        for (int i = 0; i < parsedList.size(); i++) {
-            if (Operation.isOperator(parsedList.get(i))) {
-                if (i == parsedList.size() - 1) {
-                    evaluable = null;
+        for (Token t : this.tokens) {
+            if (t instanceof Term) {
+                termStack.push((Term) t);
+            } else if (t instanceof Operation) {
+                o = (Operation) t;
+                if (o.getNumberOfInputs() > termStack.size()) {
+                    throw new InvalidEquationException(
+                            "Too few values in equation "
+                                    + this.originalEquation + " for " + o);
                 } else {
-                    evaluable = getEvaluable(parsedList.get(i + 1));
-                }
-                try {
-                    constructor = Operation.determineOperation(
-                            parsedList.get(i)).getDeclaredConstructor(
-                            Evaluable.class);
-                    constructor.setAccessible(true);
-                    ret.add(constructor.newInstance(evaluable));
-                    // parsedList.set(i - 1, Double.toString(value));
-                    parsedList.remove(i);
-                    if (evaluable != null) {
-                        parsedList.remove(i);
+                    for (i = 0; i < o.getNumberOfInputs(); i++) {
+                        evaluateMe[i] = termStack.pop();
                     }
-                    i--;
-                } catch (InstantiationException | IllegalAccessException
-                        | IllegalArgumentException | InvocationTargetException
-                        | NoSuchMethodException | SecurityException e) {
-                    e.printStackTrace();
-                    throw new EvaluationException(
-                            "Exception evaluating expression " + equation, e);
+                    termStack.push(o.operate(evaluateMe, varValues));
                 }
+            } else {
+                throw new EvaluationException(
+                        "Invalid token found in equation "
+                                + this.originalEquation);
             }
         }
 
-        return ret;
-    }
-
-    public static Evaluable getEvaluable(String input) {
-        if (input.matches(NUMBER_REGEX)) {
-            return ConstantAmount.getTerm(input);
+        if (termStack.size() == 1) {
+            return termStack.pop().evaluate(varValues);
         } else {
-            return Variable.getTerm(input);
+            throw new InvalidEquationException("Too many values in equation "
+                    + this.originalEquation);
         }
-    }
-
-    public void orderOperations(List<Operation> operations) {
     }
 
     public String getOriginalEquation() {
         return this.originalEquation;
     }
-
-    public List<Operation> getOperations() {
-        return this.operations;
-    }
-
-    @Override
-    public double evaluate(Map<String, BigDecimal> varValues) {
-        double ret = 0;
-
-        // constants should always be the first operation, and they ignore
-        // what's passed in
-        for (Operation o : this.operations) {
-            ret = o.operate(ret, varValues);
-        }
-        return ret;
-    }
-
 }

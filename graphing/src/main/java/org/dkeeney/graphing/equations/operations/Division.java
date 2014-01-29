@@ -19,8 +19,8 @@ public class Division extends Operation {
     @Override
     public ConstantAmount operate(Term[] inputs,
             Map<String, BigDecimal> variableValues) {
-        return new ConstantAmount(inputs[0].evaluate(variableValues)
-                / inputs[1].evaluate(variableValues));
+        return new ConstantAmount(inputs[1].evaluate(variableValues)
+                / inputs[0].evaluate(variableValues));
     }
 
     @Override
