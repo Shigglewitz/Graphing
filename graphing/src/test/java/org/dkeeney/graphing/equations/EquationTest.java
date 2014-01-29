@@ -1,6 +1,7 @@
 package org.dkeeney.graphing.equations;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
 import java.math.BigDecimal;
@@ -9,6 +10,7 @@ import java.util.Map;
 
 import org.dkeeney.graphing.equations.exceptions.InsufficientVariableInformationException;
 import org.dkeeney.graphing.equations.exceptions.InvalidEquationException;
+import org.dkeeney.graphing.equations.exceptions.InvalidParenthesisException;
 import org.dkeeney.utils.Utils;
 import org.junit.BeforeClass;
 import org.junit.Test;
@@ -21,7 +23,7 @@ public class EquationTest {
     public static void before() {
         char var;
         for (int i = 0; i < 26; i++) {
-            var = (char) ('a' + i);
+            var = (char) ('A' + i);
             STANDARD_VARS.put(Character.toString(var), new BigDecimal(i + 1));
         }
     }
@@ -82,8 +84,8 @@ public class EquationTest {
 
     @Test
     public void testValidVariables() {
-        String[] input = { "1+2+x", "((4*5)^x-1)", "x-y-z+t^f", "1(2.05x)(y)",
-                "xyz", "20xy", "2(x)+1", "x(2*y)z" };
+        String[] input = { "1+2+X", "((4*5)^X-1)", "X-Y-Z+T^F", "1(2.05X)(Y)",
+                "XYZ", "20XY", "2(X)+1", "X(2*Y)Z" };
 
         for (String s : input) {
             this.testEquationValidity(s, true);
@@ -92,7 +94,7 @@ public class EquationTest {
 
     @Test
     public void testInvalidVariables() {
-        String[] input = { "2Xy" };
+        String[] input = { "2xY" };
 
         for (String s : input) {
             this.testEquationValidity(s, false);
@@ -112,35 +114,22 @@ public class EquationTest {
 
     @Test
     public void testOriginalEquation() throws InvalidEquationException {
-        String[] equation = { "1(2) b  (c)", "4^5(67   )" };
+        String[] equation = { "1(2) B  (C)", "4^5(67   )" };
         for (String e : equation) {
             assertEquals(e, new Equation(e).getOriginalEquation());
         }
     }
 
     @Test
-    public void testMapVariables()
-            throws InsufficientVariableInformationException {
-        String[] tests = { "x+4+y+z*45", "(a)*b^((c)+d)" };
-        String[] expected = { "24+4+25+26*45", "(1)*2^((3)+4)" };
-
-        for (int i = 0; i < tests.length; i++) {
-            assertEquals(expected[i],
-                    Equation.mapVariables(tests[i], STANDARD_VARS));
-        }
-    }
-
-    @Test
-    public void testInsufficientVariables() {
-        String[] tests = { "x+4+y+z*45", "(a)*b^((c)+d)" };
+    public void testInsufficientVariables() throws InvalidEquationException {
+        String[] tests = { "X+4+Y+Z*45", "(A)*B^((C)+D)" };
         Map<String, BigDecimal> vars = new HashMap<>();
-        String baseMessage = "Missing variable values for ";
-        String[] expectedMessages = { baseMessage + "x, y, z",
-                baseMessage + "a, b, c, d" };
+        String baseMessage = "Missing variable value for ";
+        String[] expectedMessages = { baseMessage + "Z", baseMessage + "D" };
 
         for (int i = 0; i < tests.length; i++) {
             try {
-                Equation.mapVariables(tests[i], vars);
+                new Equation(tests[i]).evaluate(vars);
                 assertTrue("Exception not thrown for " + tests[i], false);
             } catch (InsufficientVariableInformationException e) {
                 assertEquals(expectedMessages[i], e.getMessage());
@@ -190,6 +179,8 @@ public class EquationTest {
                 "1*30+45+67*89*56*12", "1*3+-4" };
         double[] output = { 7, 32, 3, 4007211, -1 };
 
+        this.testEquation(input[4], output[4]);
+
         for (int i = 0; i < input.length; i++) {
             this.testEquation(input[i], output[i]);
         }
@@ -210,8 +201,10 @@ public class EquationTest {
     @Test
     public void testEquationsWithVariables() throws InvalidEquationException,
             InsufficientVariableInformationException {
-        String[] tests = { "x+y", "b^c", "b*b", "b(c)/(d+e)", "x^2" };
+        String[] tests = { "X+Y", "B^C", "B*B", "B(C)/(D+E)", "X^2" };
         double[] expected = { 49, 8, 4, 2.0 / 3.0, 576 };
+
+        this.testEquation(tests[3], expected[3], STANDARD_VARS);
 
         for (int i = 0; i < tests.length; i++) {
             this.testEquation(tests[i], expected[i], STANDARD_VARS);
@@ -221,8 +214,12 @@ public class EquationTest {
     private void testEquationValidity(String equation, boolean valid) {
         equation = Utils.removeAllWhiteSpace(equation);
         equation = Equation.addImpliedMultiplication(equation);
-        assertEquals("Failed validity test for equation " + equation + " "
-                + valid + ".", valid, Equation.isValidEquation(equation));
+        try {
+            new Equation(equation);
+            assertTrue(equation + " should have been invalid.", valid);
+        } catch (InvalidEquationException | InvalidParenthesisException e) {
+            assertFalse(equation + " should have been valid.", valid);
+        }
     }
 
     private void testEquation(String equation, double expected)
@@ -235,6 +232,7 @@ public class EquationTest {
             Map<String, BigDecimal> vars) throws InvalidEquationException,
             InsufficientVariableInformationException {
         assertEquals("Equation " + equation + " did not evaluate to "
-                + expected, expected, new Equation(equation).solve(vars), DELTA);
+                + expected, expected, new Equation(equation).evaluate(vars),
+                DELTA);
     }
 }

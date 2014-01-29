@@ -40,7 +40,8 @@ public class ColorGrapher {
     }
 
     public void calculateValues(int width, int height)
-            throws InsufficientVariableInformationException {
+            throws InsufficientVariableInformationException,
+            InvalidEquationException {
         Map<String, BigDecimal> vars = new HashMap<>();
         this.values = new int[width][height];
 
@@ -49,18 +50,18 @@ public class ColorGrapher {
         int blueValue;
         int alphaValue = 0xfff;
         for (int x = 0; x < width; x++) {
-            vars.put("x", new BigDecimal(x));
+            vars.put("X", new BigDecimal(x));
             for (int y = 0; y < height; y++) {
-                vars.put("y", new BigDecimal(y));
+                vars.put("Y", new BigDecimal(y));
                 redValue = ColorUtils.normalizeColor(
-                        (int) this.red.solve(vars), this.strategy);
+                        (int) this.red.evaluate(vars), this.strategy);
                 greenValue = ColorUtils.normalizeColor(
-                        (int) this.green.solve(vars), this.strategy);
+                        (int) this.green.evaluate(vars), this.strategy);
                 blueValue = ColorUtils.normalizeColor(
-                        (int) this.blue.solve(vars), this.strategy);
+                        (int) this.blue.evaluate(vars), this.strategy);
                 if (this.alpha != null) {
                     alphaValue = ColorUtils.normalizeAlpha(
-                            (int) this.alpha.solve(vars), this.strategy);
+                            (int) this.alpha.evaluate(vars), this.strategy);
                 }
 
                 this.values[x][y] = ColorUtils.getRgbAsInt(redValue,
@@ -83,7 +84,8 @@ public class ColorGrapher {
                 || this.values[0].length != image.getHeight()) {
             try {
                 this.calculateValues(image.getWidth(), image.getHeight());
-            } catch (InsufficientVariableInformationException e) {
+            } catch (InvalidEquationException e) {
+                e.printStackTrace();
                 graphics.setColor(Color.BLACK);
                 graphics.drawString(
                         "An error occurred while calculating values", 1, 10);
@@ -112,7 +114,11 @@ public class ColorGrapher {
         return image;
     }
 
-    private final boolean diagnostics = false;
+    private boolean diagnostics = false;
+
+    public void enableDiagnostics() {
+        this.diagnostics = true;
+    }
 
     public void setStrategy(ColorUtils.NormalizationStrategy strategy) {
         this.strategy = strategy;
