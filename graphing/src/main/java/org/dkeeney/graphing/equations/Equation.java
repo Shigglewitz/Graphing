@@ -68,7 +68,9 @@ public class Equation {
 
     public static List<Token> djikstraShunt(String equation)
             throws InvalidEquationException {
-        Pattern p = Pattern.compile("[\\^*/+()-]|[A-Z]|(-?[0-9]+(\\.[0-9]+)?)");
+        Pattern p = Pattern.compile(Operation.OPERATOR_REGEX + "|"
+                + Parenthesis.ALL_PARENS_REGEX + "|" + VARIABLE_REGEX + "|("
+                + NUMBER_REGEX + ")");
         Matcher m = p.matcher(equation);
         List<Token> inFix = new LinkedList<>();
         String group;
@@ -84,7 +86,7 @@ public class Equation {
                 inFix.add(ConstantAmount.getTerm(group));
             } else if (group.matches(VARIABLE_REGEX)) {
                 inFix.add(Variable.getTerm(group));
-            } else if (group.matches("[()]")) {
+            } else if (group.matches(Parenthesis.ALL_PARENS_REGEX)) {
                 inFix.add(new Parenthesis(group));
             } else if (group.equals(Subtraction.OPERATOR)) {
                 if (previous == null || previous.matches("[(]")
