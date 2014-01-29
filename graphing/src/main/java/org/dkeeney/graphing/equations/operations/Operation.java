@@ -23,7 +23,8 @@ public abstract class Operation implements Token {
     }
 
     public enum Precedence implements Comparable<Precedence> {
-        ADDITION_SUBTRACTION(2), MULTIPLY_DIVIDE(3), EXPONENT(4), NEGATE(5);
+        ADDITION_SUBTRACTION(2), MULTIPLY_DIVIDE(3), EXPONENT(4), PARENTHESES(5), NEGATE(
+                6);
         private int precedence;
 
         private Precedence(int precedence) {
