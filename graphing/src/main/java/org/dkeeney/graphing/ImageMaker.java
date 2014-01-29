@@ -9,13 +9,13 @@ import java.io.IOException;
 import javax.imageio.ImageIO;
 
 import org.dkeeney.utils.ColorUtils;
-import org.dkeeney.utils.Utils;
 
 public class ImageMaker {
     public static final String DEFAULT_DIRECTORY = "src/test/resources/rendered/";
+    public static final String DEFAULT_EXTENSION = "png";
 
     public static void saveImage(BufferedImage image) throws IOException {
-        saveImage(image, "test-image", "png");
+        saveImage(image, "test-image", DEFAULT_EXTENSION);
     }
 
     public static void saveImage(BufferedImage image, String filename,
