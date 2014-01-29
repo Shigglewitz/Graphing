@@ -9,26 +9,27 @@ import java.util.Random;
 
 import javax.imageio.ImageIO;
 
+import org.dkeeney.graphing.ImageMaker;
+
 public class ImageComparison {
     private static Random RANDOM = new Random();
-    private static final String DEFAULT_FILE_EXTENSION = ".png";
 
     private static BufferedImage loadImage(String fileName) throws IOException {
-        return loadImage(fileName, DEFAULT_FILE_EXTENSION);
+        return loadImage(fileName, ImageMaker.DEFAULT_EXTENSION);
     }
 
     private static BufferedImage loadImage(String expectedImageFileName,
             String fileExtension) throws IOException {
         File file = new File("src/test/resources/images/"
-                + expectedImageFileName + fileExtension);
+                + expectedImageFileName + "." + fileExtension);
         BufferedImage control = ImageIO.read(file);
         return control;
     }
 
     public static void compareRandomPixels(String expectedImageFileName,
             BufferedImage actual) throws IOException {
-        compareRandomPixels(expectedImageFileName, DEFAULT_FILE_EXTENSION,
-                actual);
+        compareRandomPixels(expectedImageFileName,
+                ImageMaker.DEFAULT_EXTENSION, actual);
     }
 
     public static void compareRandomPixels(String expectedImageFileName,
@@ -40,7 +41,7 @@ public class ImageComparison {
     public static void compareRandomPixels(String expectedImageFileName,
             BufferedImage actual, int numComparisons) throws IOException {
         BufferedImage control = loadImage(expectedImageFileName,
-                DEFAULT_FILE_EXTENSION);
+                ImageMaker.DEFAULT_EXTENSION);
         compareRandomPixels(control, actual, numComparisons);
     }
 

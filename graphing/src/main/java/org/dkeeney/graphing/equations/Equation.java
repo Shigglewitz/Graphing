@@ -20,6 +20,7 @@ import org.dkeeney.graphing.equations.operations.Multiplication;
 import org.dkeeney.graphing.equations.operations.Negate;
 import org.dkeeney.graphing.equations.operations.Operation;
 import org.dkeeney.graphing.equations.operations.Subtraction;
+import org.dkeeney.graphing.equations.operations.trigonometry.TrigonometricOperation;
 import org.dkeeney.graphing.equations.terms.ConstantAmount;
 import org.dkeeney.graphing.equations.terms.Term;
 import org.dkeeney.graphing.equations.terms.Variable;
@@ -68,7 +69,10 @@ public class Equation {
 
     public static List<Token> djikstraShunt(String equation)
             throws InvalidEquationException {
-        Pattern p = Pattern.compile("[\\^*/+()-]|[A-Z]|(-?[0-9]+(\\.[0-9]+)?)");
+        Pattern p = Pattern.compile(Operation.OPERATOR_REGEX + "|"
+                + TrigonometricOperation.OPERATOR_REGEX + "|"
+                + Parenthesis.ALL_PARENS_REGEX + "|" + VARIABLE_REGEX + "|("
+                + NUMBER_REGEX + ")");
         Matcher m = p.matcher(equation);
         List<Token> inFix = new LinkedList<>();
         String group;
@@ -84,8 +88,19 @@ public class Equation {
                 inFix.add(ConstantAmount.getTerm(group));
             } else if (group.matches(VARIABLE_REGEX)) {
                 inFix.add(Variable.getTerm(group));
-            } else if (group.matches("[()]")) {
+            } else if (group.matches(Parenthesis.ALL_PARENS_REGEX)) {
                 inFix.add(new Parenthesis(group));
+            } else if (group.matches(TrigonometricOperation.OPERATOR_REGEX)) {
+                Constructor<? extends Operation> constructor;
+                try {
+                    constructor = TrigonometricOperation.determineOperation(
+                            group).getConstructor();
+                    inFix.add(constructor.newInstance());
+                } catch (NoSuchMethodException | SecurityException
+                        | InstantiationException | IllegalAccessException
+                        | IllegalArgumentException | InvocationTargetException e) {
+                    throw new EvaluationException(e);
+                }
             } else if (group.equals(Subtraction.OPERATOR)) {
                 if (previous == null || previous.matches("[(]")
                         || Operation.isOperator(previous)) {
@@ -98,7 +113,6 @@ public class Equation {
                 try {
                     constructor = Operation.determineOperation(group)
                             .getConstructor();
-                    constructor.setAccessible(true);
                     inFix.add(constructor.newInstance());
                 } catch (NoSuchMethodException | SecurityException
                         | InstantiationException | IllegalAccessException
