@@ -19,6 +19,9 @@ public class ColorGrapher {
 
     private final Equation red, green, blue, alpha;
     private int[][] values;
+    private double zoomFactor = 1;
+    private int pixelShiftX = 0;
+    private int pixelShiftY = 0;
 
     private ColorUtils.NormalizationStrategy strategy = NormalizationStrategy.CURVE;
 
@@ -39,6 +42,15 @@ public class ColorGrapher {
         }
     }
 
+    public void setZoomFactor(int zoom) {
+        this.zoomFactor = 1.0 / zoom;
+    }
+
+    public void setPixelShift(int x, int y) {
+        this.pixelShiftX = x;
+        this.pixelShiftY = y;
+    }
+
     public void calculateValues(int width, int height)
             throws InsufficientVariableInformationException,
             InvalidEquationException {
@@ -50,9 +62,11 @@ public class ColorGrapher {
         int blueValue;
         int alphaValue = 0xfff;
         for (int x = 0; x < width; x++) {
-            vars.put("X", new BigDecimal(x));
+            vars.put("X", new BigDecimal((x + this.pixelShiftX)
+                    * this.zoomFactor));
             for (int y = 0; y < height; y++) {
-                vars.put("Y", new BigDecimal(y));
+                vars.put("Y", new BigDecimal((y + this.pixelShiftY)
+                        * this.zoomFactor));
                 redValue = ColorUtils.normalizeColor(
                         (int) this.red.evaluate(vars), this.strategy);
                 greenValue = ColorUtils.normalizeColor(

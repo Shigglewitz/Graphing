@@ -6,6 +6,7 @@ public class Parenthesis implements Token {
     private final boolean isLeft;
     private static final String LEFT_PAREN_REGEX = "[(]";
     private static final String RIGHT_PAREN_REGEX = "[)]";
+    public static final String ALL_PARENS_REGEX = "[()]";
 
     public Parenthesis(String input) {
         if (input.matches(LEFT_PAREN_REGEX)) {
