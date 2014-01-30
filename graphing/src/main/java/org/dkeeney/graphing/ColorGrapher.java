@@ -137,4 +137,16 @@ public class ColorGrapher {
     public void setStrategy(ColorUtils.NormalizationStrategy strategy) {
         this.strategy = strategy;
     }
+
+    public String getRedEquation() {
+        return this.red.getOriginalEquation();
+    }
+
+    public String getGreenEquation() {
+        return this.green.getOriginalEquation();
+    }
+
+    public String getBlueEquation() {
+        return this.blue.getOriginalEquation();
+    }
 }
