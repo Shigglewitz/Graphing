@@ -4,18 +4,22 @@ import java.awt.Color;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.image.BufferedImage;
+import java.io.IOException;
 
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
+import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
 import javax.swing.SwingConstants;
 import javax.swing.SwingUtilities;
 
+import org.apache.commons.lang3.RandomStringUtils;
 import org.dkeeney.graphing.ColorGrapher;
 import org.dkeeney.graphing.ImageMaker;
+import org.dkeeney.graphing.equations.exceptions.InvalidEquationException;
 
 public class Panel implements ActionListener {
     private static final long serialVersionUID = 5143557122459035395L;
@@ -38,12 +42,12 @@ public class Panel implements ActionListener {
 
     // dimensions
     private static final int GLOBAL_PADDING = 5;
+    private static final int INTERNAL_PADDING = 10;
 
-    private static final int EQUATION_PANE_PADDING = 10;
     private static final int EQUATION_TEXT_WIDTH = 100;
     private static final int EQUATION_TEXT_HEIGHT = 25;
-    private static final int DRAW_BUTTON_HEIGHT = EQUATION_TEXT_HEIGHT;
-    private static final int DRAW_BUTTON_WIDTH = 80;
+    private static final int BUTTON_HEIGHT = EQUATION_TEXT_HEIGHT;
+    private static final int BUTTON_WIDTH = 80;
     private static final int EQUATION_LABEL_WIDTH = 50;
     private static final int EQUATION_LABEL_HEIGHT = EQUATION_TEXT_HEIGHT;
 
@@ -62,8 +66,8 @@ public class Panel implements ActionListener {
         this.equationPane.setLocation(GLOBAL_PADDING, GLOBAL_PADDING);
         this.equationPane.setSize(EQUATION_LABEL_WIDTH + GLOBAL_PADDING
                 + EQUATION_TEXT_WIDTH,
-                (EQUATION_PANE_PADDING + EQUATION_TEXT_HEIGHT)
-                        * equationFields.length + DRAW_BUTTON_HEIGHT);
+                (INTERNAL_PADDING + EQUATION_TEXT_HEIGHT)
+                        * equationFields.length + BUTTON_HEIGHT);
         totalGUI.add(this.equationPane);
 
         this.redEquationLabel.setText("R:");
@@ -77,7 +81,7 @@ public class Panel implements ActionListener {
 
         this.greenEquationLabel.setText("G:");
         this.greenEquationLabel.setLocation(0, EQUATION_TEXT_HEIGHT
-                + EQUATION_PANE_PADDING);
+                + INTERNAL_PADDING);
         this.greenEquationLabel.setSize(EQUATION_LABEL_WIDTH,
                 EQUATION_LABEL_HEIGHT);
         this.greenEquationLabel.setHorizontalAlignment(SwingConstants.LEFT);
@@ -85,7 +89,7 @@ public class Panel implements ActionListener {
 
         this.blueEquationLabel.setText("B:");
         this.blueEquationLabel.setLocation(0,
-                2 * (EQUATION_TEXT_HEIGHT + EQUATION_PANE_PADDING));
+                2 * (EQUATION_TEXT_HEIGHT + INTERNAL_PADDING));
         this.blueEquationLabel.setSize(EQUATION_LABEL_WIDTH,
                 EQUATION_LABEL_HEIGHT);
         this.blueEquationLabel.setHorizontalAlignment(SwingConstants.LEFT);
@@ -94,7 +98,7 @@ public class Panel implements ActionListener {
         for (int i = 0; i < equationFields.length; i++) {
             JTextField temp = equationFields[i];
             temp.setLocation(EQUATION_LABEL_WIDTH + GLOBAL_PADDING, i
-                    * (EQUATION_TEXT_HEIGHT + EQUATION_PANE_PADDING));
+                    * (EQUATION_TEXT_HEIGHT + INTERNAL_PADDING));
             temp.setSize(EQUATION_TEXT_WIDTH, EQUATION_TEXT_HEIGHT);
             temp.setHorizontalAlignment(SwingConstants.LEFT);
             this.equationPane.add(temp);
@@ -103,10 +107,10 @@ public class Panel implements ActionListener {
         this.draw = new JButton("Draw");
         this.draw.setMnemonic((int) 'D');
         this.draw.setLocation(
-                (this.equationPane.getWidth() - DRAW_BUTTON_WIDTH) / 2,
+                (this.equationPane.getWidth() - BUTTON_WIDTH) / 2,
                 equationFields.length
-                        * (EQUATION_TEXT_HEIGHT + EQUATION_PANE_PADDING));
-        this.draw.setSize(DRAW_BUTTON_WIDTH, DRAW_BUTTON_HEIGHT);
+                        * (EQUATION_TEXT_HEIGHT + INTERNAL_PADDING));
+        this.draw.setSize(BUTTON_WIDTH, BUTTON_HEIGHT);
         this.draw.addActionListener(this);
         this.equationPane.add(this.draw);
 
@@ -126,6 +130,22 @@ public class Panel implements ActionListener {
         this.displayImage(this.generateRandomImage());
         this.drawPane.add(this.imageDisplay);
 
+        // Creation of a Panel to contain save options
+        this.savePane = new JPanel();
+        this.savePane.setLayout(null);
+        this.savePane.setLocation(
+                this.drawPane.getWidth() + this.drawPane.getX()
+                        + GLOBAL_PADDING, GLOBAL_PADDING);
+        this.savePane.setSize(BUTTON_WIDTH, BUTTON_HEIGHT);
+        totalGUI.add(this.savePane);
+
+        this.save = new JButton("Save");
+        this.save.setMnemonic((int) 'S');
+        this.save.setLocation((this.savePane.getWidth() - BUTTON_WIDTH) / 2, 0);
+        this.save.setSize(BUTTON_WIDTH, BUTTON_HEIGHT);
+        this.save.addActionListener(this);
+        this.savePane.add(this.save);
+
         totalGUI.setOpaque(true);
         return totalGUI;
     }
@@ -136,7 +156,13 @@ public class Panel implements ActionListener {
     }
 
     private void displayImage(BufferedImage image) {
+        this.image = image;
         this.imageDisplay.setIcon(new ImageIcon(image));
+    }
+
+    private void saveImage() throws IOException {
+        ImageMaker
+                .saveImage(this.image, RandomStringUtils.randomAlphabetic(15));
     }
 
     private static void createAndShowGUI() {
@@ -168,20 +194,24 @@ public class Panel implements ActionListener {
     public void actionPerformed(ActionEvent event) {
         Object source = event.getSource();
         if (source == this.draw) {
-            // try {
-            // this.cg = new ColorGrapher(this.redEquation.getText(),
-            // this.greenEquation.getText(),
-            // this.blueEquation.getText());
-            // this.image = this.cg.getGraph();
-            // this.imageDisplay.setSize(this.image.getWidth(),
-            // this.image.getHeight());
-            // this.imageDisplay.setIcon(new ImageIcon(this.image));
-            // } catch (InvalidEquationException e) {
-            // e.printStackTrace();
-            // JOptionPane.showMessageDialog(null, e.getMessage(),
-            // "Equation error!", JOptionPane.PLAIN_MESSAGE);
-            // }
-            this.displayImage(this.generateRandomImage());
+            try {
+                this.cg = new ColorGrapher(this.redEquation.getText(),
+                        this.greenEquation.getText(),
+                        this.blueEquation.getText());
+                this.displayImage(this.cg.getGraph());
+            } catch (InvalidEquationException e) {
+                e.printStackTrace();
+                JOptionPane.showMessageDialog(null, e.getMessage(),
+                        "Equation error!", JOptionPane.PLAIN_MESSAGE);
+                this.displayImage(this.generateRandomImage());
+            }
+        } else if (source == this.save) {
+            try {
+                this.saveImage();
+            } catch (IOException e) {
+                JOptionPane.showMessageDialog(null, e.getMessage(),
+                        "Saving Error", JOptionPane.PLAIN_MESSAGE);
+            }
         }
     }
 }
