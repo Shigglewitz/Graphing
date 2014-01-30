@@ -41,8 +41,7 @@ public class ImageMaker {
         return baseImage(width, height, Color.WHITE);
     }
 
-    public static BufferedImage randomImage(int width, int height)
-            throws IOException {
+    public static BufferedImage randomImage(int width, int height) {
         BufferedImage image = baseImage(width, height);
 
         for (int x = 0; x < width; x++) {
