@@ -14,8 +14,8 @@ import org.dkeeney.utils.ColorUtils;
 import org.dkeeney.utils.ColorUtils.NormalizationStrategy;
 
 public class ColorGrapher {
-    private static final int DEFAULT_WIDTH = 400;
-    private static final int DEFAULT_HEIGHT = 400;
+    public static final int DEFAULT_WIDTH = 400;
+    public static final int DEFAULT_HEIGHT = 400;
 
     private final Equation red, green, blue, alpha;
     private int[][] values;
