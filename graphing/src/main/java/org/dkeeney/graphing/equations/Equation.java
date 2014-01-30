@@ -245,7 +245,8 @@ public class Equation {
                 if (o.getNumberOfInputs() > termStack.size()) {
                     throw new InvalidEquationException(
                             "Too few values in equation "
-                                    + this.originalEquation + " for " + o);
+                                    + this.originalEquation + " for "
+                                    + o.getClass().getSimpleName());
                 } else {
                     for (i = 0; i < o.getNumberOfInputs(); i++) {
                         evaluateMe[i] = termStack.pop();

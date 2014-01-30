@@ -15,12 +15,17 @@ public class ImageMaker {
     public static final String DEFAULT_EXTENSION = "png";
 
     public static void saveImage(BufferedImage image) throws IOException {
-        saveImage(image, "test-image", DEFAULT_EXTENSION);
+        saveImage(image, "test-image");
     }
 
-    public static void saveImage(BufferedImage image, String filename,
+    public static void saveImage(BufferedImage image, String fileName)
+            throws IOException {
+        saveImage(image, fileName, DEFAULT_EXTENSION);
+    }
+
+    public static void saveImage(BufferedImage image, String fileName,
             String format) throws IOException {
-        File outputfile = new File(DEFAULT_DIRECTORY + filename + "." + format);
+        File outputfile = new File(DEFAULT_DIRECTORY + fileName + "." + format);
         ImageIO.write(image, format, outputfile);
         image.flush();
     }
@@ -41,8 +46,7 @@ public class ImageMaker {
         return baseImage(width, height, Color.WHITE);
     }
 
-    public static BufferedImage randomImage(int width, int height)
-            throws IOException {
+    public static BufferedImage randomImage(int width, int height) {
         BufferedImage image = baseImage(width, height);
 
         for (int x = 0; x < width; x++) {
