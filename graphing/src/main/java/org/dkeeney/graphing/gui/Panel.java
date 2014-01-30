@@ -48,6 +48,9 @@ public class Panel implements ActionListener {
 
     private ColorGrapher cg;
 
+    private static final Color[] labelColors = { Color.RED, Color.GREEN,
+            Color.BLUE };
+
     // dimensions
     // global
     private static final int GLOBAL_PADDING = 5;
@@ -78,18 +81,25 @@ public class Panel implements ActionListener {
     private static final int LABEL_PANE_HEIGHT = TEXT_HEIGHT;
 
     public JPanel createContentPane() {
+        // We create a bottom JPanel to place everything on.
+        JPanel totalGUI = new JPanel();
+        totalGUI.setLayout(null);
+
+        this.initializeEquationPane(totalGUI);
+        this.initializeDrawPane(totalGUI);
+        this.initializeSavePane(totalGUI);
+        this.initializeLabelPane(totalGUI);
+
+        totalGUI.setOpaque(true);
+        return totalGUI;
+    }
+
+    private void initializeEquationPane(JPanel totalGUI) {
         JTextField[] equationFields = { this.redEquation, this.greenEquation,
                 this.blueEquation };
         JLabel[] textLabels = { this.redTextLabel, this.greenTextLabel,
                 this.blueTextLabel };
-        JLabel[] equationLabels = { this.redEquationLabel,
-                this.greenEquationLabel, this.blueEquationLabel };
-        Color[] labelColors = { Color.RED, Color.GREEN, Color.BLUE };
         String[] labelInitials = { "R:", "G:", "B:" };
-
-        // We create a bottom JPanel to place everything on.
-        JPanel totalGUI = new JPanel();
-        totalGUI.setLayout(null);
 
         // Creation of a Panel to contain the equation inputs
         this.equationPane = new JPanel();
@@ -125,7 +135,9 @@ public class Panel implements ActionListener {
         this.draw.setSize(BUTTON_WIDTH, BUTTON_HEIGHT);
         this.draw.addActionListener(this);
         this.equationPane.add(this.draw);
+    }
 
+    private void initializeDrawPane(JPanel totalGUI) {
         // Creation of a Panel to contain the graph.
         this.drawPane = new JPanel();
         this.drawPane.setLayout(null);
@@ -139,7 +151,9 @@ public class Panel implements ActionListener {
         this.imageDisplay.setSize(GRAPH_WIDTH, GRAPH_HEIGHT);
         this.displayImage(this.generateRandomImage());
         this.drawPane.add(this.imageDisplay);
+    }
 
+    private void initializeSavePane(JPanel totalGUI) {
         // Creation of a Panel to contain save options
         this.savePane = new JPanel();
         this.savePane.setLayout(null);
@@ -164,6 +178,11 @@ public class Panel implements ActionListener {
         this.save.setSize(BUTTON_WIDTH, BUTTON_HEIGHT);
         this.save.addActionListener(this);
         this.savePane.add(this.save);
+    }
+
+    private void initializeLabelPane(JPanel totalGUI) {
+        JLabel[] equationLabels = { this.redEquationLabel,
+                this.greenEquationLabel, this.blueEquationLabel };
 
         // Creation of a Panel to contain equation labels
         this.labelPane = new JPanel();
@@ -185,9 +204,6 @@ public class Panel implements ActionListener {
             temp.setHorizontalAlignment(SwingConstants.CENTER);
             this.labelPane.add(temp);
         }
-
-        totalGUI.setOpaque(true);
-        return totalGUI;
     }
 
     private BufferedImage generateRandomImage() {
@@ -235,30 +251,37 @@ public class Panel implements ActionListener {
     public void actionPerformed(ActionEvent event) {
         Object source = event.getSource();
         if (source == this.draw) {
-            try {
-                this.cg = new ColorGrapher(this.redEquation.getText(),
-                        this.greenEquation.getText(),
-                        this.blueEquation.getText());
-                this.displayImage(this.cg.getGraph());
-                this.redEquationLabel.setText(this.cg.getRedEquation());
-                this.greenEquationLabel.setText(this.cg.getGreenEquation());
-                this.blueEquationLabel.setText(this.cg.getBlueEquation());
-            } catch (InvalidEquationException e) {
-                e.printStackTrace();
-                JOptionPane.showMessageDialog(null, e.getMessage(),
-                        "Equation error!", JOptionPane.PLAIN_MESSAGE);
-                this.displayImage(this.generateRandomImage());
-                this.redEquationLabel.setText(LABEL_DEFAULT);
-                this.greenEquationLabel.setText(LABEL_DEFAULT);
-                this.blueEquationLabel.setText(LABEL_DEFAULT);
-            }
+            this.clickDraw();
         } else if (source == this.save) {
-            try {
-                this.saveImage(this.saveFile.getText());
-            } catch (IOException e) {
-                JOptionPane.showMessageDialog(null, e.getMessage(),
-                        "Saving Error", JOptionPane.PLAIN_MESSAGE);
-            }
+            this.clickSave();
+        }
+    }
+
+    private void clickDraw() {
+        try {
+            this.cg = new ColorGrapher(this.redEquation.getText(),
+                    this.greenEquation.getText(), this.blueEquation.getText());
+            this.displayImage(this.cg.getGraph());
+            this.redEquationLabel.setText(this.cg.getRedEquation());
+            this.greenEquationLabel.setText(this.cg.getGreenEquation());
+            this.blueEquationLabel.setText(this.cg.getBlueEquation());
+        } catch (InvalidEquationException e) {
+            e.printStackTrace();
+            JOptionPane.showMessageDialog(null, e.getMessage(),
+                    "Equation error!", JOptionPane.PLAIN_MESSAGE);
+            this.displayImage(this.generateRandomImage());
+            this.redEquationLabel.setText(LABEL_DEFAULT);
+            this.greenEquationLabel.setText(LABEL_DEFAULT);
+            this.blueEquationLabel.setText(LABEL_DEFAULT);
+        }
+    }
+
+    private void clickSave() {
+        try {
+            this.saveImage(this.saveFile.getText());
+        } catch (IOException e) {
+            JOptionPane.showMessageDialog(null, e.getMessage(), "Saving Error",
+                    JOptionPane.PLAIN_MESSAGE);
         }
     }
 }
