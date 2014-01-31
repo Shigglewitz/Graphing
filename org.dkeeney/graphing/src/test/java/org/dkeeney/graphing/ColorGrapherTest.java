@@ -11,7 +11,7 @@ import org.junit.Ignore;
 import org.junit.Test;
 
 public class ColorGrapherTest {
-    private static final boolean DIAGNOSTIC = true;
+    private static final boolean DIAGNOSTIC = false;
 
     @Test
     public void testGetGraph() throws InvalidEquationException, IOException {
