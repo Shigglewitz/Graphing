@@ -2,9 +2,17 @@
 	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>org.dkeeney</groupId>
-	<artifactId>graphing</artifactId>
+	<artifactId>projects</artifactId>
 	<version>1.0.0</version>
-	<name>Graphing</name>
+	<packaging>pom</packaging>
+	<name>DKeeney Projects</name>
+
+	<modules>
+		<module>equations</module>
+		<module>graphing</module>
+		<module>utils</module>
+	</modules>
+
 	<properties>
 		<apacheCommonsVersion>3.2.1</apacheCommonsVersion>
 		<junitVersion>4.8.1</junitVersion>
@@ -12,6 +20,7 @@
 		<javaVersion>1.7</javaVersion>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 	</properties>
+
 	<dependencies>
 		<dependency>
 			<groupId>org.apache.commons</groupId>
@@ -25,19 +34,19 @@
 			<scope>test</scope>
 		</dependency>
 	</dependencies>
-
+	
 	<!-- necessary of else m2e will revert to 1.5 :( -->
-	<build>
-		<plugins>
-			<plugin>
-				<groupId>org.apache.maven.plugins</groupId>
-				<artifactId>maven-compiler-plugin</artifactId>
-				<version>${mavenVersion}</version>
-				<configuration>
-					<source>${javaVersion}</source>
-					<target>${javaVersion}</target>
-				</configuration>
-			</plugin>
-		</plugins>
-	</build>
+    <build>
+        <plugins>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-compiler-plugin</artifactId>
+                <version>${mavenVersion}</version>
+                <configuration>
+                    <source>${javaVersion}</source>
+                    <target>${javaVersion}</target>
+                </configuration>
+            </plugin>
+        </plugins>
+    </build>
 </project>
