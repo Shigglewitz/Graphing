@@ -1,12 +1,12 @@
-package org.dkeeney.graphing.equations.operations;
+package org.dkeeney.equations.operations;
 
 import java.math.BigDecimal;
 import java.util.HashMap;
 import java.util.Map;
 
-import org.dkeeney.graphing.equations.Token;
-import org.dkeeney.graphing.equations.terms.ConstantAmount;
-import org.dkeeney.graphing.equations.terms.Term;
+import org.dkeeney.equations.Token;
+import org.dkeeney.equations.terms.ConstantAmount;
+import org.dkeeney.equations.terms.Term;
 
 public abstract class Operation implements Token {
     private static final Operation[] SUPPORTED_OPERATIONS = { new Addition(),

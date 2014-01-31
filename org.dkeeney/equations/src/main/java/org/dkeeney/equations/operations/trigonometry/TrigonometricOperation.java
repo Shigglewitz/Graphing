@@ -1,9 +1,9 @@
-package org.dkeeney.graphing.equations.operations.trigonometry;
+package org.dkeeney.equations.operations.trigonometry;
 
 import java.util.HashMap;
 import java.util.Map;
 
-import org.dkeeney.graphing.equations.operations.Operation;
+import org.dkeeney.equations.operations.Operation;
 
 public abstract class TrigonometricOperation extends Operation {
 

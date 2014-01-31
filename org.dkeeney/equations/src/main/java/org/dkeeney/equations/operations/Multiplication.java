@@ -1,26 +1,28 @@
-package org.dkeeney.graphing.equations.operations;
+package org.dkeeney.equations.operations;
 
 import java.math.BigDecimal;
 import java.util.Map;
 
-import org.dkeeney.graphing.equations.Token;
-import org.dkeeney.graphing.equations.terms.ConstantAmount;
-import org.dkeeney.graphing.equations.terms.Term;
+import org.dkeeney.equations.Token;
+import org.dkeeney.equations.terms.ConstantAmount;
+import org.dkeeney.equations.terms.Term;
 
-public class Division extends Operation {
-    public Division() {
+public class Multiplication extends Operation {
+    public static final String OPERATOR = "*";
+
+    public Multiplication() {
     }
 
     @Override
     public String getOperator() {
-        return "/";
+        return OPERATOR;
     }
 
     @Override
     public ConstantAmount operate(Term[] inputs,
             Map<String, BigDecimal> variableValues) {
-        return new ConstantAmount(inputs[1].evaluate(variableValues)
-                / inputs[0].evaluate(variableValues));
+        return new ConstantAmount(inputs[0].evaluate(variableValues)
+                * inputs[1].evaluate(variableValues));
     }
 
     @Override
@@ -40,7 +42,7 @@ public class Division extends Operation {
 
     @Override
     public Token cloneToken() {
-        return new Division();
+        return new Multiplication();
     }
 
 }

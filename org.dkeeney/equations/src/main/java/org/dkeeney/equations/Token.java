@@ -1,4 +1,4 @@
-package org.dkeeney.graphing.equations;
+package org.dkeeney.equations;
 
 public interface Token {
     public Token cloneToken();

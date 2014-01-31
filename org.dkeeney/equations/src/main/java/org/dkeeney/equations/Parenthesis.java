@@ -1,6 +1,6 @@
-package org.dkeeney.graphing.equations;
+package org.dkeeney.equations;
 
-import org.dkeeney.graphing.equations.exceptions.InvalidParenthesisException;
+import org.dkeeney.equations.exceptions.InvalidParenthesisException;
 
 public class Parenthesis implements Token {
     private final boolean isLeft;

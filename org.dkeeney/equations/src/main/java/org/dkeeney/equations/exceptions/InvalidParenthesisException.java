@@ -1,4 +1,4 @@
-package org.dkeeney.graphing.equations.exceptions;
+package org.dkeeney.equations.exceptions;
 
 public class InvalidParenthesisException extends RuntimeException {
 

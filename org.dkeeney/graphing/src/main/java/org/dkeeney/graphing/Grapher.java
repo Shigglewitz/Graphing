@@ -8,9 +8,9 @@ import java.math.RoundingMode;
 import java.util.HashMap;
 import java.util.Map;
 
-import org.dkeeney.graphing.equations.Equation;
-import org.dkeeney.graphing.equations.exceptions.InsufficientVariableInformationException;
-import org.dkeeney.graphing.equations.exceptions.InvalidEquationException;
+import org.dkeeney.equations.Equation;
+import org.dkeeney.equations.exceptions.InsufficientVariableInformationException;
+import org.dkeeney.equations.exceptions.InvalidEquationException;
 import org.dkeeney.utils.ImageMaker;
 
 public class Grapher {

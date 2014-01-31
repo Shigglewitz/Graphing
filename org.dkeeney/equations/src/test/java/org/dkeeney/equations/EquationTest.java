@@ -1,4 +1,4 @@
-package org.dkeeney.graphing.equations;
+package org.dkeeney.equations;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
@@ -8,11 +8,11 @@ import java.math.BigDecimal;
 import java.util.HashMap;
 import java.util.Map;
 
-import org.dkeeney.graphing.equations.Equation;
-import org.dkeeney.graphing.equations.exceptions.InsufficientVariableInformationException;
-import org.dkeeney.graphing.equations.exceptions.InvalidEquationException;
-import org.dkeeney.graphing.equations.exceptions.InvalidParenthesisException;
-import org.dkeeney.graphing.equations.operations.trigonometry.TrigonometricOperation;
+import org.dkeeney.equations.Equation;
+import org.dkeeney.equations.exceptions.InsufficientVariableInformationException;
+import org.dkeeney.equations.exceptions.InvalidEquationException;
+import org.dkeeney.equations.exceptions.InvalidParenthesisException;
+import org.dkeeney.equations.operations.trigonometry.TrigonometricOperation;
 import org.dkeeney.utils.Utils;
 import org.junit.BeforeClass;
 import org.junit.Test;

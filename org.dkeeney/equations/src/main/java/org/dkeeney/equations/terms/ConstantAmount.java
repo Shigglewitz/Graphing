@@ -1,9 +1,9 @@
-package org.dkeeney.graphing.equations.terms;
+package org.dkeeney.equations.terms;
 
 import java.math.BigDecimal;
 import java.util.Map;
 
-import org.dkeeney.graphing.equations.Token;
+import org.dkeeney.equations.Token;
 
 public class ConstantAmount implements Term {
     private final double amount;

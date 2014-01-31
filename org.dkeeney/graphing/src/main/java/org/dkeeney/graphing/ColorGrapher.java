@@ -7,9 +7,9 @@ import java.math.BigDecimal;
 import java.util.HashMap;
 import java.util.Map;
 
-import org.dkeeney.graphing.equations.Equation;
-import org.dkeeney.graphing.equations.exceptions.InsufficientVariableInformationException;
-import org.dkeeney.graphing.equations.exceptions.InvalidEquationException;
+import org.dkeeney.equations.Equation;
+import org.dkeeney.equations.exceptions.InsufficientVariableInformationException;
+import org.dkeeney.equations.exceptions.InvalidEquationException;
 import org.dkeeney.utils.ColorUtils;
 import org.dkeeney.utils.ImageMaker;
 import org.dkeeney.utils.ColorUtils.NormalizationStrategy;

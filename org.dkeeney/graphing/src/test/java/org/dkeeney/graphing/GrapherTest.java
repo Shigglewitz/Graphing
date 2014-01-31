@@ -10,8 +10,8 @@ import java.io.IOException;
 import java.math.BigDecimal;
 
 import org.dkeeney.config.Constants;
-import org.dkeeney.graphing.equations.exceptions.InsufficientVariableInformationException;
-import org.dkeeney.graphing.equations.exceptions.InvalidEquationException;
+import org.dkeeney.equations.exceptions.InsufficientVariableInformationException;
+import org.dkeeney.equations.exceptions.InvalidEquationException;
 import org.dkeeney.testutils.ImageComparison;
 import org.dkeeney.utils.ImageMaker;
 import org.dkeeney.utils.Utils;

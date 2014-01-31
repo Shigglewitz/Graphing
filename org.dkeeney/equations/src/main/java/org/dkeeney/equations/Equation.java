@@ -1,4 +1,4 @@
-package org.dkeeney.graphing.equations;
+package org.dkeeney.equations;
 
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
@@ -13,17 +13,17 @@ import java.util.Stack;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import org.dkeeney.graphing.equations.exceptions.EvaluationException;
-import org.dkeeney.graphing.equations.exceptions.InvalidEquationException;
-import org.dkeeney.graphing.equations.exceptions.InvalidParenthesisException;
-import org.dkeeney.graphing.equations.operations.Multiplication;
-import org.dkeeney.graphing.equations.operations.Negate;
-import org.dkeeney.graphing.equations.operations.Operation;
-import org.dkeeney.graphing.equations.operations.Subtraction;
-import org.dkeeney.graphing.equations.operations.trigonometry.TrigonometricOperation;
-import org.dkeeney.graphing.equations.terms.ConstantAmount;
-import org.dkeeney.graphing.equations.terms.Term;
-import org.dkeeney.graphing.equations.terms.Variable;
+import org.dkeeney.equations.exceptions.EvaluationException;
+import org.dkeeney.equations.exceptions.InvalidEquationException;
+import org.dkeeney.equations.exceptions.InvalidParenthesisException;
+import org.dkeeney.equations.operations.Multiplication;
+import org.dkeeney.equations.operations.Negate;
+import org.dkeeney.equations.operations.Operation;
+import org.dkeeney.equations.operations.Subtraction;
+import org.dkeeney.equations.operations.trigonometry.TrigonometricOperation;
+import org.dkeeney.equations.terms.ConstantAmount;
+import org.dkeeney.equations.terms.Term;
+import org.dkeeney.equations.terms.Variable;
 import org.dkeeney.utils.Utils;
 
 public class Equation {

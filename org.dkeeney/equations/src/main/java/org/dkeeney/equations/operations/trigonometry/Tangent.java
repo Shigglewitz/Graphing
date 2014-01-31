@@ -1,11 +1,11 @@
-package org.dkeeney.graphing.equations.operations.trigonometry;
+package org.dkeeney.equations.operations.trigonometry;
 
 import java.math.BigDecimal;
 import java.util.Map;
 
-import org.dkeeney.graphing.equations.Token;
-import org.dkeeney.graphing.equations.terms.ConstantAmount;
-import org.dkeeney.graphing.equations.terms.Term;
+import org.dkeeney.equations.Token;
+import org.dkeeney.equations.terms.ConstantAmount;
+import org.dkeeney.equations.terms.Term;
 
 public class Tangent extends TrigonometricOperation {
     @Override

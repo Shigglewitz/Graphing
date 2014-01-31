@@ -1,9 +1,9 @@
-package org.dkeeney.graphing.equations;
+package org.dkeeney.equations;
 
 import static org.junit.Assert.assertEquals;
 
-import org.dkeeney.graphing.equations.operations.Operation;
-import org.dkeeney.graphing.equations.operations.trigonometry.TrigonometricOperation;
+import org.dkeeney.equations.operations.Operation;
+import org.dkeeney.equations.operations.trigonometry.TrigonometricOperation;
 import org.dkeeney.utils.Utils;
 import org.junit.Test;
 

@@ -1,10 +1,10 @@
-package org.dkeeney.graphing.equations.terms;
+package org.dkeeney.equations.terms;
 
 import java.math.BigDecimal;
 import java.util.Map;
 
-import org.dkeeney.graphing.equations.Token;
-import org.dkeeney.graphing.equations.exceptions.InsufficientVariableInformationException;
+import org.dkeeney.equations.Token;
+import org.dkeeney.equations.exceptions.InsufficientVariableInformationException;
 
 public class Variable implements Term {
     private final String variable;
