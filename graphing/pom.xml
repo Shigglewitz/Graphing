@@ -10,6 +10,7 @@
 		<junitVersion>4.8.1</junitVersion>
 		<mavenVersion>2.1</mavenVersion>
 		<javaVersion>1.7</javaVersion>
+		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 	</properties>
 	<dependencies>
 		<dependency>
