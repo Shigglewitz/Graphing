@@ -11,6 +11,7 @@ import java.util.Map;
 import org.dkeeney.graphing.equations.Equation;
 import org.dkeeney.graphing.equations.exceptions.InsufficientVariableInformationException;
 import org.dkeeney.graphing.equations.exceptions.InvalidEquationException;
+import org.dkeeney.utils.ImageMaker;
 
 public class Grapher {
     private static final int DEFAULT_WIDTH = 400;

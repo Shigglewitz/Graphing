@@ -3,8 +3,10 @@ package org.dkeeney.graphing;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
 
+import org.dkeeney.config.Constants;
 import org.dkeeney.graphing.equations.exceptions.InvalidEquationException;
-import org.dkeeney.utils.ImageComparison;
+import org.dkeeney.testutils.ImageComparison;
+import org.dkeeney.utils.ImageMaker;
 import org.junit.Ignore;
 import org.junit.Test;
 
@@ -73,7 +75,7 @@ public class ColorGrapherTest {
         }
         if (save) {
             ImageMaker.saveImage(experiment, fileName,
-                    ImageMaker.DEFAULT_EXTENSION);
+                    Constants.DEFAULT_EXTENSION);
         }
     }
 }

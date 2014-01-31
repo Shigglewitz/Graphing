@@ -1,4 +1,4 @@
-package org.dkeeney.graphing;
+package org.dkeeney.utils;
 
 import java.awt.Color;
 import java.awt.Graphics2D;
@@ -8,11 +8,10 @@ import java.io.IOException;
 
 import javax.imageio.ImageIO;
 
-import org.dkeeney.utils.ColorUtils;
+import org.dkeeney.config.Constants;
 
 public class ImageMaker {
     public static final String DEFAULT_DIRECTORY = "src/test/resources/rendered/";
-    public static final String DEFAULT_EXTENSION = "png";
 
     public static void saveImage(BufferedImage image) throws IOException {
         saveImage(image, "test-image");
@@ -20,7 +19,7 @@ public class ImageMaker {
 
     public static void saveImage(BufferedImage image, String fileName)
             throws IOException {
-        saveImage(image, fileName, DEFAULT_EXTENSION);
+        saveImage(image, fileName, Constants.DEFAULT_EXTENSION);
     }
 
     public static void saveImage(BufferedImage image, String fileName,

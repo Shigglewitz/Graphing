@@ -1,4 +1,4 @@
-package org.dkeeney.graphing;
+package org.dkeeney.utils;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
@@ -13,16 +13,24 @@ import java.util.Random;
 import javax.imageio.ImageIO;
 
 import org.apache.commons.lang3.RandomStringUtils;
-import org.dkeeney.utils.ColorUtils;
-import org.dkeeney.utils.Utils;
 import org.junit.AfterClass;
+import org.junit.BeforeClass;
 import org.junit.Test;
 
 public class ImageMakerTest {
     private static final int DEFAULT_WIDTH = 200;
     private static final int DEFAULT_HEIGHT = DEFAULT_WIDTH;
 
+    @BeforeClass
+    public static void beforeClass() {
+        cleanUp();
+    }
+
     @AfterClass
+    public static void afterClass() {
+        cleanUp();
+    }
+
     public static void cleanUp() {
         Utils.cleanDirectory(ImageMaker.DEFAULT_DIRECTORY);
     }

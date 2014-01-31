@@ -8,4 +8,28 @@
     </parent>
 	<artifactId>graphing</artifactId>
 	<name>Graphing</name>
+	
+	<dependencies>
+	     <dependency>
+            <groupId>org.dkeeney</groupId>
+            <artifactId>test-utils</artifactId>
+            <version>${dkeeneyVersion}</version>
+            <scope>test</scope>
+        </dependency>
+         <dependency>
+            <groupId>org.dkeeney</groupId>
+            <artifactId>config</artifactId>
+            <version>${dkeeneyVersion}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.dkeeney</groupId>
+            <artifactId>utils</artifactId>
+            <version>${dkeeneyVersion}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.dkeeney</groupId>
+            <artifactId>equations</artifactId>
+            <version>${dkeeneyVersion}</version>
+        </dependency>
+    </dependencies>
 </project>

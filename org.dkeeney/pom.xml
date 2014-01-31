@@ -11,9 +11,12 @@
 		<module>equations</module>
 		<module>graphing</module>
 		<module>utils</module>
+		<module>test-utils</module>
+		<module>config</module>
 	</modules>
 
 	<properties>
+	    <dkeeneyVersion>1.0.0</dkeeneyVersion>
 		<apacheCommonsVersion>3.2.1</apacheCommonsVersion>
 		<junitVersion>4.8.1</junitVersion>
 		<mavenVersion>2.1</mavenVersion>
@@ -35,7 +38,7 @@
 		</dependency>
 	</dependencies>
 	
-	<!-- necessary of else m2e will revert to 1.5 :( -->
+	<!-- necessary or else m2e will revert to 1.5 :( -->
     <build>
         <plugins>
             <plugin>

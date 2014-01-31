@@ -19,8 +19,8 @@ import javax.swing.SwingUtilities;
 
 import org.apache.commons.lang3.RandomStringUtils;
 import org.dkeeney.graphing.ColorGrapher;
-import org.dkeeney.graphing.ImageMaker;
 import org.dkeeney.graphing.equations.exceptions.InvalidEquationException;
+import org.dkeeney.utils.ImageMaker;
 
 public class Panel implements ActionListener {
     private static final String LABEL_DEFAULT = "--";

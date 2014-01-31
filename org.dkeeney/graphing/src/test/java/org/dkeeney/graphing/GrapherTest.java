@@ -9,9 +9,11 @@ import java.awt.image.BufferedImage;
 import java.io.IOException;
 import java.math.BigDecimal;
 
+import org.dkeeney.config.Constants;
 import org.dkeeney.graphing.equations.exceptions.InsufficientVariableInformationException;
 import org.dkeeney.graphing.equations.exceptions.InvalidEquationException;
-import org.dkeeney.utils.ImageComparison;
+import org.dkeeney.testutils.ImageComparison;
+import org.dkeeney.utils.ImageMaker;
 import org.dkeeney.utils.Utils;
 import org.junit.AfterClass;
 import org.junit.Test;
@@ -45,7 +47,8 @@ public class GrapherTest {
             IOException {
         Grapher g = new Grapher("X^2");
         BufferedImage experiment = g.getGraph();
-        ImageComparison.compareRandomPixels("graph1", experiment);
+        ImageComparison.compareRandomPixels("graph1",
+                Constants.DEFAULT_EXTENSION, experiment);
     }
 
     @Test

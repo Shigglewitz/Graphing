@@ -1,4 +1,4 @@
-package org.dkeeney.utils;
+package org.dkeeney.testutils;
 
 import static org.junit.Assert.assertEquals;
 
@@ -9,14 +9,10 @@ import java.util.Random;
 
 import javax.imageio.ImageIO;
 
-import org.dkeeney.graphing.ImageMaker;
+import org.dkeeney.config.Constants;
 
 public class ImageComparison {
     private static Random RANDOM = new Random();
-
-    private static BufferedImage loadImage(String fileName) throws IOException {
-        return loadImage(fileName, ImageMaker.DEFAULT_EXTENSION);
-    }
 
     private static BufferedImage loadImage(String expectedImageFileName,
             String fileExtension) throws IOException {
@@ -28,8 +24,8 @@ public class ImageComparison {
 
     public static void compareRandomPixels(String expectedImageFileName,
             BufferedImage actual) throws IOException {
-        compareRandomPixels(expectedImageFileName,
-                ImageMaker.DEFAULT_EXTENSION, actual);
+        compareRandomPixels(expectedImageFileName, Constants.DEFAULT_EXTENSION,
+                actual);
     }
 
     public static void compareRandomPixels(String expectedImageFileName,
@@ -39,9 +35,10 @@ public class ImageComparison {
     }
 
     public static void compareRandomPixels(String expectedImageFileName,
-            BufferedImage actual, int numComparisons) throws IOException {
+            String expectedImageFileExtension, BufferedImage actual,
+            int numComparisons) throws IOException {
         BufferedImage control = loadImage(expectedImageFileName,
-                ImageMaker.DEFAULT_EXTENSION);
+                expectedImageFileExtension);
         compareRandomPixels(control, actual, numComparisons);
     }
 
@@ -66,7 +63,7 @@ public class ImageComparison {
 
     public static void compareWholeImage(String fileName, BufferedImage actual)
             throws IOException {
-        compareWholeImage(loadImage(fileName), actual);
+        compareWholeImage(fileName, Constants.DEFAULT_EXTENSION, actual);
     }
 
     public static void compareWholeImage(String fileName, String fileExtension,

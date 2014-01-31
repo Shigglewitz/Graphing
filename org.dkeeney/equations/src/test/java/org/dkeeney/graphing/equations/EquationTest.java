@@ -8,6 +8,7 @@ import java.math.BigDecimal;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.dkeeney.graphing.equations.Equation;
 import org.dkeeney.graphing.equations.exceptions.InsufficientVariableInformationException;
 import org.dkeeney.graphing.equations.exceptions.InvalidEquationException;
 import org.dkeeney.graphing.equations.exceptions.InvalidParenthesisException;

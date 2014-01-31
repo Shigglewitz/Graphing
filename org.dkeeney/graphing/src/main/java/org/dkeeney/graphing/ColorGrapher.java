@@ -11,6 +11,7 @@ import org.dkeeney.graphing.equations.Equation;
 import org.dkeeney.graphing.equations.exceptions.InsufficientVariableInformationException;
 import org.dkeeney.graphing.equations.exceptions.InvalidEquationException;
 import org.dkeeney.utils.ColorUtils;
+import org.dkeeney.utils.ImageMaker;
 import org.dkeeney.utils.ColorUtils.NormalizationStrategy;
 
 public class ColorGrapher {

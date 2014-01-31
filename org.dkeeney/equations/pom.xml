@@ -8,4 +8,12 @@
 	</parent>
 	<artifactId>equations</artifactId>
 	<name>Equations</name>
+
+	<dependencies>
+        <dependency>
+            <groupId>org.dkeeney</groupId>
+            <artifactId>utils</artifactId>
+            <version>${dkeeneyVersion}</version>
+        </dependency>
+    </dependencies>
 </project>

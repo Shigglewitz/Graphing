@@ -6,20 +6,20 @@
 		<artifactId>projects</artifactId>
 		<version>1.0.0</version>
 	</parent>
-	<artifactId>utils</artifactId>
-	<name>Utilities</name>
+	<artifactId>test-utils</artifactId>
+	<name>Test Utils</name>
 
 	<dependencies>
 	    <dependency>
-            <groupId>org.dkeeney</groupId>
-            <artifactId>config</artifactId>
-            <version>${dkeeneyVersion}</version>
+            <groupId>junit</groupId>
+            <artifactId>junit</artifactId>
+            <version>${junitVersion}</version>
         </dependency>
+	    
 		<dependency>
 			<groupId>org.dkeeney</groupId>
-			<artifactId>test-utils</artifactId>
+			<artifactId>config</artifactId>
 			<version>${dkeeneyVersion}</version>
-			<scope>test</scope>
 		</dependency>
 	</dependencies>
 </project>
