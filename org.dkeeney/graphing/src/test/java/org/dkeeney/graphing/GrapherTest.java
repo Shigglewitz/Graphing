@@ -22,7 +22,7 @@ public class GrapherTest {
 
     @AfterClass
     public static void cleanUp() {
-        Utils.cleanDirectory(Constants.DEFAULT_DIRECTORY);
+        Utils.cleanDirectory(Constants.DEFAULT_IMAGE_DIRECTORY);
     }
 
     @Test
@@ -47,7 +47,7 @@ public class GrapherTest {
         Grapher g = new Grapher("X^2");
         BufferedImage experiment = g.getGraph();
         ImageComparison.compareRandomPixels("graph1",
-                Constants.DEFAULT_EXTENSION, experiment);
+                Constants.DEFAULT_IMAGE_EXTENSION, experiment);
     }
 
     @Test

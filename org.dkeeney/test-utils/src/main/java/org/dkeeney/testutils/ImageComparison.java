@@ -24,7 +24,7 @@ public class ImageComparison {
 
     public static void compareRandomPixels(String expectedImageFileName,
             BufferedImage actual) throws IOException {
-        compareRandomPixels(expectedImageFileName, Constants.DEFAULT_EXTENSION,
+        compareRandomPixels(expectedImageFileName, Constants.DEFAULT_IMAGE_EXTENSION,
                 actual);
     }
 
@@ -63,7 +63,7 @@ public class ImageComparison {
 
     public static void compareWholeImage(String fileName, BufferedImage actual)
             throws IOException {
-        compareWholeImage(fileName, Constants.DEFAULT_EXTENSION, actual);
+        compareWholeImage(fileName, Constants.DEFAULT_IMAGE_EXTENSION, actual);
     }
 
     public static void compareWholeImage(String fileName, String fileExtension,

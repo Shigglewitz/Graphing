@@ -75,7 +75,7 @@ public class ColorGrapherTest {
         }
         if (save) {
             ImageMaker.saveImage(experiment, fileName,
-                    Constants.DEFAULT_EXTENSION);
+                    Constants.DEFAULT_IMAGE_EXTENSION);
         }
     }
 }

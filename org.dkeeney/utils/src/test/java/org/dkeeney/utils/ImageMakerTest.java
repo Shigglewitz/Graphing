@@ -33,7 +33,7 @@ public class ImageMakerTest {
     }
 
     public static void cleanUp() {
-        Utils.cleanDirectory(Constants.DEFAULT_DIRECTORY);
+        Utils.cleanDirectory(Constants.DEFAULT_IMAGE_DIRECTORY);
     }
 
     @Test
@@ -74,7 +74,7 @@ public class ImageMakerTest {
         String fileName = RandomStringUtils.randomAlphabetic(15);
         ImageMaker.saveImage(image, fileName, "png");
 
-        File file = new File(Constants.DEFAULT_DIRECTORY + fileName + ".png");
+        File file = new File(Constants.DEFAULT_IMAGE_DIRECTORY + fileName + ".png");
         assertTrue("File was not created", file.exists());
         BufferedImage testImage = ImageIO.read(file);
         assertNotNull(

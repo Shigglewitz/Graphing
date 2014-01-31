@@ -17,12 +17,12 @@ public class ImageMaker {
 
     public static void saveImage(BufferedImage image, String fileName)
             throws IOException {
-        saveImage(image, fileName, Constants.DEFAULT_EXTENSION);
+        saveImage(image, fileName, Constants.DEFAULT_IMAGE_EXTENSION);
     }
 
     public static void saveImage(BufferedImage image, String fileName,
             String format) throws IOException {
-        File outputfile = new File(Constants.DEFAULT_DIRECTORY + fileName + "."
+        File outputfile = new File(Constants.DEFAULT_IMAGE_DIRECTORY + fileName + "."
                 + format);
         ImageIO.write(image, format, outputfile);
         image.flush();
