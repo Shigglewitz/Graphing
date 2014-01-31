@@ -11,8 +11,6 @@ import javax.imageio.ImageIO;
 import org.dkeeney.config.Constants;
 
 public class ImageMaker {
-    public static final String DEFAULT_DIRECTORY = "src/test/resources/rendered/";
-
     public static void saveImage(BufferedImage image) throws IOException {
         saveImage(image, "test-image");
     }
@@ -24,7 +22,8 @@ public class ImageMaker {
 
     public static void saveImage(BufferedImage image, String fileName,
             String format) throws IOException {
-        File outputfile = new File(DEFAULT_DIRECTORY + fileName + "." + format);
+        File outputfile = new File(Constants.DEFAULT_DIRECTORY + fileName + "."
+                + format);
         ImageIO.write(image, format, outputfile);
         image.flush();
     }

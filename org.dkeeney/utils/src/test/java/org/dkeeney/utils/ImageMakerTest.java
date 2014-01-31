@@ -13,6 +13,7 @@ import java.util.Random;
 import javax.imageio.ImageIO;
 
 import org.apache.commons.lang3.RandomStringUtils;
+import org.dkeeney.config.Constants;
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.Test;
@@ -32,7 +33,7 @@ public class ImageMakerTest {
     }
 
     public static void cleanUp() {
-        Utils.cleanDirectory(ImageMaker.DEFAULT_DIRECTORY);
+        Utils.cleanDirectory(Constants.DEFAULT_DIRECTORY);
     }
 
     @Test
@@ -73,7 +74,7 @@ public class ImageMakerTest {
         String fileName = RandomStringUtils.randomAlphabetic(15);
         ImageMaker.saveImage(image, fileName, "png");
 
-        File file = new File(ImageMaker.DEFAULT_DIRECTORY + fileName + ".png");
+        File file = new File(Constants.DEFAULT_DIRECTORY + fileName + ".png");
         assertTrue("File was not created", file.exists());
         BufferedImage testImage = ImageIO.read(file);
         assertNotNull(

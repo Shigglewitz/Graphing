@@ -13,7 +13,6 @@ import org.dkeeney.config.Constants;
 import org.dkeeney.equations.exceptions.InsufficientVariableInformationException;
 import org.dkeeney.equations.exceptions.InvalidEquationException;
 import org.dkeeney.testutils.ImageComparison;
-import org.dkeeney.utils.ImageMaker;
 import org.dkeeney.utils.Utils;
 import org.junit.AfterClass;
 import org.junit.Test;
@@ -23,7 +22,7 @@ public class GrapherTest {
 
     @AfterClass
     public static void cleanUp() {
-        Utils.cleanDirectory(ImageMaker.DEFAULT_DIRECTORY);
+        Utils.cleanDirectory(Constants.DEFAULT_DIRECTORY);
     }
 
     @Test
