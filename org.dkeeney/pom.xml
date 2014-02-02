@@ -13,14 +13,16 @@
 		<module>utils</module>
 		<module>test-utils</module>
 		<module>config</module>
+		<module>statistics</module>
 	</modules>
 
 	<properties>
-	    <dkeeneyVersion>1.0.0</dkeeneyVersion>
+		<dkeeneyVersion>${project.version}</dkeeneyVersion>
 		<apacheCommonsVersion>3.2.1</apacheCommonsVersion>
 		<junitVersion>4.8.1</junitVersion>
 		<mavenVersion>2.1</mavenVersion>
 		<javaVersion>1.7</javaVersion>
+		<mavenExecVersion>1.2.1</mavenExecVersion>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 	</properties>
 
@@ -30,6 +32,7 @@
 			<artifactId>commons-lang3</artifactId>
 			<version>${apacheCommonsVersion}</version>
 		</dependency>
+		<!-- Test -->
 		<dependency>
 			<groupId>junit</groupId>
 			<artifactId>junit</artifactId>
@@ -37,19 +40,24 @@
 			<scope>test</scope>
 		</dependency>
 	</dependencies>
-	
-	<!-- necessary or else m2e will revert to 1.5 :( -->
-    <build>
-        <plugins>
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-compiler-plugin</artifactId>
-                <version>${mavenVersion}</version>
-                <configuration>
-                    <source>${javaVersion}</source>
-                    <target>${javaVersion}</target>
-                </configuration>
+
+	<build>
+		<plugins>
+		    <!-- necessary or else m2e will revert to 1.5 :( -->
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-compiler-plugin</artifactId>
+				<version>${mavenVersion}</version>
+				<configuration>
+					<source>${javaVersion}</source>
+					<target>${javaVersion}</target>
+				</configuration>
+			</plugin>
+			 <plugin>
+                <groupId>org.codehaus.mojo</groupId>
+                <artifactId>exec-maven-plugin</artifactId>
+                <version>${mavenExecVersion}</version>
             </plugin>
-        </plugins>
-    </build>
+		</plugins>
+	</build>
 </project>
