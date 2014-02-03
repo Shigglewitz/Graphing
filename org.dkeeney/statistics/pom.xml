@@ -16,6 +16,12 @@
             <artifactId>graphing</artifactId>
             <version>${dkeeneyVersion}</version>
 	    </dependency>
+	    <dependency>
+            <groupId>org.dkeeney</groupId>
+            <artifactId>test-utils</artifactId>
+            <version>${dkeeneyVersion}</version>
+            <scope>test</scope>
+        </dependency>
 	</dependencies>
 	
 	<build>
