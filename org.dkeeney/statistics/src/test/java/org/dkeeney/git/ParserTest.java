@@ -3,15 +3,25 @@ package org.dkeeney.git;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
+import java.awt.Color;
+import java.awt.Point;
+import java.awt.image.BufferedImage;
 import java.io.File;
+import java.io.IOException;
 import java.net.URISyntaxException;
+import java.util.ArrayList;
 import java.util.List;
 
 import org.dkeeney.git.commit.Commit;
+import org.dkeeney.graphing.DataGrapher;
+import org.dkeeney.testutils.ImageComparison;
+import org.dkeeney.utils.ImageMaker;
 import org.junit.Test;
 
 public class ParserTest {
     private static final File testDir = getRootDirectory();
+    private static final String COMMITS_FOLDER = "testGitCommits/";
+    private static final String STATS_FOLDER = "testGraphGitStats/";
 
     public static File getRootDirectory() {
         try {
@@ -27,7 +37,7 @@ public class ParserTest {
     public void testParseCommitHistory() {
         Parser p = new Parser();
         List<Commit> commitHistory = p.parseCommitHistory(new File(testDir
-                .getAbsolutePath() + "/testGitCommits/gitlog.txt"));
+                .getAbsolutePath() + "/" + COMMITS_FOLDER + "gitlog.txt"));
         assertEquals("Wrong number of commits parsed", 70, commitHistory.size());
         assertEquals("Wrong hash for beginning of commit history",
                 "6df90d8db099a57e25a2173f6fa30471eaa002bb", commitHistory
@@ -51,6 +61,43 @@ public class ParserTest {
                 assertTrue("Merge attribute misisng for commit " + c.getHash(),
                         c.getMerge() != null && !c.getMerge().equals(""));
             }
+        }
+    }
+
+    @Test
+    public void testGraphCommitHistory() throws IOException {
+        Parser p = new Parser();
+        List<Commit> commitHistory = p.parseCommitHistory(new File(testDir
+                .getAbsolutePath() + "/" + COMMITS_FOLDER + "gitlog.txt"));
+        List<Point> totalTestsRun = new ArrayList<>();
+        List<Point> totalTestsFail = new ArrayList<>();
+        List<Point> totalTestsError = new ArrayList<>();
+        List<Point> totalTestsSkip = new ArrayList<>();
+        int i = 0;
+        for (Commit c : commitHistory) {
+            c.loadCommitData(STATS_FOLDER);
+            totalTestsRun.add(new Point(i, c.getMavenResults()
+                    .getTotalTestsRun()));
+            totalTestsFail.add(new Point(i, c.getMavenResults()
+                    .getTotalTestsFail()));
+            totalTestsError.add(new Point(i, c.getMavenResults()
+                    .getTotalTestsError()));
+            totalTestsSkip.add(new Point(i, c.getMavenResults()
+                    .getTotalTestsSkip()));
+            i++;
+        }
+        DataGrapher dg = new DataGrapher();
+        dg.addPoints(totalTestsRun, Color.GREEN);
+        dg.addPoints(totalTestsError, Color.RED);
+        dg.addPoints(totalTestsFail, Color.BLUE);
+        dg.addPoints(totalTestsSkip, Color.BLACK);
+        BufferedImage experiment = dg.getGraph();
+
+        try {
+            ImageComparison.compareWholeImage("commit-history", experiment);
+        } catch (AssertionError e) {
+            ImageMaker.saveImage(experiment, "commit-history");
+            throw e;
         }
     }
 }

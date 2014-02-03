@@ -11,7 +11,7 @@ import org.junit.Ignore;
 import org.junit.Test;
 
 public class MavenResultsTest {
-    private static final String STATS_FOLDER = "testGitStats/";
+    private static final String STATS_FOLDER = "testParseGitStats/";
 
     @Test
     public void testLoadMavenResults() {
