@@ -32,6 +32,12 @@ public class DataGrapher {
     private final int unitsBetweenTicks = 1;
     private final boolean drawTicks = true;
 
+    private DrawType drawType = DrawType.LINE;
+
+    public enum DrawType {
+        LINE, FILL
+    }
+
     public DataGrapher() {
         this.data = new ArrayList<List<Point>>();
         this.graphColors = new ArrayList<>();
@@ -106,16 +112,39 @@ public class DataGrapher {
         // draw graphs
         Point p;
         List<Point> l;
+        int[] polyX = new int[4];
+        int[] polyY = new int[4];
         for (int i = 0; i < this.data.size(); i++) {
             l = this.data.get(i);
             p = l.get(0);
             graphics.setColor(this.graphColors.get(i));
             for (int j = 1; j < l.size(); j++) {
-                graphics.drawLine(GraphUtils.getXpixel(width, minX, maxX,
-                        p.getX()), GraphUtils.getYpixel(height, minY, maxY,
-                        p.getY()), GraphUtils.getXpixel(width, minX, maxX, l
-                        .get(j).getX()), GraphUtils.getYpixel(height, minY,
-                        maxY, l.get(j).getY()));
+                switch (this.drawType) {
+                case LINE:
+                    graphics.drawLine(GraphUtils.getXpixel(width, minX, maxX,
+                            p.getX()), GraphUtils.getYpixel(height, minY, maxY,
+                            p.getY()), GraphUtils.getXpixel(width, minX, maxX,
+                            l.get(j).getX()), GraphUtils.getYpixel(height,
+                            minY, maxY, l.get(j).getY()));
+                    break;
+                case FILL:
+                    polyX[0] = GraphUtils
+                            .getXpixel(width, minX, maxX, p.getX());
+                    polyX[1] = GraphUtils.getXpixel(width, minX, maxX, l.get(j)
+                            .getX());
+                    polyX[2] = polyX[1];
+                    polyX[3] = polyX[0];
+                    polyY[0] = GraphUtils.getYpixel(height, minY, maxY,
+                            p.getY());
+                    polyY[1] = GraphUtils.getYpixel(height, minY, maxY, l
+                            .get(j).getY());
+                    polyY[2] = height - 1;
+                    polyY[3] = height - 1;
+                    graphics.fillPolygon(polyX, polyY, 4);
+                    break;
+                default:
+                    break;
+                }
                 p = l.get(j);
             }
         }
@@ -144,5 +173,9 @@ public class DataGrapher {
                 return 0;
             }
         }
+    }
+
+    public void setDrawType(DrawType drawType) {
+        this.drawType = drawType;
     }
 }
