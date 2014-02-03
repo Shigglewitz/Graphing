@@ -46,7 +46,7 @@ public class GrapherTest {
             IOException {
         Grapher g = new Grapher("X^2");
         BufferedImage experiment = g.getGraph();
-        ImageComparison.compareRandomPixels("graph1",
+        ImageComparison.compareWholeImage("graph1",
                 Constants.DEFAULT_IMAGE_EXTENSION, experiment);
     }
 
@@ -61,6 +61,6 @@ public class GrapherTest {
         g.setExtraGraphPadding(1);
         g.setDrawGrid(true);
         BufferedImage experiment = g.getGraph(-1, 10, -5, 2);
-        ImageComparison.compareRandomPixels("graph2", experiment);
+        ImageComparison.compareWholeImage("graph2", experiment);
     }
 }
