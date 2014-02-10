@@ -18,7 +18,8 @@ public class DataGrapherTest {
                 new Point(3, 3), new Point(3, 4), new Point(4, 4) };
         DataGrapher dg = new DataGrapher();
         dg.addPoints(data, Color.RED);
-        BufferedImage experiment = dg.getGraph();
+        BufferedImage experiment = dg.getGraph(Grapher.DEFAULT_WIDTH,
+                Grapher.DEFAULT_HEIGHT);
 
         try {
             ImageComparison.compareWholeImage("data-graph1",
@@ -36,7 +37,8 @@ public class DataGrapherTest {
         DataGrapher dg = new DataGrapher();
         dg.addPoints(data, Color.RED);
         dg.setDrawType(DrawType.FILL);
-        BufferedImage experiment = dg.getGraph();
+        BufferedImage experiment = dg.getGraph(Grapher.DEFAULT_WIDTH,
+                Grapher.DEFAULT_HEIGHT);
 
         try {
             ImageComparison.compareWholeImage("data-graph2",

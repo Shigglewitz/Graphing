@@ -17,6 +17,7 @@ import java.util.Scanner;
 
 import org.dkeeney.git.commit.Commit;
 import org.dkeeney.graphing.DataGrapher;
+import org.dkeeney.graphing.Grapher;
 import org.dkeeney.utils.ImageMaker;
 
 public class Parser {
@@ -119,7 +120,9 @@ public class Parser {
         dg.addPoints(totalTestsError, Color.RED);
         dg.addPoints(totalTestsFail, Color.BLUE);
         dg.addPoints(totalTestsSkip, Color.BLACK);
-        ImageMaker.saveImage(dg.getGraph(), "commit-history");
+        ImageMaker.saveImage(
+                dg.getGraph(Grapher.DEFAULT_WIDTH, Grapher.DEFAULT_HEIGHT),
+                "commit-history");
         System.out.println("Success");
 
     }

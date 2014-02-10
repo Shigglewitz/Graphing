@@ -11,10 +11,10 @@ import org.dkeeney.equations.Equation;
 import org.dkeeney.equations.exceptions.InsufficientVariableInformationException;
 import org.dkeeney.equations.exceptions.InvalidEquationException;
 import org.dkeeney.utils.ColorUtils;
-import org.dkeeney.utils.ImageMaker;
 import org.dkeeney.utils.ColorUtils.NormalizationStrategy;
+import org.dkeeney.utils.ImageMaker;
 
-public class ColorGrapher {
+public class ColorGrapher implements Grapher {
     public static final int DEFAULT_WIDTH = 400;
     public static final int DEFAULT_HEIGHT = 400;
 
@@ -85,12 +85,8 @@ public class ColorGrapher {
         }
     }
 
-    public BufferedImage getGraph() {
-        return this.getGraph(DEFAULT_WIDTH, DEFAULT_HEIGHT);
-    }
-
-    public BufferedImage getGraph(int width, int height) {
-        BufferedImage image = ImageMaker.baseImage(width, height);
+    @Override
+    public void draw(BufferedImage image) {
         Graphics2D graphics = image.createGraphics();
 
         long beforeCalc = System.currentTimeMillis();
@@ -126,6 +122,21 @@ public class ColorGrapher {
                     + "ms to draw.");
         }
 
+    }
+
+    /**
+     * maybe figure out a way to work this into it later, but for now not
+     * applicable
+     */
+    @Override
+    public void adjustWindow(double minX, double maxX, double minY, double maxY) {
+        return;
+    }
+
+    @Override
+    public BufferedImage getGraph(int width, int height) {
+        BufferedImage image = ImageMaker.baseImage(width, height);
+        this.draw(image);
         return image;
     }
 

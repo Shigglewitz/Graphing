@@ -17,7 +17,7 @@ import org.dkeeney.utils.Utils;
 import org.junit.AfterClass;
 import org.junit.Test;
 
-public class GrapherTest {
+public class EquationGrapherTest {
     private static final double DELTA = 0.0000001;
 
     @AfterClass
@@ -28,7 +28,7 @@ public class GrapherTest {
     @Test
     public void testCalculateValues() throws InvalidEquationException,
             InsufficientVariableInformationException {
-        Grapher g = new Grapher("X^2");
+        EquationGrapher g = new EquationGrapher("X^2");
         assertNull(g.getValues());
         g.calculateValues(new BigDecimal(-2), new BigDecimal(2.005),
                 new BigDecimal(0.01), "X");
@@ -44,8 +44,9 @@ public class GrapherTest {
     @Test
     public void testGetSimpleGraph() throws InvalidEquationException,
             IOException {
-        Grapher g = new Grapher("X^2");
-        BufferedImage experiment = g.getGraph();
+        EquationGrapher g = new EquationGrapher("X^2");
+        BufferedImage experiment = g.getGraph(Grapher.DEFAULT_WIDTH,
+                Grapher.DEFAULT_HEIGHT);
         ImageComparison.compareWholeImage("graph1",
                 Constants.DEFAULT_IMAGE_EXTENSION, experiment);
     }
@@ -53,14 +54,16 @@ public class GrapherTest {
     @Test
     public void testGetGraphWithOptions() throws InvalidEquationException,
             IOException {
-        Grapher g = new Grapher("-(X^2)");
+        EquationGrapher g = new EquationGrapher("-(X^2)");
         g.setGraphBackground(Color.CYAN);
         g.setAxisColor(Color.DARK_GRAY);
         g.setGridColor(Color.WHITE);
         g.setGraphColor(Color.RED);
         g.setExtraGraphPadding(1);
         g.setDrawGrid(true);
-        BufferedImage experiment = g.getGraph(-1, 10, -5, 2);
+        g.adjustWindow(-1, 10, -5, 2);
+        BufferedImage experiment = g.getGraph(Grapher.DEFAULT_WIDTH,
+                Grapher.DEFAULT_HEIGHT);
         ImageComparison.compareWholeImage("graph2", experiment);
     }
 }

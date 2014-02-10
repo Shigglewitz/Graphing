@@ -12,9 +12,8 @@ import java.util.List;
 import org.dkeeney.utils.GraphUtils;
 import org.dkeeney.utils.ImageMaker;
 
-public class DataGrapher {
-    public static final int DEFAULT_WIDTH = 400;
-    public static final int DEFAULT_HEIGHT = DEFAULT_WIDTH;
+public class DataGrapher implements Grapher {
+
     private static final Color DEFAULT_GRAPH_COLOR = Color.BLACK;
 
     private final List<List<Point>> data;
@@ -91,23 +90,29 @@ public class DataGrapher {
         points.add(p);
     }
 
-    public BufferedImage getGraph() {
-        return this.getGraph(DEFAULT_WIDTH, DEFAULT_HEIGHT);
+    @Override
+    public void adjustWindow(double minX, double maxX, double minY, double maxY) {
+        this.minX = minX;
+        this.maxX = maxX;
+        this.minY = minY;
+        this.maxY = maxY;
     }
 
+    @Override
     public BufferedImage getGraph(int width, int height) {
-        return this.getGraph(width, height, this.minX, this.maxX, this.minY,
-                this.maxY);
-    }
-
-    public BufferedImage getGraph(int width, int height, double minX,
-            double maxX, double minY, double maxY) {
         BufferedImage image = ImageMaker.baseImage(width, height,
                 this.graphBackground);
+        this.draw(image);
+        return image;
+    }
+
+    @Override
+    public void draw(BufferedImage image) {
         Graphics2D graphics = image.createGraphics();
-        GraphUtils.drawInitialGraph(width, height, minX, maxX, minY, maxY,
-                graphics, this.drawGrid, this.drawTicks, this.gridColor,
-                this.axisColor, this.unitsBetweenTicks, this.pixelsPerTick);
+        GraphUtils.drawInitialGraph(image.getWidth(), image.getHeight(),
+                this.minX, this.maxX, this.minY, this.maxY, graphics,
+                this.drawGrid, this.drawTicks, this.gridColor, this.axisColor,
+                this.unitsBetweenTicks, this.pixelsPerTick);
 
         // draw graphs
         Point p;
@@ -121,25 +126,28 @@ public class DataGrapher {
             for (int j = 1; j < l.size(); j++) {
                 switch (this.drawType) {
                 case LINE:
-                    graphics.drawLine(GraphUtils.getXpixel(width, minX, maxX,
-                            p.getX()), GraphUtils.getYpixel(height, minY, maxY,
-                            p.getY()), GraphUtils.getXpixel(width, minX, maxX,
-                            l.get(j).getX()), GraphUtils.getYpixel(height,
-                            minY, maxY, l.get(j).getY()));
+                    graphics.drawLine(GraphUtils.getXpixel(image.getWidth(),
+                            this.minX, this.maxX, p.getX()), GraphUtils
+                            .getYpixel(image.getHeight(), this.minY, this.maxY,
+                                    p.getY()),
+                            GraphUtils.getXpixel(image.getWidth(), this.minX,
+                                    this.maxX, l.get(j).getX()), GraphUtils
+                                    .getYpixel(image.getHeight(), this.minY,
+                                            this.maxY, l.get(j).getY()));
                     break;
                 case FILL:
-                    polyX[0] = GraphUtils
-                            .getXpixel(width, minX, maxX, p.getX());
-                    polyX[1] = GraphUtils.getXpixel(width, minX, maxX, l.get(j)
-                            .getX());
+                    polyX[0] = GraphUtils.getXpixel(image.getWidth(),
+                            this.minX, this.maxX, p.getX());
+                    polyX[1] = GraphUtils.getXpixel(image.getWidth(),
+                            this.minX, this.maxX, l.get(j).getX());
                     polyX[2] = polyX[1];
                     polyX[3] = polyX[0];
-                    polyY[0] = GraphUtils.getYpixel(height, minY, maxY,
-                            p.getY());
-                    polyY[1] = GraphUtils.getYpixel(height, minY, maxY, l
-                            .get(j).getY());
-                    polyY[2] = height - 1;
-                    polyY[3] = height - 1;
+                    polyY[0] = GraphUtils.getYpixel(image.getHeight(),
+                            this.minY, this.maxY, p.getY());
+                    polyY[1] = GraphUtils.getYpixel(image.getHeight(),
+                            this.minY, this.maxY, l.get(j).getY());
+                    polyY[2] = image.getHeight() - 1;
+                    polyY[3] = image.getHeight() - 1;
                     graphics.fillPolygon(polyX, polyY, 4);
                     break;
                 default:
@@ -150,8 +158,6 @@ public class DataGrapher {
         }
 
         graphics.dispose();
-
-        return image;
     }
 
     public void setGraphBackground(Color graphBackground) {
