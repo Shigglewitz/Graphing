@@ -84,4 +84,25 @@ public class ColorUtilsTest {
             pastValue = normalized;
         }
     }
+
+    @Test
+    public void testNormalizeColorCeiling() {
+        int[] tests = { -5, 300, 256, -1, 0, 255 };
+        int[] expected = { 0, 255, 255, 0, 0, 255 };
+
+        int numRandomTests = 20;
+
+        for (int i = 0; i < tests.length; i++) {
+            assertEquals(expected[i], ColorUtils.normalizeColor(tests[i],
+                    NormalizationStrategy.CEILING));
+        }
+
+        for (int i = 0; i < numRandomTests; i++) {
+            int toTrim = RANDOM.nextInt();
+            int trimmed = ColorUtils.normalizeColor(toTrim,
+                    NormalizationStrategy.CEILING);
+            assertTrue(toTrim + " was trimmed to " + trimmed
+                    + " instead of 0-255", trimmed >= 0 && trimmed <= 0xfff);
+        }
+    }
 }
