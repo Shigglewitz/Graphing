@@ -69,7 +69,8 @@ public class ColorGrapherTest {
         }
         cg.setZoomFactor(zoomFactor);
         cg.setPixelShift(xShift, yShift);
-        BufferedImage experiment = cg.getGraph();
+        BufferedImage experiment = cg.getGraph(Grapher.DEFAULT_WIDTH,
+                Grapher.DEFAULT_HEIGHT);
         if (compareFile != null) {
             ImageComparison.compareRandomPixels(compareFile, experiment);
         }

@@ -15,6 +15,7 @@ import java.util.List;
 import org.dkeeney.git.commit.Commit;
 import org.dkeeney.graphing.DataGrapher;
 import org.dkeeney.graphing.DataGrapher.DrawType;
+import org.dkeeney.graphing.Grapher;
 import org.dkeeney.testutils.ImageComparison;
 import org.dkeeney.utils.ImageMaker;
 import org.junit.Test;
@@ -93,7 +94,8 @@ public class ParserTest {
         dg.addPoints(totalTestsFail, Color.BLUE);
         dg.addPoints(totalTestsSkip, Color.BLACK);
         dg.setDrawType(DrawType.FILL);
-        BufferedImage experiment = dg.getGraph();
+        BufferedImage experiment = dg.getGraph(Grapher.DEFAULT_WIDTH,
+                Grapher.DEFAULT_HEIGHT);
 
         try {
             ImageComparison.compareWholeImage("commit-history1", experiment);

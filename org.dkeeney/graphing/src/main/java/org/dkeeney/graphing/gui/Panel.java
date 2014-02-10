@@ -20,6 +20,7 @@ import javax.swing.SwingUtilities;
 import org.apache.commons.lang3.RandomStringUtils;
 import org.dkeeney.equations.exceptions.InvalidEquationException;
 import org.dkeeney.graphing.ColorGrapher;
+import org.dkeeney.graphing.Grapher;
 import org.dkeeney.utils.ImageMaker;
 
 public class Panel implements ActionListener {
@@ -261,7 +262,8 @@ public class Panel implements ActionListener {
         try {
             this.cg = new ColorGrapher(this.redEquation.getText(),
                     this.greenEquation.getText(), this.blueEquation.getText());
-            this.displayImage(this.cg.getGraph());
+            this.displayImage(this.cg.getGraph(Grapher.DEFAULT_WIDTH,
+                    Grapher.DEFAULT_HEIGHT));
             this.redEquationLabel.setText(this.cg.getRedEquation());
             this.greenEquationLabel.setText(this.cg.getGreenEquation());
             this.blueEquationLabel.setText(this.cg.getBlueEquation());
