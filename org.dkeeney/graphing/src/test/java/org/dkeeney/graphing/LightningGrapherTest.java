@@ -9,22 +9,19 @@ import java.io.IOException;
 import org.dkeeney.equations.exceptions.InvalidEquationException;
 import org.dkeeney.utils.ColorUtils;
 import org.dkeeney.utils.ImageMaker;
-import org.junit.Ignore;
 import org.junit.Test;
 
 public class LightningGrapherTest {
-    @Ignore
     @Test
     public void testLightningGraph() throws IOException,
             InvalidEquationException {
         LightningGrapher lg = new LightningGrapher();
-        lg.setBackgroundColor(new Color(75, 150, 225));
         lg.setDecaySpeed(5);
-        ColorGrapher cg = new ColorGrapher("X^2+Y^2", "sin(Y*X)*128", "X");
-        BufferedImage image = cg.getGraph(Grapher.DEFAULT_WIDTH,
+        lg.setSeed(1234);
+        lg.setLightningColor(Color.RED);
+        BufferedImage image = lg.getGraph(Grapher.DEFAULT_WIDTH,
                 Grapher.DEFAULT_HEIGHT);
-        cg.draw(image);
-        lg.draw(image);
+        // lg.draw(image);
 
         ImageMaker.saveImage(image, "lightning-graph");
     }
