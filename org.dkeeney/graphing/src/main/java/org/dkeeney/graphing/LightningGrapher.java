@@ -2,7 +2,9 @@ package org.dkeeney.graphing;
 
 import java.awt.Color;
 import java.awt.Graphics2D;
+import java.awt.Point;
 import java.awt.geom.Line2D;
+import java.awt.geom.Point2D;
 import java.awt.image.BufferedImage;
 import java.util.ArrayList;
 import java.util.List;
@@ -37,14 +39,53 @@ public class LightningGrapher implements Grapher {
         }
 
         boolean horizontal = random.nextBoolean();
+        int numDiversions = random.nextInt(3) + 1;
+        int diversionBase = 0;
+        Point2D endPoint = null;
+        Point2D startPoint = null;
 
         if (horizontal) {
-            this.lines.add(new Line2D.Double(0, random.nextInt(height),
-                    width - 1, random.nextInt(height)));
+            endPoint = new Point(width - 1, random.nextInt(height));
+            startPoint = new Point(0, random.nextInt(height));
+            for (int i = 0; i < numDiversions; i++) {
+                this.lines.add(this.percentOfLine((int) startPoint.getX(),
+                        (int) startPoint.getY(), (int) endPoint.getX(),
+                        (int) endPoint.getY(),
+                        this.percentInRange(i + 2, numDiversions + 2, random)));
+                startPoint = this.lines.get(this.lines.size() - 1).getP2();
+                if (height - startPoint.getY() > height / 2) {
+                    diversionBase = height - 1;
+                } else {
+                    diversionBase = 0;
+                }
+                this.lines.add(this.percentOfLine((int) startPoint.getX(),
+                        (int) startPoint.getY(),
+                        random.nextInt((int) startPoint.getX()), diversionBase,
+                        this.percentInRange(1, 4, random)));
+                startPoint = this.lines.get(this.lines.size() - 1).getP2();
+            }
+            this.lines.add(new Line2D.Double((int) startPoint.getX(),
+                    (int) startPoint.getY(), (int) endPoint.getX(),
+                    (int) endPoint.getY()));
         } else {
-            this.lines.add(new Line2D.Double(random.nextInt(width), 0, random
-                    .nextInt(width), height - 1));
+            endPoint = new Point(random.nextInt(width), height - 1);
+            startPoint = new Point(random.nextInt(width), 0);
+            this.lines.add(this.percentOfLine((int) startPoint.getX(),
+                    (int) startPoint.getY(), (int) endPoint.getX(),
+                    (int) endPoint.getY(), 1));
         }
+    }
+
+    private Line2D.Double percentOfLine(int x1, int y1, int x2, int y2,
+            double percent) {
+        return new Line2D.Double(x1, y1, x1 + ((x2 - x1) * percent), y1
+                + ((y2 - y1) * percent));
+    }
+
+    private double percentInRange(int partition, int numPartitions,
+            Random random) {
+        int sizeOfPartition = 100 / numPartitions;
+        return (random.nextInt(sizeOfPartition) + ((partition - 1) * sizeOfPartition)) / 100.0;
     }
 
     @Override
@@ -60,8 +101,9 @@ public class LightningGrapher implements Grapher {
         graphics.setColor(this.lightningColor);
         for (Line2D line : this.lines) {
             // draw the line
-            System.out.println((int) line.getX1() + " " + (int) line.getY1()
-                    + " " + (int) line.getX2() + " " + (int) line.getY2());
+            System.out.println("(" + (int) line.getX1() + ", "
+                    + (int) line.getY1() + ") - (" + (int) line.getX2() + ", "
+                    + (int) line.getY2() + ")");
             graphics.drawLine((int) line.getX1(), (int) line.getY1(),
                     (int) line.getX2(), (int) line.getY2());
 
@@ -77,6 +119,7 @@ public class LightningGrapher implements Grapher {
                 .getRGB());
         double slopeCalc = line.getX2() - line.getX1();
         boolean horizontal = false;
+        boolean increasing = false;
         int startPoint = 0;
         int pixelsAdjusted = 0;
         if (slopeCalc == 0) {
@@ -89,14 +132,19 @@ public class LightningGrapher implements Grapher {
                 horizontal = false;
             }
         }
+        System.out.println(horizontal);
         for (int i = 0; i < 255 / this.decaySpeed; i++) {
             for (int j = 0; j < brightestRgb.length; j++) {
-                brightestRgb[j] = brightestRgb[j] - this.decaySpeed;
+                brightestRgb[j] = Math
+                        .max(brightestRgb[j] - this.decaySpeed, 0);
             }
-            for (int x = 0; (horizontal && x < image.getWidth())
-                    || (!horizontal && x < image.getHeight()); x++) {
-                if (horizontal) {
-                    startPoint = (int) (line.getY1() + x * slopeCalc);
+            if (horizontal) {
+                int x = (int) line.getX1();
+                increasing = line.getX2() > line.getX1();
+                while ((increasing && x < line.getX2())
+                        || (!increasing && x > line.getX2())) {
+                    startPoint = (int) (line.getY1() + (x - line.getX1())
+                            * slopeCalc);
                     if (startPoint + i < image.getHeight()) {
                         image.setRGB(
                                 x,
@@ -111,25 +159,43 @@ public class LightningGrapher implements Grapher {
                                 brightenPixel(image.getRGB(x, startPoint - i),
                                         brightestRgb));
                     }
-                } else {
-                    startPoint = (int) (line.getX1() + x * (1 / slopeCalc));
+                    pixelsAdjusted += 2;
+                    if (increasing) {
+                        x++;
+                    } else {
+                        x--;
+                    }
+                }
+            } else {
+                int y = (int) line.getY1();
+                increasing = line.getY2() > line.getY1();
+                while ((increasing && y < line.getY2())
+                        || (!increasing && y > line.getY2())) {
+                    startPoint = (int) (line.getX1() + (y - line.getY1())
+                            * (1 / slopeCalc));
                     if (startPoint + i < image.getWidth()) {
                         image.setRGB(
                                 startPoint + i,
-                                x,
-                                brightenPixel(image.getRGB(startPoint + i, x),
+                                y,
+                                brightenPixel(image.getRGB(startPoint + i, y),
                                         brightestRgb));
                     }
                     if (startPoint - i > 0) {
                         image.setRGB(
                                 startPoint - i,
-                                x,
-                                brightenPixel(image.getRGB(startPoint - i, x),
+                                y,
+                                brightenPixel(image.getRGB(startPoint - i, y),
                                         brightestRgb));
                     }
+                    pixelsAdjusted += 2;
+                    if (increasing) {
+                        y++;
+                    } else {
+                        y--;
+                    }
                 }
-                pixelsAdjusted += 2;
             }
+
         }
         System.out.println("Adjusted " + pixelsAdjusted + " pixels!");
     }
