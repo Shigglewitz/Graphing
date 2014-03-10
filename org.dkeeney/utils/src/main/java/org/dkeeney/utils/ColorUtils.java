@@ -10,6 +10,11 @@ public class ColorUtils {
                 | ((green & 0x0ff) << 8) | (blue & 0x0ff);
     }
 
+    public static int getRgbAsInt(int[] rgb) {
+        return getRgbAsInt(rgb[0], rgb[1], rgb[2], rgb.length > 3 ? rgb[3]
+                : 0xfff);
+    }
+
     public static int getRgbAsInt(int red, int green, int blue) {
         return getRgbAsInt(red, green, blue, 0xfff);
     }
@@ -37,7 +42,7 @@ public class ColorUtils {
     }
 
     public static enum NormalizationStrategy {
-        CRUDE, CURVE
+        CRUDE, CURVE, CEILING
     }
 
     private static final int COLOR_NORMALIZATION_MASK = 0x100;
@@ -75,6 +80,14 @@ public class ColorUtils {
                 reduce = mask - (reduce % mask);
             }
             return reduce;
+        case CEILING:
+            if (input >= mask) {
+                return mask - 1;
+            } else if (input <= 0) {
+                return 0;
+            } else {
+                return input;
+            }
         default:
             return input;
         }
