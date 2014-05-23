@@ -9,22 +9,21 @@ import java.awt.image.BufferedImage;
 import java.io.IOException;
 import java.math.BigDecimal;
 
+import org.junit.AfterClass;
+import org.junit.Test;
 import org.shigglewitz.config.Constants;
 import org.shigglewitz.equations.exceptions.InsufficientVariableInformationException;
 import org.shigglewitz.equations.exceptions.InvalidEquationException;
 import org.shigglewitz.testutils.ImageComparison;
+import org.shigglewitz.testutils.TestConstants;
 import org.shigglewitz.utils.Utils;
-import org.junit.AfterClass;
-import org.junit.Test;
-import org.shigglewitz.graphing.EquationGrapher;
-import org.shigglewitz.graphing.Grapher;
 
 public class EquationGrapherTest {
     private static final double DELTA = 0.0000001;
 
     @AfterClass
     public static void cleanUp() {
-        Utils.cleanDirectory(Constants.DEFAULT_IMAGE_DIRECTORY);
+        Utils.cleanDirectory(TestConstants.DEFAULT_IMAGE_DIRECTORY);
     }
 
     @Test
