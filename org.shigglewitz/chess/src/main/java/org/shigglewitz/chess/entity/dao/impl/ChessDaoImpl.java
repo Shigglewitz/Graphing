@@ -31,18 +31,18 @@ public class ChessDaoImpl implements ChessDao {
 
     @Override
     public Game getGame(UUID id) {
-        // TODO Auto-generated method stub
-        return null;
+        return this.entityManager.find(Game.class, id);
     }
 
     @Override
-    public void saveGame(Game game) {
-        // TODO Auto-generated method stub
-
-    }
-
     @Transactional
+    public void saveGame(Game game) {
+        this.entityManager.persist(game);
+        this.entityManager.flush();
+    }
+
     @Override
+    @Transactional
     public void savePlayer(Player player) {
         this.entityManager.persist(player);
         this.entityManager.flush();
