@@ -12,6 +12,8 @@
     <properties>
         <spring.version>4.0.5.RELEASE</spring.version>
         <hibernate.version>4.2.2.Final</hibernate.version>
+        <c3p0.version>0.9.5-pre8</c3p0.version>
+        <postgres.version>9.3-1101-jdbc41</postgres.version>
     </properties>
 
     <profiles>
@@ -23,22 +25,39 @@
             <properties>
                 <HIBERNATE_HMB2DDL>create-drop</HIBERNATE_HMB2DDL>
                 <DATABASE_SCHEMA>chess</DATABASE_SCHEMA>
-                <DATABASE_URL>postgres://postgres:postgres@localhost:5432/postgres</DATABASE_URL>
+                <DATABASE_URL>postgres://postgres:Postgres1@localhost:5432/postgres</DATABASE_URL>
             </properties>
         </profile>
     </profiles>
 
     <dependencies>
         <dependency>
-            <groupId>javax.persistence</groupId>
-            <artifactId>persistence-api</artifactId>
-            <version>1.0</version>
-        </dependency>
-        <dependency>
             <groupId>org.hibernate</groupId>
             <artifactId>hibernate-core</artifactId>
             <version>${hibernate.version}</version>
         </dependency>
+        <dependency>
+            <groupId>org.hibernate</groupId>
+            <artifactId>hibernate-entitymanager</artifactId>
+            <version>${hibernate.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.hibernate</groupId>
+            <artifactId>hibernate-validator</artifactId>
+            <version>5.0.1.Final</version>
+        </dependency>
+
+        <dependency>
+            <groupId>com.mchange</groupId>
+            <artifactId>c3p0</artifactId>
+            <version>${c3p0.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.postgresql</groupId>
+            <artifactId>postgresql</artifactId>
+            <version>${postgres.version}</version>
+        </dependency>
+
         <dependency>
             <groupId>org.springframework</groupId>
             <artifactId>spring-context</artifactId>
@@ -65,11 +84,13 @@
 
     <build>
         <resources>
-            <directory>src/main/resources</directory>
-            <filtering>true</filtering>
-            <includes>
-                <include>*.xml</include>
-            </includes>
+            <resource>
+                <directory>src/main/resources</directory>
+                <filtering>true</filtering>
+                <includes>
+                    <include>*.xml</include>
+                </includes>
+            </resource>
         </resources>
     </build>
 </project>

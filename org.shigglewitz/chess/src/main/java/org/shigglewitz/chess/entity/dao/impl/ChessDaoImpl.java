@@ -9,6 +9,7 @@ import org.shigglewitz.chess.entity.dao.ChessDao;
 import org.shigglewitz.chess.entity.game.Game;
 import org.shigglewitz.chess.entity.player.Player;
 import org.springframework.stereotype.Repository;
+import org.springframework.transaction.annotation.Transactional;
 
 @Repository("chessDao")
 public class ChessDaoImpl implements ChessDao {
@@ -40,6 +41,7 @@ public class ChessDaoImpl implements ChessDao {
 
     }
 
+    @Transactional
     @Override
     public void savePlayer(Player player) {
         this.entityManager.persist(player);
