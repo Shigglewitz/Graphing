@@ -29,7 +29,7 @@ public class SquareTest {
 
             this.assertEquality(new int[] { file, rank }, Square
                     .getRankAndFileFromDescr(new Square(file, rank, Math.max(
-                            file, rank)).getDescr()));
+                            file, rank), null).getDescr()));
         }
     }
 
@@ -46,7 +46,8 @@ public class SquareTest {
 
             assertEquals("Descr mismatch for file " + file + " and rank "
                     + rank, expected,
-                    new Square(file, rank, Math.max(file, rank)).getDescr());
+                    new Square(file, rank, Math.max(file, rank), null)
+                            .getDescr());
         }
     }
 

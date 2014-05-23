@@ -7,6 +7,10 @@ public class Controller {
     @Autowired
     private ChessDao chessDao;
 
+    public void startGame(String playerId, String colorChoice) {
+
+    }
+
     public void movePiece(String gameId, String playerId, String pieceId,
             String destSquare) {
 

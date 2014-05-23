@@ -6,11 +6,15 @@ import org.shigglewitz.chess.entity.game.Game;
 import org.shigglewitz.chess.entity.player.Player;
 
 public interface ChessDao {
-    public Player getPlayer(UUID id);
+    Player getPlayer(UUID id);
 
-    public Game getGame(UUID id);
+    Game getGame(UUID id);
 
-    public void savePlayer(Player player);
+    void savePlayer(Player player);
 
-    public void saveGame(Game game);
+    void saveGame(Game game);
+
+    void updatePlayer(Player player);
+
+    void updateGame(Game game);
 }

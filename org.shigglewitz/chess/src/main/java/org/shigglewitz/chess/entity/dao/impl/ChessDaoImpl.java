@@ -9,6 +9,7 @@ import org.shigglewitz.chess.entity.dao.ChessDao;
 import org.shigglewitz.chess.entity.game.Game;
 import org.shigglewitz.chess.entity.player.Player;
 import org.springframework.stereotype.Repository;
+import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
 @Repository("chessDao")
@@ -35,17 +36,31 @@ public class ChessDaoImpl implements ChessDao {
     }
 
     @Override
-    @Transactional
+    @Transactional(propagation = Propagation.MANDATORY)
     public void saveGame(Game game) {
+        this.entityManager.persist(game.getBoard());
         this.entityManager.persist(game);
         this.entityManager.flush();
     }
 
     @Override
-    @Transactional
+    @Transactional(propagation = Propagation.MANDATORY)
     public void savePlayer(Player player) {
         this.entityManager.persist(player);
         this.entityManager.flush();
     }
 
+    @Override
+    @Transactional(propagation = Propagation.MANDATORY)
+    public void updatePlayer(Player player) {
+        this.entityManager.merge(player);
+        this.entityManager.flush();
+    }
+
+    @Override
+    @Transactional(propagation = Propagation.MANDATORY)
+    public void updateGame(Game game) {
+        this.entityManager.merge(game);
+        this.entityManager.flush();
+    }
 }
