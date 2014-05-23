@@ -13,13 +13,10 @@ import java.util.Random;
 import javax.imageio.ImageIO;
 
 import org.apache.commons.lang3.RandomStringUtils;
-import org.shigglewitz.config.Constants;
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.Test;
-import org.shigglewitz.utils.ColorUtils;
-import org.shigglewitz.utils.ImageMaker;
-import org.shigglewitz.utils.Utils;
+import org.shigglewitz.testutils.TestConstants;
 
 public class ImageMakerTest {
     private static final int DEFAULT_WIDTH = 200;
@@ -36,7 +33,7 @@ public class ImageMakerTest {
     }
 
     public static void cleanUp() {
-        Utils.cleanDirectory(Constants.DEFAULT_IMAGE_DIRECTORY);
+        Utils.cleanDirectory(TestConstants.DEFAULT_IMAGE_DIRECTORY);
     }
 
     @Test
@@ -77,7 +74,8 @@ public class ImageMakerTest {
         String fileName = RandomStringUtils.randomAlphabetic(15);
         ImageMaker.saveImage(image, fileName, "png");
 
-        File file = new File(Constants.DEFAULT_IMAGE_DIRECTORY + fileName + ".png");
+        File file = new File(TestConstants.DEFAULT_IMAGE_DIRECTORY + fileName
+                + ".png");
         assertTrue("File was not created", file.exists());
         BufferedImage testImage = ImageIO.read(file);
         assertNotNull(
