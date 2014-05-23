@@ -48,12 +48,12 @@ target/
 Servers/
 
 #Ignoring these projects for now
-Chess/
 DailyProgrammer/
 Daniel Library/
 Euler/
 HackerCup/
 HackerRank/
+JsfChess/
 JSFFaceletsTutorial/
 TinyVillage/
 commons-lang3-3.1-src/
