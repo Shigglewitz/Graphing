@@ -1,4 +1,4 @@
-package org.shigglewitz.chess.entity.board;
+package org.shigglewitz.chess.entity;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
@@ -6,6 +6,7 @@ import static org.junit.Assert.assertNotNull;
 import java.util.Random;
 
 import org.junit.Test;
+import org.shigglewitz.chess.entity.Square;
 
 public class SquareTest {
 	@Test

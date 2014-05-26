@@ -1,4 +1,4 @@
-package org.shigglewitz.chess.entity.board;
+package org.shigglewitz.chess.entity;
 
 import java.io.Serializable;
 import java.util.UUID;
@@ -13,9 +13,8 @@ import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 import javax.persistence.Transient;
 
-import org.shigglewitz.chess.entity.board.Square.SquarePk;
-import org.shigglewitz.chess.entity.game.Game;
-import org.shigglewitz.chess.entity.game.Game.Color;
+import org.shigglewitz.chess.entity.Game.Color;
+import org.shigglewitz.chess.entity.Square.SquarePk;
 import org.shigglewitz.chess.entity.pieces.Piece;
 
 @Entity

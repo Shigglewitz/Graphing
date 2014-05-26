@@ -2,8 +2,8 @@ package org.shigglewitz.chess.entity.dao;
 
 import java.util.UUID;
 
-import org.shigglewitz.chess.entity.game.Game;
-import org.shigglewitz.chess.entity.player.Player;
+import org.shigglewitz.chess.entity.Game;
+import org.shigglewitz.chess.entity.Player;
 
 public interface ChessDao {
     Player getPlayer(UUID id);

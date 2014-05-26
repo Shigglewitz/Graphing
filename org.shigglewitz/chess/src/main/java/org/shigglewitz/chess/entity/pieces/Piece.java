@@ -1,6 +1,6 @@
 package org.shigglewitz.chess.entity.pieces;
 
-import org.shigglewitz.chess.entity.game.Game;
+import org.shigglewitz.chess.entity.Game;
 
 public interface Piece {
 	Game.Color getColor();

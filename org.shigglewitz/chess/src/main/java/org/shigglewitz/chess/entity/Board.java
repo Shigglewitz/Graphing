@@ -1,4 +1,4 @@
-package org.shigglewitz.chess.entity.board;
+package org.shigglewitz.chess.entity;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -16,14 +16,14 @@ import javax.persistence.Transient;
 
 import org.hibernate.annotations.GenericGenerator;
 import org.hibernate.annotations.Type;
-import org.shigglewitz.chess.entity.game.Game.Color;
+import org.shigglewitz.chess.entity.Game.Color;
+import org.shigglewitz.chess.entity.pieces.Bishop;
+import org.shigglewitz.chess.entity.pieces.King;
+import org.shigglewitz.chess.entity.pieces.Knight;
+import org.shigglewitz.chess.entity.pieces.Pawn;
 import org.shigglewitz.chess.entity.pieces.Piece;
-import org.shigglewitz.chess.entity.pieces.impl.Bishop;
-import org.shigglewitz.chess.entity.pieces.impl.King;
-import org.shigglewitz.chess.entity.pieces.impl.Knight;
-import org.shigglewitz.chess.entity.pieces.impl.Pawn;
-import org.shigglewitz.chess.entity.pieces.impl.Queen;
-import org.shigglewitz.chess.entity.pieces.impl.Rook;
+import org.shigglewitz.chess.entity.pieces.Queen;
+import org.shigglewitz.chess.entity.pieces.Rook;
 
 @Entity
 @Table(name = "BOARDS")

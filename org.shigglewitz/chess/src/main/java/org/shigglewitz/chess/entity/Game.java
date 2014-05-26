@@ -1,4 +1,4 @@
-package org.shigglewitz.chess.entity.game;
+package org.shigglewitz.chess.entity;
 
 import java.util.UUID;
 
@@ -13,8 +13,6 @@ import javax.persistence.Table;
 
 import org.hibernate.annotations.GenericGenerator;
 import org.hibernate.annotations.Type;
-import org.shigglewitz.chess.entity.board.Board;
-import org.shigglewitz.chess.entity.player.Player;
 
 @Entity
 @Table(name = "GAMES")

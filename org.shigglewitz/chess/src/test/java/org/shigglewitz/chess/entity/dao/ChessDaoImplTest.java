@@ -1,4 +1,4 @@
-package org.shigglewitz.chess.entity.dao.impl;
+package org.shigglewitz.chess.entity.dao;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
@@ -9,11 +9,11 @@ import java.util.UUID;
 import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.shigglewitz.chess.controller.service.GameService;
-import org.shigglewitz.chess.entity.board.Board;
+import org.shigglewitz.chess.controller.GameService;
+import org.shigglewitz.chess.entity.Board;
+import org.shigglewitz.chess.entity.Game;
+import org.shigglewitz.chess.entity.Player;
 import org.shigglewitz.chess.entity.dao.ChessDao;
-import org.shigglewitz.chess.entity.game.Game;
-import org.shigglewitz.chess.entity.player.Player;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;

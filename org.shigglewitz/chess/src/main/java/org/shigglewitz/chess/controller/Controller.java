@@ -3,10 +3,9 @@ package org.shigglewitz.chess.controller;
 import java.util.UUID;
 
 import org.shigglewitz.chess.controller.exception.BadRequestException;
-import org.shigglewitz.chess.controller.service.GameService;
+import org.shigglewitz.chess.entity.Game;
+import org.shigglewitz.chess.entity.Player;
 import org.shigglewitz.chess.entity.dao.ChessDao;
-import org.shigglewitz.chess.entity.game.Game;
-import org.shigglewitz.chess.entity.player.Player;
 import org.springframework.beans.factory.annotation.Autowired;
 
 public class Controller {

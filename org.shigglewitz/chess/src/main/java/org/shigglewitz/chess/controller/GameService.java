@@ -1,12 +1,12 @@
-package org.shigglewitz.chess.controller.service;
+package org.shigglewitz.chess.controller;
 
 import org.shigglewitz.chess.controller.exception.BadRequestException;
-import org.shigglewitz.chess.entity.board.Board;
-import org.shigglewitz.chess.entity.board.Square;
+import org.shigglewitz.chess.entity.Board;
+import org.shigglewitz.chess.entity.Game;
+import org.shigglewitz.chess.entity.Player;
+import org.shigglewitz.chess.entity.Square;
+import org.shigglewitz.chess.entity.Game.Color;
 import org.shigglewitz.chess.entity.dao.ChessDao;
-import org.shigglewitz.chess.entity.game.Game;
-import org.shigglewitz.chess.entity.game.Game.Color;
-import org.shigglewitz.chess.entity.player.Player;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;

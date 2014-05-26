@@ -1,4 +1,4 @@
-package org.shigglewitz.chess.entity.player;
+package org.shigglewitz.chess.entity;
 
 import java.util.UUID;
 

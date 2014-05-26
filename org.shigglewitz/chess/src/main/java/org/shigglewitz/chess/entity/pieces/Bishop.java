@@ -1,20 +1,19 @@
-package org.shigglewitz.chess.entity.pieces.impl;
+package org.shigglewitz.chess.entity.pieces;
 
-import org.shigglewitz.chess.entity.game.Game.Color;
-import org.shigglewitz.chess.entity.pieces.Piece;
+import org.shigglewitz.chess.entity.Game.Color;
 
-public class King implements Piece {
-	public static final char SHORTHAND = 'K';
+public class Bishop implements Piece {
+	public static final char SHORTHAND = 'B';
 
 	private Color color;
 	private boolean moved;
 	private String name;
 	private boolean captured;
 
-	public King(Color color) {
+	public Bishop(Color color) {
 		this.color = color;
 		this.moved = false;
-		this.name = "King";
+		this.name = "Bishop";
 		this.captured = false;
 	}
 

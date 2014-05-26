@@ -1,20 +1,19 @@
-package org.shigglewitz.chess.entity.pieces.impl;
+package org.shigglewitz.chess.entity.pieces;
 
-import org.shigglewitz.chess.entity.game.Game.Color;
-import org.shigglewitz.chess.entity.pieces.Piece;
+import org.shigglewitz.chess.entity.Game.Color;
 
-public class Rook implements Piece {
-	public static final char SHORTHAND = 'R';
+public class Pawn implements Piece {
+	public static final char SHORTHAND = 'P';
 
 	private Color color;
 	private boolean moved;
 	private String name;
 	private boolean captured;
 
-	public Rook(Color color) {
+	public Pawn(Color color) {
 		this.color = color;
 		this.moved = false;
-		this.name = "Rook";
+		this.name = "Pawn";
 		this.captured = false;
 	}
 
@@ -57,5 +56,4 @@ public class Rook implements Piece {
 	public void setCaptured(boolean captured) {
 		this.captured = captured;
 	}
-
 }
