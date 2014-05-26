@@ -3,9 +3,19 @@ package org.shigglewitz.chess.entity.pieces;
 import org.shigglewitz.chess.entity.game.Game;
 
 public interface Piece {
-    public Game.Color getColor();
+	Game.Color getColor();
 
-    public String getName();
+	void setColor(Game.Color color);
 
-    public boolean hasMoved();
+	String getName();
+
+	void setName(String name);
+
+	boolean isMoved();
+
+	void setMoved(boolean moved);
+
+	boolean isCaptured();
+
+	void setCaptured(boolean captured);
 }

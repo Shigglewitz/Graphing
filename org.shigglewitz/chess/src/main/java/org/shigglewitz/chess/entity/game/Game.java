@@ -19,80 +19,81 @@ import org.shigglewitz.chess.entity.player.Player;
 @Entity
 @Table(name = "GAMES")
 public class Game {
-    public enum Color {
-        LIGHT, DARK
-    }
+	public enum Color {
+		LIGHT, DARK
+	}
 
-    private UUID id;
-    private Player lightPlayer;
-    private Player darkPlayer;
-    private Color nextMove;
-    private Board board;
+	private UUID id;
+	private Player lightPlayer;
+	private Player darkPlayer;
+	private Color nextMove;
+	private Board board;
 
-    /**
-     * this should only be used by hibernate
-     */
-    protected Game() {
-    }
+	/**
+	 * this should only be used by hibernate
+	 */
+	protected Game() {
+	}
 
-    public Game(int size) {
-        this.setBoard(new Board(size));
-    }
+	public Game(int size) {
+		this.setBoard(new Board(size, Board.LIGHT_START_POSITION,
+				Board.DARK_START_POSITION));
+	}
 
-    @Id
-    @Column(name = "id", unique = true, nullable = false)
-    @Type(type = "pg-uuid")
-    @GeneratedValue(generator = "uuid")
-    @GenericGenerator(name = "uuid", strategy = "uuid2")
-    public UUID getId() {
-        return this.id;
-    }
+	@Id
+	@Column(name = "id", unique = true, nullable = false)
+	@Type(type = "pg-uuid")
+	@GeneratedValue(generator = "uuid")
+	@GenericGenerator(name = "uuid", strategy = "uuid2")
+	public UUID getId() {
+		return this.id;
+	}
 
-    public void setId(UUID id) {
-        this.id = id;
-    }
+	public void setId(UUID id) {
+		this.id = id;
+	}
 
-    @ManyToOne
-    @JoinColumn(name = "lightplayer_id")
-    public Player getLightPlayer() {
-        return this.lightPlayer;
-    }
+	@ManyToOne
+	@JoinColumn(name = "lightplayer_id")
+	public Player getLightPlayer() {
+		return this.lightPlayer;
+	}
 
-    public void setLightPlayer(Player lightPlayer) {
-        this.lightPlayer = lightPlayer;
-    }
+	public void setLightPlayer(Player lightPlayer) {
+		this.lightPlayer = lightPlayer;
+	}
 
-    @ManyToOne
-    @JoinColumn(name = "darkplayer_id")
-    public Player getDarkPlayer() {
-        return this.darkPlayer;
-    }
+	@ManyToOne
+	@JoinColumn(name = "darkplayer_id")
+	public Player getDarkPlayer() {
+		return this.darkPlayer;
+	}
 
-    public void setDarkPlayer(Player darkPlayer) {
-        this.darkPlayer = darkPlayer;
-    }
+	public void setDarkPlayer(Player darkPlayer) {
+		this.darkPlayer = darkPlayer;
+	}
 
-    @Column
-    public Color getNextMove() {
-        return this.nextMove;
-    }
+	@Column
+	public Color getNextMove() {
+		return this.nextMove;
+	}
 
-    public void setNextMove(Color nextMove) {
-        this.nextMove = nextMove;
-    }
+	public void setNextMove(Color nextMove) {
+		this.nextMove = nextMove;
+	}
 
-    @OneToOne
-    @JoinColumn(name = "board_id")
-    public Board getBoard() {
-        return this.board;
-    }
+	@OneToOne
+	@JoinColumn(name = "board_id")
+	public Board getBoard() {
+		return this.board;
+	}
 
-    /**
-     * should only be used by hibernate
-     * 
-     * @param board
-     */
-    protected void setBoard(Board board) {
-        this.board = board;
-    }
+	/**
+	 * should only be used by hibernate
+	 * 
+	 * @param board
+	 */
+	protected void setBoard(Board board) {
+		this.board = board;
+	}
 }

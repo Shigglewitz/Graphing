@@ -3,18 +3,18 @@ package org.shigglewitz.chess.entity.pieces.impl;
 import org.shigglewitz.chess.entity.game.Game.Color;
 import org.shigglewitz.chess.entity.pieces.Piece;
 
-public class Pawn implements Piece {
-	public static final char SHORTHAND = 'P';
+public class Queen implements Piece {
+	public static final char SHORTHAND = 'Q';
 
 	private Color color;
 	private boolean moved;
 	private String name;
 	private boolean captured;
 
-	public Pawn(Color color) {
+	public Queen(Color color) {
 		this.color = color;
 		this.moved = false;
-		this.name = "Pawn";
+		this.name = "Queen";
 		this.captured = false;
 	}
 
