@@ -17,81 +17,95 @@ import org.hibernate.annotations.Type;
 @Entity
 @Table(name = "GAMES")
 public class Game {
-	public enum Color {
-		LIGHT, DARK
-	}
+    public enum Color {
+        LIGHT, DARK
+    }
 
-	private UUID id;
-	private Player lightPlayer;
-	private Player darkPlayer;
-	private Color nextMove;
-	private Board board;
+    private UUID id;
+    private Player lightPlayer;
+    private Player darkPlayer;
+    private Color nextMove;
+    private Board board;
 
-	/**
-	 * this should only be used by hibernate
-	 */
-	protected Game() {
-	}
+    /**
+     * this should only be used by hibernate
+     */
+    protected Game() {
+    }
 
-	public Game(int size) {
-		this.setBoard(new Board(size, Board.LIGHT_START_POSITION,
-				Board.DARK_START_POSITION));
-	}
+    protected static String emptyStartingString(int size) {
+        return String.format(String.format("%%-%ds", size), "");
+    }
 
-	@Id
-	@Column(name = "id", unique = true, nullable = false)
-	@Type(type = "pg-uuid")
-	@GeneratedValue(generator = "uuid")
-	@GenericGenerator(name = "uuid", strategy = "uuid2")
-	public UUID getId() {
-		return this.id;
-	}
+    public Game(int size) {
+        this(size, emptyStartingString(size), emptyStartingString(size));
+    }
 
-	public void setId(UUID id) {
-		this.id = id;
-	}
+    public Game(int size, String lightStart, String darkStart) {
+        this.setBoard(new Board(size, lightStart, darkStart));
+    }
 
-	@ManyToOne
-	@JoinColumn(name = "lightplayer_id")
-	public Player getLightPlayer() {
-		return this.lightPlayer;
-	}
+    public static Game createDefaultGame() {
+        Game ret = new Game();
+        ret.setBoard(Board.createDefaultBoard());
 
-	public void setLightPlayer(Player lightPlayer) {
-		this.lightPlayer = lightPlayer;
-	}
+        return ret;
+    }
 
-	@ManyToOne
-	@JoinColumn(name = "darkplayer_id")
-	public Player getDarkPlayer() {
-		return this.darkPlayer;
-	}
+    @Id
+    @Column(name = "id", unique = true, nullable = false)
+    @Type(type = "pg-uuid")
+    @GeneratedValue(generator = "uuid")
+    @GenericGenerator(name = "uuid", strategy = "uuid2")
+    public UUID getId() {
+        return this.id;
+    }
 
-	public void setDarkPlayer(Player darkPlayer) {
-		this.darkPlayer = darkPlayer;
-	}
+    public void setId(UUID id) {
+        this.id = id;
+    }
 
-	@Column
-	public Color getNextMove() {
-		return this.nextMove;
-	}
+    @ManyToOne
+    @JoinColumn(name = "lightplayer_id")
+    public Player getLightPlayer() {
+        return this.lightPlayer;
+    }
 
-	public void setNextMove(Color nextMove) {
-		this.nextMove = nextMove;
-	}
+    public void setLightPlayer(Player lightPlayer) {
+        this.lightPlayer = lightPlayer;
+    }
 
-	@OneToOne
-	@JoinColumn(name = "board_id")
-	public Board getBoard() {
-		return this.board;
-	}
+    @ManyToOne
+    @JoinColumn(name = "darkplayer_id")
+    public Player getDarkPlayer() {
+        return this.darkPlayer;
+    }
 
-	/**
-	 * should only be used by hibernate
-	 * 
-	 * @param board
-	 */
-	protected void setBoard(Board board) {
-		this.board = board;
-	}
+    public void setDarkPlayer(Player darkPlayer) {
+        this.darkPlayer = darkPlayer;
+    }
+
+    @Column
+    public Color getNextMove() {
+        return this.nextMove;
+    }
+
+    public void setNextMove(Color nextMove) {
+        this.nextMove = nextMove;
+    }
+
+    @OneToOne
+    @JoinColumn(name = "board_id")
+    public Board getBoard() {
+        return this.board;
+    }
+
+    /**
+     * should only be used by hibernate
+     * 
+     * @param board
+     */
+    protected void setBoard(Board board) {
+        this.board = board;
+    }
 }
