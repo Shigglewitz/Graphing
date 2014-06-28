@@ -22,10 +22,22 @@ public class Deployments {
         controllerWar.setWebXML(new File(WEBAPP_SRC, "WEB-INF/web.xml"));
         controllerWar.addPackage(Package
                 .getPackage("org.shigglewitz.chess.controller"));
-        controllerWar
-                .addAsWebResource(new File(WEBAPP_SRC, "jsp/viewChess.jsp"));
+        String[] jsps = getJsps(new String[] { "viewChess" });
+
+        for (String jsp : jsps) {
+            controllerWar.addAsWebResource(new File(WEBAPP_SRC, jsp), jsp);
+        }
+
         // .importFrom(new File("w1-controller.war")).as(WebArchive.class);
 
         return controllerWar;
+    }
+
+    private static String[] getJsps(String[] jspNames) {
+        for (int i = 0; i < jspNames.length; i++) {
+            jspNames[i] = "WEB-INF/jsp/" + jspNames[i] + ".jsp";
+        }
+
+        return jspNames;
     }
 }

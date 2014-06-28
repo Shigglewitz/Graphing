@@ -26,14 +26,9 @@ public class GameController {
     private GameService gameService;
 
     @RequestMapping(value = "/{game_id}", method = RequestMethod.GET)
-    public String viewGame(@PathVariable String name, ModelMap model) {
+    public String viewGame(@PathVariable("game_id") String name, ModelMap model) {
         model.addAttribute("movie", name);
         return "viewChess";
-    }
-
-    @RequestMapping(value = "/")
-    public String temp() {
-        return "home";
     }
 
     public void startGame(String playerId, String colorChoice) {
