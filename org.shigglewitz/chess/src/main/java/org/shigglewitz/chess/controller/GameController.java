@@ -6,6 +6,7 @@ import org.shigglewitz.chess.controller.exception.BadRequestException;
 import org.shigglewitz.chess.entity.Game;
 import org.shigglewitz.chess.entity.Player;
 import org.shigglewitz.chess.entity.dao.ChessDao;
+import org.shigglewitz.chess.maven.Properties;
 import org.shigglewitz.chess.service.GameService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -15,7 +16,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 
 @Controller
-@RequestMapping("/game")
+@RequestMapping(Properties.GAME_CONTROLLER_PATH)
 public class GameController {
     public static final String UUID_REGEX = "[a-f0-9]{8}(-[a-f0-9]{4}){3}-[a-f0-9]{12}";
 
