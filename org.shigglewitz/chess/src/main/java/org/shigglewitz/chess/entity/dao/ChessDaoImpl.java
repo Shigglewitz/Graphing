@@ -5,7 +5,6 @@ import java.util.UUID;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 
-import org.shigglewitz.chess.entity.Board;
 import org.shigglewitz.chess.entity.Game;
 import org.shigglewitz.chess.entity.Player;
 import org.springframework.stereotype.Repository;
@@ -38,13 +37,9 @@ public class ChessDaoImpl implements ChessDao {
     @Override
     @Transactional(propagation = Propagation.MANDATORY)
     public void saveGame(Game game) {
-        this.saveBoard(game.getBoard());
+        this.entityManager.persist(game.getBoard());
         this.entityManager.persist(game);
         this.entityManager.flush();
-    }
-
-    protected void saveBoard(Board board) {
-        this.entityManager.persist(board);
     }
 
     @Override

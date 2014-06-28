@@ -1,5 +1,6 @@
 package org.shigglewitz.chess.entity;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
@@ -26,7 +27,9 @@ import org.shigglewitz.chess.entity.pieces.Rook;
 
 @Entity
 @Table(name = "BOARDS")
-public class Board {
+public class Board implements Serializable {
+    private static final long serialVersionUID = -4646696068005622537L;
+
     public static final int DEFAULT_SIZE = 8;
     public static final String LIGHT_START_POSITION = "PPPPPPPP"
             + System.lineSeparator() + "RNBQKBNR";

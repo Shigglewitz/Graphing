@@ -1,4 +1,4 @@
-package org.shigglewitz.chess.controller;
+package org.shigglewitz.chess.service;
 
 import org.junit.Test;
 import org.shigglewitz.chess.entity.Game;

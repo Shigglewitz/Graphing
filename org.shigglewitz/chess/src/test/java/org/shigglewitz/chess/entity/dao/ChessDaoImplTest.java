@@ -8,18 +8,17 @@ import java.util.UUID;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.shigglewitz.chess.controller.GameService;
 import org.shigglewitz.chess.entity.Board;
 import org.shigglewitz.chess.entity.Game;
+import org.shigglewitz.chess.entity.Game.Color;
 import org.shigglewitz.chess.entity.Player;
+import org.shigglewitz.chess.service.GameService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.transaction.annotation.Transactional;
 
-@ContextConfiguration({ "classpath:applicationContext-hibernate.xml",
-        "classpath:applicationContext-daoBeans.xml",
-        "classpath:applicationContext-serviceBeans.xml" })
+@ContextConfiguration({ "classpath:applicationContext-Chess.xml" })
 @RunWith(SpringJUnit4ClassRunner.class)
 public class ChessDaoImplTest {
     @Autowired
@@ -50,20 +49,26 @@ public class ChessDaoImplTest {
     }
 
     @Test
+    @Transactional
+    public void testUpdatePlayer() {
+        String testName = "Temp Name";
+        Player player = this.gameService.createPlayer();
+        assertEquals("", player.getName());
+        player.setName(testName);
+        this.chessDao.updatePlayer(player);
+        UUID id = player.getId();
+
+        player = null;
+
+        player = this.chessDao.getPlayer(id);
+        assertEquals(testName, player.getName());
+    }
+
+    @Test
     public void testGetUnknownPlayer() {
         Player player = this.chessDao.getPlayer(UUID.randomUUID());
 
         assertNull(player);
-    }
-
-    @Test
-    @Transactional
-    public void testSaveGame() {
-        Game game = new Game(5, "     ", "     ");
-
-        this.chessDao.saveGame(game);
-
-        assertNotNull(game.getId());
     }
 
     @Test
@@ -88,7 +93,7 @@ public class ChessDaoImplTest {
 
     @Test
     @Transactional
-    public void testCreateGame() {
+    public void testSaveGame() {
         Player player1 = new Player();
         Game game = new Game(5);
 
@@ -96,5 +101,23 @@ public class ChessDaoImplTest {
 
         this.chessDao.savePlayer(player1);
         this.chessDao.saveGame(game);
+
+        assertNotNull(player1.getId());
+        assertNotNull(game.getId());
+    }
+
+    @Test
+    @Transactional
+    public void testUpdateGame() {
+        Game game = this.gameService.createGame();
+        UUID id = game.getId();
+        assertEquals(Color.LIGHT, game.getNextMove());
+
+        game.setNextMove(Color.DARK);
+        this.chessDao.updateGame(game);
+        game = null;
+
+        game = this.chessDao.getGame(id);
+        assertEquals(Color.DARK, game.getNextMove());
     }
 }

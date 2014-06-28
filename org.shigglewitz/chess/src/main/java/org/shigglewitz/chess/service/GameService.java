@@ -1,4 +1,4 @@
-package org.shigglewitz.chess.controller;
+package org.shigglewitz.chess.service;
 
 import org.shigglewitz.chess.controller.exception.BadRequestException;
 import org.shigglewitz.chess.entity.Board;

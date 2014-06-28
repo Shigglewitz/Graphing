@@ -1,5 +1,6 @@
 package org.shigglewitz.chess.entity;
 
+import java.io.Serializable;
 import java.util.UUID;
 
 import javax.persistence.Column;
@@ -16,7 +17,9 @@ import org.hibernate.annotations.Type;
 
 @Entity
 @Table(name = "GAMES")
-public class Game {
+public class Game implements Serializable {
+    private static final long serialVersionUID = -4377523928633766665L;
+
     public enum Color {
         LIGHT, DARK
     }
@@ -48,6 +51,7 @@ public class Game {
     public static Game createDefaultGame() {
         Game ret = new Game();
         ret.setBoard(Board.createDefaultBoard());
+        ret.setNextMove(Color.LIGHT);
 
         return ret;
     }
