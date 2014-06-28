@@ -1,5 +1,6 @@
-package org.shigglewitz.chess.entity.game;
+package org.shigglewitz.chess.entity;
 
+import java.io.Serializable;
 import java.util.UUID;
 
 import javax.persistence.Column;
@@ -13,12 +14,12 @@ import javax.persistence.Table;
 
 import org.hibernate.annotations.GenericGenerator;
 import org.hibernate.annotations.Type;
-import org.shigglewitz.chess.entity.board.Board;
-import org.shigglewitz.chess.entity.player.Player;
 
 @Entity
 @Table(name = "GAMES")
-public class Game {
+public class Game implements Serializable {
+    private static final long serialVersionUID = -4377523928633766665L;
+
     public enum Color {
         LIGHT, DARK
     }
@@ -35,8 +36,24 @@ public class Game {
     protected Game() {
     }
 
+    protected static String emptyStartingString(int size) {
+        return String.format(String.format("%%-%ds", size), "");
+    }
+
     public Game(int size) {
-        this.setBoard(new Board(size));
+        this(size, emptyStartingString(size), emptyStartingString(size));
+    }
+
+    public Game(int size, String lightStart, String darkStart) {
+        this.setBoard(new Board(size, lightStart, darkStart));
+    }
+
+    public static Game createDefaultGame() {
+        Game ret = new Game();
+        ret.setBoard(Board.createDefaultBoard());
+        ret.setNextMove(Color.LIGHT);
+
+        return ret;
     }
 
     @Id

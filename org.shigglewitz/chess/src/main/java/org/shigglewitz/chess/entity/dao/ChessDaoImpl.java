@@ -1,13 +1,12 @@
-package org.shigglewitz.chess.entity.dao.impl;
+package org.shigglewitz.chess.entity.dao;
 
 import java.util.UUID;
 
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 
-import org.shigglewitz.chess.entity.dao.ChessDao;
-import org.shigglewitz.chess.entity.game.Game;
-import org.shigglewitz.chess.entity.player.Player;
+import org.shigglewitz.chess.entity.Game;
+import org.shigglewitz.chess.entity.Player;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
