@@ -11,14 +11,22 @@
     <name>Shigglewitz Chess</name>
 
     <properties>
+        <!-- dependency versions -->
         <spring.version>4.0.5.RELEASE</spring.version>
         <hibernate.version>4.2.2.Final</hibernate.version>
         <c3p0.version>0.9.5-pre8</c3p0.version>
         <postgres.version>9.3-1101-jdbc41</postgres.version>
 
+        <!-- maven plugin versions -->
+        <templating-maven-plugin.version>1.0-alpha-3</templating-maven-plugin.version>
+        <maven-war-plugin.version>2.4</maven-war-plugin.version>
+
         <!-- used by java template -->
         <war.name>Chess</war.name>
+        <path.to.view.files>/WEB-INF/jsp/</path.to.view.files>
+        <view.extension>.jsp</view.extension>
         <controller.game.path>/game</controller.game.path>
+        <controller.player.path>/player</controller.player.path>
     </properties>
 
     <repositories>
@@ -207,7 +215,7 @@
             <plugin>
                 <groupId>org.codehaus.mojo</groupId>
                 <artifactId>templating-maven-plugin</artifactId>
-                <version>1.0-alpha-3</version>
+                <version>${templating-maven-plugin.version}</version>
                 <executions>
                     <execution>
                         <id>filter-src</id>
@@ -220,12 +228,48 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-war-plugin</artifactId>
-                <version>2.4</version>
+                <version>${maven-war-plugin.version}</version>
                 <configuration>
                     <webXml>src\main\webapp\WEB-INF\web.xml</webXml>
                 </configuration>
             </plugin>
         </plugins>
+        <pluginManagement>
+            <plugins>
+                <!--This plugin's configuration is used to store Eclipse 
+                    m2e settings only. It has no influence on the Maven build itself. -->
+                <plugin>
+                    <groupId>org.eclipse.m2e</groupId>
+                    <artifactId>lifecycle-mapping</artifactId>
+                    <version>1.0.0</version>
+                    <configuration>
+                        <lifecycleMappingMetadata>
+                            <pluginExecutions>
+                                <pluginExecution>
+                                    <pluginExecutionFilter>
+                                        <groupId>
+                                            org.codehaus.mojo
+                                        </groupId>
+                                        <artifactId>
+                                            templating-maven-plugin
+                                        </artifactId>
+                                        <versionRange>
+                                            [${templating-maven-plugin.version},)
+                                        </versionRange>
+                                        <goals>
+                                            <goal>filter-sources</goal>
+                                        </goals>
+                                    </pluginExecutionFilter>
+                                    <action>
+                                        <execute />
+                                    </action>
+                                </pluginExecution>
+                            </pluginExecutions>
+                        </lifecycleMappingMetadata>
+                    </configuration>
+                </plugin>
+            </plugins>
+        </pluginManagement>
         <resources>
             <resource>
                 <directory>src/main/resources</directory>
@@ -236,5 +280,22 @@
                 </includes>
             </resource>
         </resources>
+        <testResources>
+            <testResource>
+                <directory>src/main/resources</directory>
+                <filtering>true</filtering>
+                <includes>
+                    <include>*.xml</include>
+                    <include>*.sql</include>
+                </includes>
+            </testResource>
+            <testResource>
+                <directory>src/test/resources</directory>
+                <filtering>true</filtering>
+                <includes>
+                    <include>*.xml</include>
+                </includes>
+            </testResource>
+        </testResources>
     </build>
 </project>

@@ -46,7 +46,9 @@ public class ControllerTestHelper {
     }
 
     private static String getUrl(URL deploymentUrl, String path) {
-        return deploymentUrl.toString() + path;
+        // remove the last / from the deployment url
+        // the $ is the regex symbol for end of line
+        return deploymentUrl.toString().replaceAll("/$", "") + path;
     }
 
     private static void printResponse(ResponseEntity<String> response) {

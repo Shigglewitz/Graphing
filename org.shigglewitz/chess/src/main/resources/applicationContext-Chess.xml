@@ -20,10 +20,12 @@
     <bean
         class="org.springframework.web.servlet.view.InternalResourceViewResolver">
         <property name="prefix">
-            <value>/WEB-INF/jsp/</value>
+            <!-- /WEB-INF/jsp/ -->
+            <value>${path.to.view.files}</value>
         </property>
         <property name="suffix">
-            <value>.jsp</value>
+            <!-- .jsp -->
+            <value>${view.extension}</value>
         </property>
     </bean>
 
