@@ -11,7 +11,9 @@ import org.junit.runner.RunWith;
 import org.shigglewitz.chess.entity.Board;
 import org.shigglewitz.chess.entity.Game;
 import org.shigglewitz.chess.entity.Game.Color;
+import org.shigglewitz.chess.entity.Move;
 import org.shigglewitz.chess.entity.Player;
+import org.shigglewitz.chess.entity.pieces.Piece;
 import org.shigglewitz.chess.service.GameService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
@@ -95,15 +97,28 @@ public class ChessDaoImplTest {
     @Transactional
     public void testSaveGame() {
         Player player1 = new Player();
-        Game game = new Game(5);
+        Game game = new Game(5, "PBQKR", "NP PB");
 
         game.setLightPlayer(player1);
+
+        assertNull(player1.getId());
+        assertNull(game.getId());
+        assertNull(game.getBoard().getId());
+
+        for (Piece p : game.getBoard().getPieces()) {
+            assertNull(p.getId());
+        }
 
         this.chessDao.savePlayer(player1);
         this.chessDao.saveGame(game);
 
         assertNotNull(player1.getId());
         assertNotNull(game.getId());
+        assertNotNull(game.getBoard().getId());
+
+        for (Piece p : game.getBoard().getPieces()) {
+            assertNotNull(p.getId());
+        }
     }
 
     @Test
@@ -111,13 +126,21 @@ public class ChessDaoImplTest {
     public void testUpdateGame() {
         Game game = this.gameService.createGame();
         UUID id = game.getId();
-        assertEquals(Color.LIGHT, game.getNextMove());
+        assertEquals(Color.LIGHT, game.getColorToMove());
+        assertEquals(0, game.viewMoves().size());
 
-        game.setNextMove(Color.DARK);
+        assertNotNull(game.getBoard().getSquare("a2").getPiece().getId());
+
+        Move move = new Move(1, Color.LIGHT, game.getBoard().getSquare("a2")
+                .getPiece(), game.getBoard().getSquare("a4"), false, game);
+        this.chessDao.saveMove(move);
+        game.addMove(move);
+        game.setColorToMove(Color.DARK);
         this.chessDao.updateGame(game);
         game = null;
 
         game = this.chessDao.getGame(id);
-        assertEquals(Color.DARK, game.getNextMove());
+        assertEquals(Color.DARK, game.getColorToMove());
+        assertEquals(1, game.viewMoves().size());
     }
 }

@@ -7,7 +7,6 @@ import java.util.UUID;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
-import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import javax.persistence.OneToMany;
@@ -15,6 +14,8 @@ import javax.persistence.Table;
 import javax.persistence.Transient;
 
 import org.hibernate.annotations.GenericGenerator;
+import org.hibernate.annotations.LazyCollection;
+import org.hibernate.annotations.LazyCollectionOption;
 import org.hibernate.annotations.Type;
 import org.shigglewitz.chess.entity.Game.Color;
 import org.shigglewitz.chess.entity.pieces.Bishop;
@@ -37,6 +38,7 @@ public class Board implements Serializable {
             + System.lineSeparator() + "PPPPPPPP";
 
     private List<Square> squares;
+    private List<Piece> pieces;
     private int size;
     private UUID id;
 
@@ -44,6 +46,7 @@ public class Board implements Serializable {
     }
 
     public Board(int size, String lightStart, String darkStart) {
+        this.pieces = new ArrayList<>();
         String[] lightRanks = lightStart.split(System.lineSeparator());
         String[] darkRanks = darkStart.split(System.lineSeparator());
 
@@ -76,42 +79,62 @@ public class Board implements Serializable {
         }
 
         // create pieces and add to squares
+        int file = -1;
+        int rank = -1;
+        char currentPiece = 0;
         // light pieces
         for (int i = 0; i < lightRanks.length; i++) {
             for (int j = 0; j < size; j++) {
-                this.getSquare(j + 1, lightRanks.length - i).setPiece(
-                        createPiece(lightRanks[i].charAt(j), Color.LIGHT));
+                file = j + 1;
+                rank = lightRanks.length - i;
+                currentPiece = lightRanks[i].charAt(j);
+
+                if (currentPiece != ' ') {
+                    Piece p = createPiece(currentPiece, Color.LIGHT, this);
+                    p.setFile(file);
+                    p.setRank(rank);
+                    this.pieces.add(p);
+                    this.getSquare(file, rank).setPiece(p);
+                }
             }
         }
 
         // dark pieces
         for (int i = 0; i < darkRanks.length; i++) {
             for (int j = 0; j < size; j++) {
-                this.getSquare(j + 1, size - i).setPiece(
-                        createPiece(darkRanks[i].charAt(j), Color.DARK));
+                file = j + 1;
+                rank = size - i;
+                currentPiece = darkRanks[i].charAt(j);
+
+                if (currentPiece != ' ') {
+                    Piece p = createPiece(currentPiece, Color.DARK, this);
+                    p.setFile(file);
+                    p.setRank(rank);
+                    this.pieces.add(p);
+                    this.getSquare(j + 1, size - i).setPiece(p);
+                }
             }
         }
     }
 
-    protected static Piece createPiece(char shorthand, Color color) {
+    protected static Piece createPiece(char shorthand, Color color, Board board) {
         switch (shorthand) {
         case Pawn.SHORTHAND:
-            return new Pawn(color);
+            return new Pawn(color, board);
         case Rook.SHORTHAND:
-            return new Rook(color);
+            return new Rook(color, board);
         case Knight.SHORTHAND:
-            return new Knight(color);
+            return new Knight(color, board);
         case Bishop.SHORTHAND:
-            return new Bishop(color);
+            return new Bishop(color, board);
         case Queen.SHORTHAND:
-            return new Queen(color);
+            return new Queen(color, board);
         case King.SHORTHAND:
-            return new King(color);
+            return new King(color, board);
         default:
-            break;
+            throw new IllegalArgumentException(shorthand
+                    + " is not a valid piece indicator");
         }
-
-        return null;
     }
 
     public static Board createDefaultBoard() {
@@ -137,7 +160,8 @@ public class Board implements Serializable {
      * 
      * @return
      */
-    @OneToMany(mappedBy = "squareId.board", fetch = FetchType.EAGER)
+    @LazyCollection(LazyCollectionOption.FALSE)
+    @OneToMany(mappedBy = "squareId.board")
     protected List<Square> getSquares() {
         return this.squares;
     }
@@ -163,6 +187,21 @@ public class Board implements Serializable {
         int[] fileAndRank = Square.getFileAndRankFromDescr(descr);
 
         return this.getSquare(fileAndRank[0], fileAndRank[1]);
+    }
+
+    @LazyCollection(LazyCollectionOption.FALSE)
+    @OneToMany(mappedBy = "board")
+    public List<Piece> getPieces() {
+        return this.pieces;
+    }
+
+    /**
+     * should only be used by hibernate
+     * 
+     * @param pieces
+     */
+    protected void setPieces(List<Piece> pieces) {
+        this.pieces = pieces;
     }
 
     public int getSize() {

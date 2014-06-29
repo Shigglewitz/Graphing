@@ -1,60 +1,29 @@
 package org.shigglewitz.chess.entity.pieces;
 
+import javax.persistence.DiscriminatorValue;
+import javax.persistence.Entity;
+
+import org.shigglewitz.chess.entity.Board;
 import org.shigglewitz.chess.entity.Game.Color;
 
-public class Rook implements Piece {
-	public static final char SHORTHAND = 'R';
+@Entity
+@DiscriminatorValue("Rook")
+public class Rook extends Piece {
+    private static final long serialVersionUID = 499825860183232138L;
 
-	private Color color;
-	private boolean moved;
-	private String name;
-	private boolean captured;
+    public static final char SHORTHAND = 'R';
 
-	public Rook(Color color) {
-		this.color = color;
-		this.moved = false;
-		this.name = "Rook";
-		this.captured = false;
-	}
+    /**
+     * should only be used by hibernate
+     */
+    protected Rook() {
+    };
 
-	@Override
-	public Color getColor() {
-		return this.color;
-	}
-
-	@Override
-	public void setColor(Color color) {
-		this.color = color;
-	}
-
-	@Override
-	public String getName() {
-		return this.name;
-	}
-
-	@Override
-	public void setName(String name) {
-		this.name = name;
-	}
-
-	@Override
-	public boolean isMoved() {
-		return this.moved;
-	}
-
-	@Override
-	public void setMoved(boolean moved) {
-		this.moved = moved;
-	}
-
-	@Override
-	public boolean isCaptured() {
-		return this.captured;
-	}
-
-	@Override
-	public void setCaptured(boolean captured) {
-		this.captured = captured;
-	}
-
+    public Rook(Color color, Board board) {
+        this.color = color;
+        this.moved = false;
+        this.name = "Rook";
+        this.captured = false;
+        this.board = board;
+    }
 }

@@ -3,6 +3,7 @@ package org.shigglewitz.chess.entity.dao;
 import java.util.UUID;
 
 import org.shigglewitz.chess.entity.Game;
+import org.shigglewitz.chess.entity.Move;
 import org.shigglewitz.chess.entity.Player;
 
 public interface ChessDao {
@@ -17,4 +18,6 @@ public interface ChessDao {
     void updatePlayer(Player player);
 
     void updateGame(Game game);
+
+    void saveMove(Move move);
 }
