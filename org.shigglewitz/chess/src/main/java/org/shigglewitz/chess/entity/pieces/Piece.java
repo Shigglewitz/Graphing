@@ -1,5 +1,6 @@
 package org.shigglewitz.chess.entity.pieces;
 
+import java.io.Serializable;
 import java.util.UUID;
 
 import javax.persistence.Column;
@@ -23,7 +24,9 @@ import org.shigglewitz.chess.entity.Game.Color;
 @Table(name = "pieces")
 @Inheritance(strategy = InheritanceType.SINGLE_TABLE)
 @DiscriminatorColumn(name = "type", discriminatorType = DiscriminatorType.STRING)
-public abstract class Piece {
+public abstract class Piece implements Serializable {
+    private static final long serialVersionUID = -2115083671763364158L;
+
     protected Color color;
     protected boolean moved;
     protected String name;

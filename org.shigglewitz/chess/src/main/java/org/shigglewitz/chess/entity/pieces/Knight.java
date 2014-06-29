@@ -9,6 +9,8 @@ import org.shigglewitz.chess.entity.Game.Color;
 @Entity
 @DiscriminatorValue("Knight")
 public class Knight extends Piece {
+    private static final long serialVersionUID = -1053742019637114436L;
+
     public static final char SHORTHAND = 'N';
 
     /**

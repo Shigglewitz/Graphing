@@ -9,6 +9,8 @@ import org.shigglewitz.chess.entity.Game.Color;
 @Entity
 @DiscriminatorValue("Rook")
 public class Rook extends Piece {
+    private static final long serialVersionUID = 499825860183232138L;
+
     public static final char SHORTHAND = 'R';
 
     /**
