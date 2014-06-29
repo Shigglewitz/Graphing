@@ -1,59 +1,27 @@
 package org.shigglewitz.chess.entity.pieces;
 
+import javax.persistence.DiscriminatorValue;
+import javax.persistence.Entity;
+
+import org.shigglewitz.chess.entity.Board;
 import org.shigglewitz.chess.entity.Game.Color;
 
-public class Knight implements Piece {
-	public static final char SHORTHAND = 'N';
+@Entity
+@DiscriminatorValue("Knight")
+public class Knight extends Piece {
+    public static final char SHORTHAND = 'N';
 
-	private Color color;
-	private boolean moved;
-	private String name;
-	private boolean captured;
+    /**
+     * should only be used by hibernate
+     */
+    protected Knight() {
+    };
 
-	public Knight(Color color) {
-		this.color = color;
-		this.moved = false;
-		this.name = "Knight";
-		this.captured = false;
-	}
-
-	@Override
-	public Color getColor() {
-		return this.color;
-	}
-
-	@Override
-	public void setColor(Color color) {
-		this.color = color;
-	}
-
-	@Override
-	public String getName() {
-		return this.name;
-	}
-
-	@Override
-	public void setName(String name) {
-		this.name = name;
-	}
-
-	@Override
-	public boolean isMoved() {
-		return this.moved;
-	}
-
-	@Override
-	public void setMoved(boolean moved) {
-		this.moved = moved;
-	}
-
-	@Override
-	public boolean isCaptured() {
-		return this.captured;
-	}
-
-	@Override
-	public void setCaptured(boolean captured) {
-		this.captured = captured;
-	}
+    public Knight(Color color, Board board) {
+        this.color = color;
+        this.moved = false;
+        this.name = "Knight";
+        this.captured = false;
+        this.board = board;
+    }
 }
