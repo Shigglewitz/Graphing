@@ -35,7 +35,7 @@ http://www.springframework.org/schema/jdbc/spring-jdbc-3.2.xsd">
 		</property>
 	</bean>
 
-	<jdbc:initialize-database data-source="dataSource">
+	<jdbc:initialize-database data-source="dataSource" enabled="false">
 		<jdbc:script execution="INIT" location="classpath:chessSetup.sql"
 			encoding="UTF-8" />
 		<jdbc:script execution="DESTROY" location="classpath:chessTeardown.sql"

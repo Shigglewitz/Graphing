@@ -14,6 +14,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.shigglewitz.chess.entity.Game;
 import org.shigglewitz.chess.entity.random.RandomUtil;
+import org.shigglewitz.chess.maven.Properties;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
@@ -35,8 +36,9 @@ public class GameControllerTest {
     public void testViewGame() {
         Game game = this.randomUtil.createRandomDefaultGame();
         ResponseEntity<String> response = null;
-        response = ControllerTestHelper.accessUrl(this.deploymentUrl, "game/"
-                + game.getId(), HttpMethod.GET);
+        response = ControllerTestHelper.accessUrl(this.deploymentUrl,
+                Properties.GAME_CONTROLLER_PATH + "/" + game.getId(),
+                HttpMethod.GET);
         assertEquals(HttpStatus.OK, response.getStatusCode());
 
         assertNotNull(response.getBody());

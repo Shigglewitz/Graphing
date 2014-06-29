@@ -6,6 +6,7 @@ import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.container.test.api.TargetsContainer;
 import org.jboss.shrinkwrap.api.ShrinkWrap;
 import org.jboss.shrinkwrap.api.spec.WebArchive;
+import org.shigglewitz.chess.maven.Properties;
 
 public class Deployments {
     private static WebArchive controllerWar;
@@ -20,8 +21,7 @@ public class Deployments {
 
         controllerWar = ShrinkWrap.create(WebArchive.class, "Chess.war");
         controllerWar.setWebXML(new File(WEBAPP_SRC, "WEB-INF/web.xml"));
-        controllerWar.addPackage(Package
-                .getPackage("org.shigglewitz.chess.controller"));
+        controllerWar.addPackage(GameController.class.getPackage());
         String[] jsps = getJsps(new String[] { "viewChess" });
 
         for (String jsp : jsps) {
@@ -35,7 +35,9 @@ public class Deployments {
 
     private static String[] getJsps(String[] jspNames) {
         for (int i = 0; i < jspNames.length; i++) {
-            jspNames[i] = "WEB-INF/jsp/" + jspNames[i] + ".jsp";
+            // "/WEB-INF/jsp/" + name + ".jsp"
+            jspNames[i] = Properties.VIEW_FILE_PATH + jspNames[i]
+                    + Properties.VIEW_EXTENSION;
         }
 
         return jspNames;
