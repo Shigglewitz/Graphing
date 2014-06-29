@@ -6,7 +6,9 @@ import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 
 import org.shigglewitz.chess.entity.Game;
+import org.shigglewitz.chess.entity.Move;
 import org.shigglewitz.chess.entity.Player;
+import org.shigglewitz.chess.entity.pieces.Piece;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
@@ -37,6 +39,9 @@ public class ChessDaoImpl implements ChessDao {
     @Override
     @Transactional(propagation = Propagation.MANDATORY)
     public void saveGame(Game game) {
+        for (Piece p : game.getBoard().getPieces()) {
+            this.entityManager.persist(p);
+        }
         this.entityManager.persist(game.getBoard());
         this.entityManager.persist(game);
         this.entityManager.flush();
@@ -60,6 +65,13 @@ public class ChessDaoImpl implements ChessDao {
     @Transactional(propagation = Propagation.MANDATORY)
     public void updateGame(Game game) {
         this.entityManager.merge(game);
+        this.entityManager.flush();
+    }
+
+    @Override
+    @Transactional(propagation = Propagation.MANDATORY)
+    public void saveMove(Move move) {
+        this.entityManager.persist(move);
         this.entityManager.flush();
     }
 }

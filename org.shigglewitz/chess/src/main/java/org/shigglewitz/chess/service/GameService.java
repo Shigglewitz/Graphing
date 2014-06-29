@@ -63,12 +63,12 @@ public class GameService {
         destSquare.setPiece(startSquare.getPiece());
         startSquare.setPiece(null);
 
-        switch (game.getNextMove()) {
+        switch (game.getColorToMove()) {
         case LIGHT:
-            game.setNextMove(Color.DARK);
+            game.setColorToMove(Color.DARK);
             break;
         case DARK:
-            game.setNextMove(Color.LIGHT);
+            game.setColorToMove(Color.LIGHT);
             break;
         }
 

@@ -55,7 +55,7 @@ public class GameController {
             throw new BadRequestException(this.invalidPlayerIdMessage(playerId));
         }
 
-        switch (game.getNextMove()) {
+        switch (game.getColorToMove()) {
         case LIGHT:
             this.validatePlayersTurn(game.getLightPlayer(), player);
             break;
