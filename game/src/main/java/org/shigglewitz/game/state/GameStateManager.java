@@ -8,11 +8,15 @@ public class GameStateManager {
     private final List<GameState> gameStates;
     private int currentState = 0;
 
+    public static final int MENU_STATE = 0;
+    public static final int LEVEL_1_STATE = 1;
+
     public GameStateManager() {
         gameStates = new ArrayList<>();
 
         currentState = 0;
         gameStates.add(new MenuState(this));
+        gameStates.add(new Level1State(this));
     }
 
     public void setState(int state) {
