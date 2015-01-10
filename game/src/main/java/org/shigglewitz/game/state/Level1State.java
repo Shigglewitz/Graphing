@@ -5,6 +5,8 @@ import java.awt.Point;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.shigglewitz.game.audio.AudioPlayer;
+import org.shigglewitz.game.audio.BackgroundPlayer;
 import org.shigglewitz.game.config.Config;
 import org.shigglewitz.game.config.Controls;
 import org.shigglewitz.game.entity.Enemy;
@@ -25,9 +27,10 @@ public class Level1State extends GameState {
     private List<Explosion> explosions;
     private HUD hud;
 
+    private AudioPlayer bgMusic;
+
     public Level1State(GameStateManager gsm) {
         this.gsm = gsm;
-        init();
     }
 
     @Override
@@ -47,6 +50,11 @@ public class Level1State extends GameState {
         explosions = new ArrayList<>();
 
         hud = new HUD(player);
+
+        bgMusic = new BackgroundPlayer(Config.LEVEL_1_1_MUSIC);
+        bgMusic.play();
+
+        initialized = true;
     }
 
     private void populateEnemies() {

@@ -3,10 +3,13 @@ package org.shigglewitz.game.entity;
 import java.awt.Graphics2D;
 import java.awt.image.BufferedImage;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import javax.imageio.ImageIO;
 
+import org.shigglewitz.game.audio.AudioPlayer;
 import org.shigglewitz.game.config.Config;
 import org.shigglewitz.game.tilemap.TileMap;
 
@@ -41,6 +44,8 @@ public class Player extends MapObject {
     private static final int GLIDING = 4;
     private static final int FIREBALL = 5;
     private static final int SCRATCHING = 6;
+
+    private final Map<String, AudioPlayer> sfx;
 
     public Player(TileMap tm) {
         super(tm);
@@ -97,6 +102,10 @@ public class Player extends MapObject {
         animation.setFrames(sprites.get(IDLE));
         animation.setDelay(400);
         currentAction = IDLE;
+
+        sfx = new HashMap<>();
+        sfx.put("jump", new AudioPlayer(Config.JUMP_SFX));
+        sfx.put("scratch", new AudioPlayer(Config.SCRATCH_SFX));
     }
 
     public int getHealth() {
@@ -116,11 +125,15 @@ public class Player extends MapObject {
     }
 
     public void setFiring() {
-        firing = true;
+        if (canAttack()) {
+            firing = true;
+        }
     }
 
     public void setScratching() {
-        scratching = true;
+        if (canAttack()) {
+            scratching = true;
+        }
     }
 
     public void setGliding(boolean b) {
@@ -178,6 +191,7 @@ public class Player extends MapObject {
 
         // jumping
         if (jumping && !falling) {
+            sfx.get("jump").play();
             dy = jumpStart;
             falling = true;
         }
@@ -199,6 +213,10 @@ public class Player extends MapObject {
                 dy = maxFallSpeed;
             }
         }
+    }
+
+    public boolean canAttack() {
+        return !scratching && !firing;
     }
 
     public void update() {
@@ -253,6 +271,7 @@ public class Player extends MapObject {
         // set animations
         if (scratching) {
             if (currentAction != SCRATCHING) {
+                sfx.get("scratch").play();
                 currentAction = SCRATCHING;
                 animation.setFrames(sprites.get(SCRATCHING));
                 animation.setDelay(50);

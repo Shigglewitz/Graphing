@@ -14,9 +14,10 @@ public class GameStateManager {
     public GameStateManager() {
         gameStates = new ArrayList<>();
 
-        currentState = 0;
         gameStates.add(new MenuState(this));
         gameStates.add(new Level1State(this));
+
+        setState(MENU_STATE);
     }
 
     public void setState(int state) {
@@ -25,18 +26,27 @@ public class GameStateManager {
     }
 
     public void update() {
-        gameStates.get(currentState).update();
+        if (gameStates.get(currentState).isInitialized()) {
+            gameStates.get(currentState).update();
+        }
     }
 
     public void draw(Graphics2D g) {
-        gameStates.get(currentState).draw(g);
+        if (gameStates.get(currentState).isInitialized()) {
+            gameStates.get(currentState).draw(g);
+        }
+
     }
 
     public void keyPressed(int k) {
-        gameStates.get(currentState).keyPressed(k);
+        if (gameStates.get(currentState).isInitialized()) {
+            gameStates.get(currentState).keyPressed(k);
+        }
     }
 
     public void keyReleased(int k) {
-        gameStates.get(currentState).keyReleased(k);
+        if (gameStates.get(currentState).isInitialized()) {
+            gameStates.get(currentState).keyReleased(k);
+        }
     }
 }

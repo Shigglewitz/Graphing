@@ -22,6 +22,13 @@ public interface Config {
     public static final String MAP_FOLDER = "/maps/";
     public static final String LEVEL_1_1_MAP = MAP_FOLDER + "level1-1.map";
 
+    public static final String MUSIC_FOLDER = "/music/";
+    public static final String LEVEL_1_1_MUSIC = MUSIC_FOLDER + "level1-1.mp3";
+
+    public static final String SFX_FOLDER = "/sfx/";
+    public static final String JUMP_SFX = SFX_FOLDER + "jump.mp3";
+    public static final String SCRATCH_SFX = SFX_FOLDER + "scratch.mp3";
+
     public static final String SPRITES_FOLDER = "/sprites/";
     public static final String ENEMY_SPRITES_FOLDER = SPRITES_FOLDER + "enemy/";
     public static final String SLUGGER_SPRITE = ENEMY_SPRITES_FOLDER

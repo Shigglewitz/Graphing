@@ -4,6 +4,7 @@ import java.awt.Graphics2D;
 
 public abstract class GameState {
     protected GameStateManager gsm;
+    protected boolean initialized = false;
 
     protected abstract void init();
 
@@ -14,4 +15,8 @@ public abstract class GameState {
     protected abstract void keyPressed(int k);
 
     protected abstract void keyReleased(int k);
+
+    public boolean isInitialized() {
+        return initialized;
+    }
 }
