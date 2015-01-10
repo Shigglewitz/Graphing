@@ -12,7 +12,7 @@ import org.shigglewitz.game.tilemap.TileMap;
 
 public class Player extends MapObject {
 
-    private final int health;
+    private int health;
     private int maxHealth;
     private int fire;
     private int maxFire;
@@ -127,6 +127,23 @@ public class Player extends MapObject {
         gliding = b;
     }
 
+    public void hit(int damage) {
+        if (dead || flinching) {
+            return;
+        }
+
+        health -= damage;
+        if (health < 0) {
+            health = 0;
+        }
+        if (health == 0) {
+            dead = true;
+        }
+
+        flinching = true;
+        flinchTimer = System.nanoTime();
+    }
+
     private void getNextPosition() {
         // movement
         if (left) {
@@ -225,6 +242,14 @@ public class Player extends MapObject {
             }
         }
 
+        // check flinching
+        if (flinching) {
+            long elapsed = (System.nanoTime() - flinchTimer) / 1_000_000;
+            if (elapsed > 1000) {
+                flinching = false;
+            }
+        }
+
         // set animations
         if (scratching) {
             if (currentAction != SCRATCHING) {
@@ -308,5 +333,39 @@ public class Player extends MapObject {
         }
 
         super.draw(g);
+    }
+
+    public void checkAttack(List<Enemy> enemies) {
+        for (Enemy e : enemies) {
+            // check scratch attack
+            if (scratching) {
+                if (facingRight) {
+                    if (e.getX() > x && e.getX() < x + scratchRange
+                            && e.getY() > y - height / 2
+                            && e.getY() < y + height / 2) {
+                        e.hit(scratchDamage);
+                    }
+                } else {
+                    if (e.getX() < x && e.getX() > x - scratchRange
+                            && e.getY() > y - height / 2
+                            && e.getY() < y + height / 2) {
+                        e.hit(scratchDamage);
+                    }
+                }
+            }
+
+            // check fireballs
+            for (FireBall f : fireBalls) {
+                if (f.intersects(e)) {
+                    e.hit(fireballDamage);
+                    f.setHit();
+                }
+            }
+
+            // check enemy collision
+            if (intersects(e)) {
+                hit(e.getDamage());
+            }
+        }
     }
 }

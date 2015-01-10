@@ -1,12 +1,14 @@
 package org.shigglewitz.game.state;
 
 import java.awt.Graphics2D;
+import java.awt.Point;
 import java.util.ArrayList;
 import java.util.List;
 
 import org.shigglewitz.game.config.Config;
 import org.shigglewitz.game.config.Controls;
 import org.shigglewitz.game.entity.Enemy;
+import org.shigglewitz.game.entity.Explosion;
 import org.shigglewitz.game.entity.HUD;
 import org.shigglewitz.game.entity.Player;
 import org.shigglewitz.game.entity.enemies.Slugger;
@@ -20,6 +22,7 @@ public class Level1State extends GameState {
 
     private Player player;
     private List<Enemy> enemies;
+    private List<Explosion> explosions;
     private HUD hud;
 
     public Level1State(GameStateManager gsm) {
@@ -39,12 +42,27 @@ public class Level1State extends GameState {
         player = new Player(tileMap);
         player.setPosition(100, 100);
 
-        enemies = new ArrayList<>();
-        Slugger s = new Slugger(tileMap);
-        s.setPosition(100, 100);
-        enemies.add(s);
+        populateEnemies();
+
+        explosions = new ArrayList<>();
 
         hud = new HUD(player);
+    }
+
+    private void populateEnemies() {
+        enemies = new ArrayList<>();
+
+        Point[] locations = new Point[] { new Point(200, 100),
+                new Point(860, 200), new Point(1525, 200),
+                new Point(1680, 200), new Point(1800, 200), };
+
+        Slugger s;
+        for (Point p : locations) {
+            s = new Slugger(tileMap);
+            s.setPosition(p.getX(), p.getY());
+            enemies.add(s);
+        }
+
     }
 
     @Override
@@ -57,8 +75,26 @@ public class Level1State extends GameState {
         // set background
         bg.setPosition(tileMap.getX(), tileMap.getY());
 
-        for (Enemy e : enemies) {
+        // attack enemies
+        player.checkAttack(enemies);
+
+        for (int i = 0; i < enemies.size(); i++) {
+            Enemy e = enemies.get(i);
             e.update();
+            if (e.isDead()) {
+                enemies.remove(i);
+                i--;
+                explosions.add(new Explosion(tileMap, e.getX(), e.getY()));
+            }
+        }
+
+        for (int i = 0; i < explosions.size(); i++) {
+            Explosion e = explosions.get(i);
+            e.update();
+            if (e.shouldRemove()) {
+                explosions.remove(i);
+                i--;
+            }
         }
     }
 
@@ -71,6 +107,10 @@ public class Level1State extends GameState {
         player.draw(g);
 
         for (Enemy e : enemies) {
+            e.draw(g);
+        }
+
+        for (Explosion e : explosions) {
             e.draw(g);
         }
 
