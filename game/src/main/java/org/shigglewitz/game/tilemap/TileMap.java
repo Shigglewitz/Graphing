@@ -44,7 +44,7 @@ public class TileMap {
         numRowsToDraw = Config.HEIGHT / tileSize + 2;
         numColsToDraw = Config.WIDTH / tileSize + 2;
 
-        tween = 0.07;
+        tween = 1;
     }
 
     public void loadTiles(String s) {
@@ -100,12 +100,12 @@ public class TileMap {
         return tileSize;
     }
 
-    public int getX() {
-        return (int) x;
+    public double getX() {
+        return x;
     }
 
-    public int getY() {
-        return (int) y;
+    public double getY() {
+        return y;
     }
 
     public int getWidth() {
@@ -132,15 +132,9 @@ public class TileMap {
         return tiles[r][c].getType();
     }
 
-    @SuppressWarnings("unused")
     public void setPosition(double x, double y) {
-        if (Config.CAMERA_MODE == 0) {
-            this.x = x;
-            this.y = y;
-        } else {
-            this.x += (x - this.x) * tween;
-            this.y += (y - this.y) * tween;
-        }
+        this.x += (x - this.x) * tween;
+        this.y += (y - this.y) * tween;
 
         fixBounds();
 

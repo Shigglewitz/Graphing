@@ -1,10 +1,15 @@
 package org.shigglewitz.game.state;
 
 import java.awt.Graphics2D;
+import java.util.ArrayList;
+import java.util.List;
 
 import org.shigglewitz.game.config.Config;
 import org.shigglewitz.game.config.Controls;
+import org.shigglewitz.game.entity.Enemy;
+import org.shigglewitz.game.entity.HUD;
 import org.shigglewitz.game.entity.Player;
+import org.shigglewitz.game.entity.enemies.Slugger;
 import org.shigglewitz.game.tilemap.Background;
 import org.shigglewitz.game.tilemap.TileMap;
 
@@ -14,6 +19,8 @@ public class Level1State extends GameState {
     private Background bg;
 
     private Player player;
+    private List<Enemy> enemies;
+    private HUD hud;
 
     public Level1State(GameStateManager gsm) {
         this.gsm = gsm;
@@ -31,14 +38,28 @@ public class Level1State extends GameState {
 
         player = new Player(tileMap);
         player.setPosition(100, 100);
+
+        enemies = new ArrayList<>();
+        Slugger s = new Slugger(tileMap);
+        s.setPosition(100, 100);
+        enemies.add(s);
+
+        hud = new HUD(player);
     }
 
     @Override
     protected void update() {
+        // update player
         player.update();
-
         tileMap.setPosition(Config.WIDTH / 2 - player.getX(), Config.HEIGHT / 2
                 - player.getY());
+
+        // set background
+        bg.setPosition(tileMap.getX(), tileMap.getY());
+
+        for (Enemy e : enemies) {
+            e.update();
+        }
     }
 
     @Override
@@ -48,6 +69,12 @@ public class Level1State extends GameState {
         tileMap.draw(g);
 
         player.draw(g);
+
+        for (Enemy e : enemies) {
+            e.draw(g);
+        }
+
+        hud.draw(g);
     }
 
     @Override

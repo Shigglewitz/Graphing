@@ -16,10 +16,20 @@ public interface Config {
     public static final String GRASS_BACKGROUND = BACKGROUND_FOLDER
             + "grassbg1.gif";
 
+    public static final String HUD_FOLDER = "/hud/";
+    public static final String HUD_SPRITE = HUD_FOLDER + "hud.gif";
+
     public static final String MAP_FOLDER = "/maps/";
     public static final String LEVEL_1_1_MAP = MAP_FOLDER + "level1-1.map";
 
     public static final String SPRITES_FOLDER = "/sprites/";
+    public static final String ENEMY_SPRITES_FOLDER = SPRITES_FOLDER + "enemy/";
+    public static final String SLUGGER_SPRITE = ENEMY_SPRITES_FOLDER
+            + "slugger.gif";
+    public static final String ARACHNIK_SPRITE = ENEMY_SPRITES_FOLDER
+            + "arachnik.gif";
+    public static final String ENEMY_EXPLOSION_SPRITE = ENEMY_SPRITES_FOLDER
+            + "explosion.gif";
     public static final String PLAYER_SPRITES_FOLDER = SPRITES_FOLDER
             + "player/";
     public static final String FIREBALL_SPRITE = PLAYER_SPRITES_FOLDER
@@ -30,6 +40,4 @@ public interface Config {
     public static final String TILESET_FOLDER = "/tilesets/";
     public static final String LEVEL_1_TILESET = TILESET_FOLDER
             + "grasstileset.gif";
-
-    public static int CAMERA_MODE = 0;
 }
