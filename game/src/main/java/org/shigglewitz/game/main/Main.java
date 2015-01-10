@@ -2,6 +2,8 @@ package org.shigglewitz.game.main;
 
 import javax.swing.JFrame;
 
+import org.shigglewitz.game.config.Config;
+
 public class Main {
 
     public static void main(String[] args) {

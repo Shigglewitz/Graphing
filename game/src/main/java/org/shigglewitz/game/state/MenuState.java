@@ -4,7 +4,7 @@ import java.awt.Color;
 import java.awt.Graphics2D;
 import java.awt.event.KeyEvent;
 
-import org.shigglewitz.game.main.Config;
+import org.shigglewitz.game.config.Config;
 import org.shigglewitz.game.tilemap.Background;
 
 public class MenuState extends GameState {

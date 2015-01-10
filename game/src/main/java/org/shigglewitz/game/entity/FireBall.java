@@ -5,7 +5,7 @@ import java.awt.image.BufferedImage;
 
 import javax.imageio.ImageIO;
 
-import org.shigglewitz.game.main.Config;
+import org.shigglewitz.game.config.Config;
 import org.shigglewitz.game.tilemap.TileMap;
 
 public class FireBall extends MapObject {

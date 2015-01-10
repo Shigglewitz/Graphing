@@ -6,7 +6,7 @@ import java.io.IOException;
 
 import javax.imageio.ImageIO;
 
-import org.shigglewitz.game.main.Config;
+import org.shigglewitz.game.config.Config;
 
 public class Background {
     private BufferedImage image;

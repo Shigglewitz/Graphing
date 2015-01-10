@@ -9,6 +9,7 @@ import java.awt.image.BufferedImage;
 
 import javax.swing.JPanel;
 
+import org.shigglewitz.game.config.Config;
 import org.shigglewitz.game.state.GameStateManager;
 
 public class GamePanel extends JPanel implements Runnable, KeyListener {

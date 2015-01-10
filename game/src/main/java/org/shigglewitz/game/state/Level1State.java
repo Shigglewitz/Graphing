@@ -1,10 +1,10 @@
 package org.shigglewitz.game.state;
 
 import java.awt.Graphics2D;
-import java.awt.event.KeyEvent;
 
+import org.shigglewitz.game.config.Config;
+import org.shigglewitz.game.config.Controls;
 import org.shigglewitz.game.entity.Player;
-import org.shigglewitz.game.main.Config;
 import org.shigglewitz.game.tilemap.Background;
 import org.shigglewitz.game.tilemap.TileMap;
 
@@ -52,50 +52,50 @@ public class Level1State extends GameState {
 
     @Override
     protected void keyPressed(int k) {
-        if (k == KeyEvent.VK_LEFT) {
+        if (k == Controls.LEFT) {
             player.setLeft(true);
         }
-        if (k == KeyEvent.VK_RIGHT) {
+        if (k == Controls.RIGHT) {
             player.setRight(true);
         }
-        if (k == KeyEvent.VK_UP) {
+        if (k == Controls.UP) {
             player.setUp(true);
         }
-        if (k == KeyEvent.VK_DOWN) {
+        if (k == Controls.DOWN) {
             player.setDown(true);
         }
-        if (k == KeyEvent.VK_W) {
+        if (k == Controls.JUMP) {
             player.setJumping(true);
         }
-        if (k == KeyEvent.VK_E) {
+        if (k == Controls.GLIDE) {
             player.setGliding(true);
         }
-        if (k == KeyEvent.VK_R) {
+        if (k == Controls.SCRATCH) {
             player.setScratching();
         }
-        if (k == KeyEvent.VK_F) {
+        if (k == Controls.FIREBALL) {
             player.setFiring();
         }
     }
 
     @Override
     protected void keyReleased(int k) {
-        if (k == KeyEvent.VK_LEFT) {
+        if (k == Controls.LEFT) {
             player.setLeft(false);
         }
-        if (k == KeyEvent.VK_RIGHT) {
+        if (k == Controls.RIGHT) {
             player.setRight(false);
         }
-        if (k == KeyEvent.VK_UP) {
+        if (k == Controls.UP) {
             player.setUp(false);
         }
-        if (k == KeyEvent.VK_DOWN) {
+        if (k == Controls.DOWN) {
             player.setDown(false);
         }
-        if (k == KeyEvent.VK_W) {
+        if (k == Controls.JUMP) {
             player.setJumping(false);
         }
-        if (k == KeyEvent.VK_E) {
+        if (k == Controls.GLIDE) {
             player.setGliding(false);
         }
     }

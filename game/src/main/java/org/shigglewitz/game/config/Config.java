@@ -1,4 +1,4 @@
-package org.shigglewitz.game.main;
+package org.shigglewitz.game.config;
 
 public interface Config {
     public static final String WINDOW_TITLE = "TITLE";

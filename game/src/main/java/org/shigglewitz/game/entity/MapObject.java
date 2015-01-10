@@ -2,7 +2,7 @@ package org.shigglewitz.game.entity;
 
 import java.awt.Rectangle;
 
-import org.shigglewitz.game.main.Config;
+import org.shigglewitz.game.config.Config;
 import org.shigglewitz.game.tilemap.Tile.Type;
 import org.shigglewitz.game.tilemap.TileMap;
 
