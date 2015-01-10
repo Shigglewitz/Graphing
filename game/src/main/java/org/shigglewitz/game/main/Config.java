@@ -22,6 +22,8 @@ public interface Config {
     public static final String SPRITES_FOLDER = "/sprites/";
     public static final String PLAYER_SPRITES_FOLDER = SPRITES_FOLDER
             + "player/";
+    public static final String FIREBALL_SPRITE = PLAYER_SPRITES_FOLDER
+            + "fireball.gif";
     public static final String PLAYER_SPRITE = PLAYER_SPRITES_FOLDER
             + "playersprites.gif";
 

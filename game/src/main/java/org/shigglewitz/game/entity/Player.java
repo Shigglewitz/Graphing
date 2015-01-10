@@ -14,7 +14,7 @@ public class Player extends MapObject {
 
     private final int health;
     private int maxHealth;
-    private final int fire;
+    private int fire;
     private int maxFire;
     private boolean dead;
     private boolean flinching;
@@ -84,7 +84,7 @@ public class Player extends MapObject {
                                 width, height);
                     } else {
                         bi[j] = spriteSheet.getSubimage(j * width * 2, i
-                                * height, width, height);
+                                * height, width * 2, height);
                     }
                 }
                 sprites.add(bi);
@@ -190,6 +190,41 @@ public class Player extends MapObject {
         checkTileMapCollision();
         setPosition(xtemp, ytemp);
 
+        // check attack has stopped
+        if (currentAction == SCRATCHING) {
+            if (animation.hasPlayedOnce()) {
+                scratching = false;
+            }
+        }
+        if (currentAction == FIREBALL) {
+            if (animation.hasPlayedOnce()) {
+                firing = false;
+            }
+        }
+
+        // fire attack
+        fire += 1;
+        if (fire > maxFire) {
+            fire = maxFire;
+        }
+        if (firing && currentAction != FIREBALL) {
+            if (fire > fireCost) {
+                fire -= fireCost;
+                FireBall fb = new FireBall(tileMap, facingRight);
+                fb.setPosition(x, y);
+                fireBalls.add(fb);
+            }
+        }
+
+        // update fireballs
+        for (int i = 0; i < fireBalls.size(); i++) {
+            fireBalls.get(i).update();
+            if (fireBalls.get(i).shouldRemove()) {
+                fireBalls.remove(i);
+                i--;
+            }
+        }
+
         // set animations
         if (scratching) {
             if (currentAction != SCRATCHING) {
@@ -257,6 +292,11 @@ public class Player extends MapObject {
 
     public void draw(Graphics2D g) {
         setMapPosition();
+
+        // draw fireballs
+        for (FireBall f : fireBalls) {
+            f.draw(g);
+        }
 
         // draw player
         if (flinching) {
